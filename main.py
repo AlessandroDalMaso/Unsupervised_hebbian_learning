@@ -5,7 +5,7 @@ Created on Tue Jun 23 10:43:19 2020
 @author: Alessandro Dal Maso
 """
 import numpy as np
-
+import math
 # %% Defining some constants
 
 lebesgue_norm_exp = 3
@@ -36,9 +36,11 @@ def product(X, Y, neuron_index):
     ndarray
         the product of X and Y as defined by the weight matrix
     """
-    product_matrix = np.eye * np.linalign.norm(weights[neuron_index])\
-        ** (lebesgue_norm_exp-2)
-    return (X * product_matrix * Y)
+    weights_copy = weights[neuron_index]
+    for w in weights_copy:
+        w = abs(w) ** (lebesgue_norm_exp-2)
+    summatory = X * w * Y
+    return (np.sum(summatory))
 
 
 def learning_activation_function(neuron):  # TODO: is it the correct name? g
@@ -99,8 +101,13 @@ def weight_infinitesimal_change(time_scale,
 
 # %% Implementation
 
+
 # TODO: Initialize the weight_matrix with random gaussian weights,
 # with 1/sqrt(inputs) sigma, a convention i found online
 n_of_input_neurons = 3  # TODO: these are all placeholders!
 n_of_hidden_neurons = 3
-weights = np.ones(n_of_input_neurons, n_of_hidden_neurons)
+weights = np.ones((n_of_input_neurons, n_of_hidden_neurons))
+
+# %% testing
+
+
