@@ -50,26 +50,32 @@ def product(X, Y, hidden_neuron_index):
     return (np.sum(summatory))
 
 
-def g(neuron):  # Following the name convention of the article
+def g(h):
     """Return a value used to update the weight matrix.
 
     Implements temporal competition between patterns.
 
     Parameters
     ----------
-    neuron
-        the activation function of the hidden neuron
+    h
+        the value of the hidden neuron
 
     Returns
     -------
     float
         the value that will be used to update the weight matrix
     """
-    if neuron < 0:
-        return 0
-    if 7 < neuron:  # TODO placeholder value
+    rank = 0
+
+    for neuron in hidden_neurons:
+        if h >= neuron:
+            rank += rank
+    if rank == K:
         return 1
-    return -1*delta
+    if rank == K - k:
+        return -delta
+    else:
+        return 0
 
 
 def plasticity_rule(time_scale, hidden_neuron_index, visible_neuron_index):
@@ -96,10 +102,12 @@ def plasticity_rule(time_scale, hidden_neuron_index, visible_neuron_index):
     -----
     Equation [3] of the article, with h as the argument of g().
     """
-    h = hidden_neurons[hidden_neuron_index]
-    v = visible_neurons[visible_neuron_index]
+    h = hidden_neurons[hidden_neuron_index]  # hidden neuron value
+    v = visible_neurons[visible_neuron_index]  # visible neuron value
     W = weight_matrix[visible_neuron_index, hidden_neuron_index]
+    # synapsis value
     weights = weight_matrix[hidden_neuron_index].copy()
+    # value of all the synapses of the hidden neuron
 
     factor = product(weights, visible_neurons, hidden_neuron_index)
 
@@ -111,10 +119,10 @@ def plasticity_rule(time_scale, hidden_neuron_index, visible_neuron_index):
 
 # TODO: Initialize the weight_matrix with random gaussian weights,
 # with 1/sqrt(inputs) sigma, a convention i found online
-n_of_visible_neurons = 3  # TODO: these are all placeholders!
-n_of_hidden_neurons = 3
-weight_matrix = np.ones((n_of_visible_neurons, n_of_hidden_neurons))
-hidden_neurons = np.ones(n_of_hidden_neurons)
+n_of_visible_neurons = 1000  # TODO: these are all placeholders!
+K = 100  # n of hidden neurons, following the article's naming conventions
+weight_matrix = np.ones((n_of_visible_neurons, K))
+hidden_neurons = np.ones(K)
 visible_neurons = np.ones(n_of_visible_neurons)
 # %% testing
 
