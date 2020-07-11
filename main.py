@@ -10,32 +10,32 @@ from hypothesis import given
 import hypothesis.strategies as st
 import math
 from sklearn.base import TransformerMixin
+from sklearn.datasets import fetch_openml
 
 
 class CHUNeuralNetwork(TransformerMixin):
-    """f."""  # TODO docstring
+    """Extract features from data using a biologically-inspired algorithm.
+
+    """
 
 # %% Defining main constants in the init function
 
     """The convention for the constant names is the same of the article wich
     described the network implemented here. doi: 10.1073/pnas.1820458116"""
 
-    def __init__(self, p=3, k=7, delta=4, n=4.5, R=1, w_ihn=1, K=3,
+    def __init__(self, K, p=3, k=7, delta=4, R=1, w_ihn=1,
                  plasticity_scale=1, dynamical_scale=0.1):
+        self.K = K  # number of neurons for each layer
         self.p = p  # Lebesgue norm exponent
         self.k = k
         # ^ The k-th unit and all successive units's synapses will be weakened
-        self.delta = delta  # modulates the weakening
-        self.n = n
-        # ^ exponent used in the activation function in the supervised part
+        self.delta = delta  # regulates the weakening
         self.R = R  # Radius of the sphere on wich the weights will converge
         self.w_inh = w_ihn  # TODO correct value?
-        # TODO: these are all placeholders!
-        self.K = K
         # n of hidden neurons, as well as visible neurons, following the
         # article's naming conventions
         self.hidden_neurons = np.empty(K)
-        self.visible_neurons = np.empty(K)
+        self.inputs = np.empty(K)  # visible neurons
         self.weight_matrix = np.random.normal(0, 1/math.sqrt(K), (K, K))
         # The weight initialization follows a convention i found online.
         self.plasticity_scale = plasticity_scale
@@ -43,8 +43,7 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main equations and objects
 
-    def product(self, weights, Y, X=None):
-        # TODO: is there a better way to pass indexes?
+    def product(self, X, Y, weights=None):
         """Define a product for later use.
 
         To each hidden neuron is associated a different product.
@@ -62,14 +61,11 @@ class CHUNeuralNetwork(TransformerMixin):
         ndarray
             the product of X and Y as defined by the weights.
         """
-        # weights = self.weight_matrix[hidden_neuron_index].copy()
+        if weights is None:
+            weights = X.copy()
         weights_copy = weights.copy()
         for w in weights_copy:
             w = abs(w) ** (self.p-2)
-
-        if X is None:
-            X = weights.copy()
-
         totalsum = 0
         for (x, w, y) in zip(X, weights_copy, Y):
             totalsum += x*w*y
@@ -102,16 +98,12 @@ class CHUNeuralNetwork(TransformerMixin):
         else:
             return 0
 
-    def update_weights(self):
+    def plasticity_rule(self):
         """Calculate dW for each element in the weight matrix.
 
         a sub-function returns dw for a single weight; the output is vectorized
         before being returned
 
-        Parameters
-        ----------
-        inputs:
-            the input neurons value
         Returns
         -------
         ndarry:
@@ -123,8 +115,8 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         def update_weights(weights):
             increments = np.empty(0)
-            for (v, w, h) in zip(inputs, weights, self.hidden_neurons):
-                factor = self.product(weights, self.visible_neurons)
+            for (v, w, h) in zip(self.inputs, weights, self.hidden_neurons):
+                factor = self.product(weights, self.inputs)
                 factor2 = v * self.R ** self.p - factor * w
                 increment = self.g(h) * factor2 / self.plasticity_scale
 
@@ -139,10 +131,6 @@ class CHUNeuralNetwork(TransformerMixin):
         Implements a system of inhibition that will if iterated select one
         single pattern to emerge.
 
-        Parameters
-        ----------
-        inputs:
-            visible neurons value
         Returns
         -------
         ndarray:
@@ -153,13 +141,16 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         def increment(weights, h):
             summatory = 0
-            for ni, mu in self.hidden_neurons:
-                if ni == mu:
-                    pass
-                else:
-                    summatory += max(0, ni) - mu
-            return self.product(weights, inputs) - self.w_inh * summatory
+            for ni in self.hidden_neurons:
+                for mu in self.hidden_neurons:
+                    if ni == mu:
+                        pass
+                    else:
+                        summatory += max(0, ni) - mu
+            return self.product(weights, self.inputs) - self.w_inh * summatory
         return np.vectorize(increment)(self.weight_matrix, self.hidden_neurons)
+
+# %% implementing transform and fit methodss
 
     def transform(self, X):
         """Return the transformed array.
@@ -183,7 +174,7 @@ class CHUNeuralNetwork(TransformerMixin):
         return result
 
     def fit(self, X, y=None):
-        # TODO is it right to add y? complete docstring!
+        # TODO is it right to add y?
         """Fit the weights to the data provided.
 
         for each data point add to each weight the corresponding increment.
@@ -191,7 +182,7 @@ class CHUNeuralNetwork(TransformerMixin):
         Parameters
         ----------
             X: the data to fit, in shape (n_samples, n_features)
-
+            y: as this is unsupervised learning should always be None
         Returns
         -------
         CHUNeuralNetwork:
@@ -202,13 +193,17 @@ class CHUNeuralNetwork(TransformerMixin):
             self.hidden_neurons = self.weight_matrix.dot(x)
             time = np.linspace(0, 1000, 1000)  # for the differential equation
             states = integrate.odeint(self.neuron_dynamical_equation,
-                                      hidden_neurons, time)
+                                      self.hidden_neurons, time)
             self.hidden_neurons = states(-1)
-            update_weights()
+            self.hidden_neurons += self.plasticity_rule()
         return self
 
+# %% mnist database implementation
 
-a = CHUNeuralNetwork()
+
+X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
+
+a = CHUNeuralNetwork(10)
 
 """
 def test_product_proportionality(x = [1.1,1,2], y = [1.3,1.1,1], z = 2):
