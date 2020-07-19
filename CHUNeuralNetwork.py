@@ -10,12 +10,11 @@ from hypothesis import given
 import hypothesis.strategies as st
 import math
 from sklearn.base import TransformerMixin
-from sklearn.datasets import fetch_openml
 
 
 class CHUNeuralNetwork(TransformerMixin):
     """Extract features from data using a biologically-inspired algorithm.
-
+    TODO continue
     """
 
 # %% Defining main constants in the init function
@@ -119,17 +118,27 @@ class CHUNeuralNetwork(TransformerMixin):
                 factor = self.product(weights, self.inputs)
                 factor2 = v * self.R ** self.p - factor * w
                 increment = self.g(h) * factor2 / self.plasticity_scale
-
-                increments.append(increment)
+                increments = np.append(increments, increment)
             return increments
+        result = []
+        for w in self.weight_matrix:
+            result = np.append(result, update_weights(w))
+        result = np.reshape(result, (self.K, self.K))  # TODO horrible fix!
+        return result
 
-        return np.vectorize(update_weights)(self.weight_matrix)
-
-    def neuron_dynamical_equation(self):  # 8
+    def neuron_dynamical_equation(self, hidden_neurons, time=0):  # 8
         """Define the dynamics that lead to equilibrium.
 
         Implements a system of inhibition that will if iterated select one
         single pattern to emerge.
+
+        Parameters
+        ----------
+        hidden_neurons:
+            the current value of the hidden neurons
+        time:
+            time of the differential equation, for compatibility with the
+            np.integrate.odeint method
 
         Returns
         -------
@@ -139,16 +148,25 @@ class CHUNeuralNetwork(TransformerMixin):
         -----
         Equation [8] of the article.
         """
+        urca = 0
+
         def increment(weights, h):
+            nonlocal urca
+            urca += 1
+            print(urca)
             summatory = 0
-            for ni in self.hidden_neurons:
-                for mu in self.hidden_neurons:
+            for ni in hidden_neurons:
+                for mu in hidden_neurons:
                     if ni == mu:
                         pass
                     else:
                         summatory += max(0, ni) - mu
             return self.product(weights, self.inputs) - self.w_inh * summatory
-        return np.vectorize(increment)(self.weight_matrix, self.hidden_neurons)
+        result = []
+        for weights, h in zip(self.weight_matrix, self.hidden_neurons):
+            result = np.append(result, increment(weights, h))
+        return result
+        # return np.vectorize(increment)(self.weight_matrix, self.hidden_neurons)
 
 # %% implementing transform and fit methodss
 
@@ -169,8 +187,11 @@ class CHUNeuralNetwork(TransformerMixin):
             Transformed array.
         """
         result = np.empty(0)
+        y = 0
         for x in X:
-            result.append(self.weight_matrix.dot(x))
+            y += 1
+            result = np.append(result, self.weight_matrix.dot(x))
+            print(y)
         return result
 
     def fit(self, X, y=None):
@@ -195,33 +216,5 @@ class CHUNeuralNetwork(TransformerMixin):
             states = integrate.odeint(self.neuron_dynamical_equation,
                                       self.hidden_neurons, time)
             self.hidden_neurons = states(-1)
-            self.hidden_neurons += self.plasticity_rule()
+            self.weight_matrix += self.plasticity_rule()
         return self
-
-# %% mnist database implementation
-
-
-X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
-
-a = CHUNeuralNetwork(10)
-
-"""
-def test_product_proportionality(x = [1.1,1,2], y = [1.3,1.1,1], z = 2):
-    product(x,y,z)
-
-@given(array1=hn.arrays(float, n_of_input_neurons),
-       array2=hn.arrays(float, n_of_input_neurons),
-       # TODO i don't understand why but i can't define both arrays with a
-       # comma!
-       index=st.integers(min_value=0, max_value=n_of_input_neurons-1),
-       proportionality_constant=st.floats())
-def test_product_proportionality(array1, array2, index,
-                                 proportionality_constant):
-    h.
-    assert product(array1 * proportionality_constant, array2, index)\
-        == product(array1, array2, index) * proportionality_constant
-
-    assert product(array1, array2 * proportionality_constant, index)\
-        == product(array1, array2, index) * proportionality_constant
-
-"""
