@@ -3,7 +3,7 @@ Created on Tue Jun 23 10:43:19 2020
 
 Author: Alessandro Dal Maso
 """
-
+x = 0
 import numpy as np
 from scipy import integrate
 from hypothesis import given
@@ -11,91 +11,109 @@ import hypothesis.strategies as st
 import math
 from sklearn.base import TransformerMixin
 
-
 class CHUNeuralNetwork(TransformerMixin):
     """Extract features from data using a biologically-inspired algorithm.
-    TODO continue
+
+    Competing Hidden Units Neural Network. A 2-layers neural network
+    that implements competition between patterns, learning unsupervised. The
+    data transformed can then be used with a second, supervised, layer. See
+    the article in the notes for a more complete explanation.
+
+    Parameters
+    ----------
+        K:
+            the number of hidden neurons
+        J:
+            the number of visible neurons (e.g. the number of features)
+        p:
+            exponent of the lebesgue norm used (se product function)
+        k:
+            The k-th unit will be weakened
+        delta:
+            regulates the weakening discussed above
+        R:
+            Radius of the sphere on wich the weights will converge
+        w_inh:
+            inhibition parameter
+        hidden_neurons:
+            initial values for those neurons.
+        inputs:
+            initial value for input neurons
+        weight_matrix:
+            the weights of the network.
+        scale:
+            a time scale.
+
+    Notes:
+    ------
+        The name conventions for the variable is the same used in the article,
+        when possible.
+
+    References:
+    ----------
+        doi: 10.1073/pnas.1820458116
     """
 
 # %% Defining main constants in the init function
 
-    """The convention for the constant names is the same of the article wich
-    described the network implemented here. doi: 10.1073/pnas.1820458116"""
 
-    def __init__(self, K, p=3, k=7, delta=4, R=1, w_ihn=1,
-                 plasticity_scale=1, dynamical_scale=0.1):
-        self.K = K  # number of neurons for each layer
-        self.p = p  # Lebesgue norm exponent
+    def __init__(self, J, K=2000, p=3, k=7, delta=4, R=1, w_ihn=1,
+                 scale=1, batch_size=1):
+        self.K = K
+        self.J = J
+        self.p = p
         self.k = k
-        # ^ The k-th unit and all successive units's synapses will be weakened
-        self.delta = delta  # regulates the weakening
-        self.R = R  # Radius of the sphere on wich the weights will converge
-        self.w_inh = w_ihn  # TODO correct value?
-        # n of hidden neurons, as well as visible neurons, following the
-        # article's naming conventions
+        self.delta = delta
+        self.R = R
+        self.w_inh = w_ihn
         self.hidden_neurons = np.empty(K)
-        self.inputs = np.empty(K)  # visible neurons
-        self.weight_matrix = np.random.normal(0, 1/math.sqrt(K), (K, K))
+        self.inputs = np.empty(J)
+        self.weight_matrix = np.random.normal(0, 1/math.sqrt(K), (K, J))
         # The weight initialization follows a convention i found online.
-        self.plasticity_scale = plasticity_scale
-        self.dynamical_scale = dynamical_scale
+        self.scale = scale
+        self.batch_size = 1
 
 # %% Defining main equations and objects
 
-    def product(self, X, Y, weights=None):
-        """Define a product for later use.
+    def product(self):
+        shape = (self.batch_size, self.K, self.J, self.J)
+        input_tensor = np.tile(self.batch, (1, self.K*self.J))
+        input_tensor = np.reshape(input_tensor, shape)
+        weight_tensor = np.tile(self.weight_matrix,
+                                (1, self.batch_size * self.J))
+        weight_tensor = np.reshape(weight_tensor, shape)
+        weights_abs = np.abs(weight_tensor)
+        powers = input_tensor.fill(self.p-2)
+        coefficients = np.power(weights_abs, powers)
+        summatory = input_tensor * weight_tensor * coefficients
+        result = np.sum(summatory, axis=-1)
+        assert result.shape == (self.batch_size, self.K, self.J)
+        return result
 
-        To each hidden neuron is associated a different product.
-
-        Parameters
-        ----------
-        X, Y:
-                the vectors to be multiplied
-        weights:
-            the weights associated with an hidden neuron. A different product
-            is defined for each hidden neuron.
-
-        Returns
-        -------
-        ndarray
-            the product of X and Y as defined by the weights.
-        """
-        if weights is None:
-            weights = X.copy()
-        weights_copy = weights.copy()
-        for w in weights_copy:
-            w = abs(w) ** (self.p-2)
-        totalsum = 0
-        for (x, w, y) in zip(X, weights_copy, Y):
-            totalsum += x*w*y
-        return totalsum
-
-    def g(self, h):
-        """Return a value used to update the weight matrix.
+    def g(self):
+        """Return the update values for each neuron.
 
         Implements temporal competition between patterns.
 
-        Parameters
-        ----------
-        h:
-
-        Returns
-        -------
-        float
-            the value that will be used to update the weight matrix
+        Return:
+        ------
+        ndarray
+            the values that will be used in the plasicity_rule function
         """
-        rank = 0
-
-        for neuron in self.hidden_neurons:
-            if h >= neuron:
-                rank += rank
-
-        if rank == self.K:
-            return 1
-        if rank == self.K - self.k:  # TODO ask if correct procedure
-            return -self.delta
-        else:
-            return 0
+        def ranking():
+            result = np.zeros(self.hidden_neurons.shape)
+            sortvalues = np.argsort(self.hidden_neurons)
+            # from lowest to highest
+            result[sortvalues[self.K-1]] = 1
+            result[sortvalues[self.k]] = -self.delta
+            return result
+        ranks = ranking()
+        g_tensor = np.repeat(ranks, self.J, axis=-1)
+        g_tensor = np.reshape(g_tensor, (self.K, self.J))
+        assert g_tensor[0][0] == g_tensor[0][1]
+        g_tensor = np.repeat([g_tensor], self.batch_size, axis=0)
+        assert g_tensor[0][0][0] == g_tensor[0][0][1]
+        return g_tensor
 
     def plasticity_rule(self):
         """Calculate dW for each element in the weight matrix.
@@ -112,61 +130,18 @@ class CHUNeuralNetwork(TransformerMixin):
         -----
         Equation [3] of the article, with h as the argument of g().
         """
-        def update_weights(weights):
-            increments = np.empty(0)
-            for (v, w, h) in zip(self.inputs, weights, self.hidden_neurons):
-                factor = self.product(weights, self.inputs)
-                factor2 = v * self.R ** self.p - factor * w
-                increment = self.g(h) * factor2 / self.plasticity_scale
-                increments = np.append(increments, increment)
-            return increments
-        result = []
-        for w in self.weight_matrix:
-            result = np.append(result, update_weights(w))
-        result = np.reshape(result, (self.K, self.K))  # TODO horrible fix!
-        return result
+        inputs_tensor = np.repeat(self.batch, self.K, axis=0)
+        inputs_tensor = np.reshape(inputs_tensor,
+                                   (self.batch_size, self.K, self.J))
+        weights_tensor = np.repeat([self.weight_matrix],
+                                   self.batch_size, axis=0)
 
-    def neuron_dynamical_equation(self, hidden_neurons, time=0):  # 8
-        """Define the dynamics that lead to equilibrium.
+        minuend = self.R ** self.p * inputs_tensor
+        subtrahend = np.multiply(self.product(), weights_tensor)
+        result = self.g() * (minuend - subtrahend)
+        return np.sum(result, axis=-1)  # summing over all results in the batch
 
-        Implements a system of inhibition that will if iterated select one
-        single pattern to emerge.
 
-        Parameters
-        ----------
-        hidden_neurons:
-            the current value of the hidden neurons
-        time:
-            time of the differential equation, for compatibility with the
-            np.integrate.odeint method
-
-        Returns
-        -------
-        ndarray:
-            numpy array of the increments dh
-        Notes
-        -----
-        Equation [8] of the article.
-        """
-        urca = 0
-
-        def increment(weights, h):
-            nonlocal urca
-            urca += 1
-            print(urca)
-            summatory = 0
-            for ni in hidden_neurons:
-                for mu in hidden_neurons:
-                    if ni == mu:
-                        pass
-                    else:
-                        summatory += max(0, ni) - mu
-            return self.product(weights, self.inputs) - self.w_inh * summatory
-        result = []
-        for weights, h in zip(self.weight_matrix, self.hidden_neurons):
-            result = np.append(result, increment(weights, h))
-        return result
-        # return np.vectorize(increment)(self.weight_matrix, self.hidden_neurons)
 
 # %% implementing transform and fit methodss
 
@@ -186,14 +161,12 @@ class CHUNeuralNetwork(TransformerMixin):
         ndarray of shape (n_samples, n_features)
             Transformed array.
         """
-        result = np.empty(0)
-        y = 0
+        result = np.empty((1, self.K))
+        # ^ give the correct shape to result
         for x in X:
-            y += 1
-            result = np.append(result, self.weight_matrix.dot(x))
-            print(y)
+            result = np.append(result, [self.weight_matrix.dot(x)], axis=0)
+        result = np.delete(result, 0, axis=0)  # delete the placeholder
         return result
-
     def fit(self, X, y=None):
         # TODO is it right to add y?
         """Fit the weights to the data provided.
@@ -209,12 +182,16 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork:
             the network itself
         """
-        for x in X:
-            self.inputs = x
-            self.hidden_neurons = self.weight_matrix.dot(x)
-            time = np.linspace(0, 1000, 1000)  # for the differential equation
-            states = integrate.odeint(self.neuron_dynamical_equation,
-                                      self.hidden_neurons, time)
-            self.hidden_neurons = states(-1)
+        def batch(iterable, n):
+            lenght = len(iterable)
+            for ndx in range(0, lenght, n):
+                yield iterable[ndx:min(ndx + n, lenght)]
+        global x
+        for b in batch(X, self.batch_size):
+            x += 1
+            print(x)
+            #print("questo è il valore di un neurone", self.hidden_neurons[1])
+            self.batch = b
+            #print("questo è il valore di un input", self.inputs[1])
             self.weight_matrix += self.plasticity_rule()
         return self
