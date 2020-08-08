@@ -3,13 +3,10 @@ Created on Tue Jun 23 10:43:19 2020
 
 Author: Alessandro Dal Maso
 """
-x = 0
 import numpy as np
-from scipy import integrate
-from hypothesis import given
-import hypothesis.strategies as st
 import math
 from sklearn.base import TransformerMixin
+
 
 class CHUNeuralNetwork(TransformerMixin):
     """Extract features from data using a biologically-inspired algorithm.
@@ -57,36 +54,39 @@ class CHUNeuralNetwork(TransformerMixin):
 # %% Defining main constants in the init function
 
 
-    def __init__(self, J, K=2000, p=3, k=7, delta=4, R=1, w_ihn=1,
+    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=200, p=3, k=7, delta=4, R=1, w_ihn=1,  # TODO k=7, K=2000
                  scale=1, batch_size=1):
-        self.K = K
-        self.J = J
+        self.K = n_of_hidden_neurons
+        self.J = n_of_input_neurons
         self.p = p
         self.k = k
         self.delta = delta
         self.R = R
         self.w_inh = w_ihn
-        self.hidden_neurons = np.empty(K)
+        self.hidden_neurons = np.empty(batch_size, K)
         self.inputs = np.empty(J)
         self.weight_matrix = np.random.normal(0, 1/math.sqrt(K), (K, J))
         # The weight initialization follows a convention i found online.
         self.scale = scale
-        self.batch_size = 1
+        self.batch_size = batch_size
 
 # %% Defining main equations and objects
 
     def product(self):
         shape = (self.batch_size, self.K, self.J, self.J)
-        input_tensor = np.tile(self.batch, (1, self.K*self.J))
+        # an array of KxJ matrices containing 1-D arrays to be summed upon
+        input_tensor = np.repeat(self.batch, self.K*self.J, axis=0)
         input_tensor = np.reshape(input_tensor, shape)
-        weight_tensor = np.tile(self.weight_matrix,
-                                (1, self.batch_size * self.J))
+        weight_tensor = np.repeat(self.weight_matrix, self.batch_size * self.J,
+                                  axis=0)
         weight_tensor = np.reshape(weight_tensor, shape)
         weights_abs = np.abs(weight_tensor)
-        powers = input_tensor.fill(self.p-2)
+        powers = input_tensor
+        powers.fill(self.p-2)
         coefficients = np.power(weights_abs, powers)
         summatory = input_tensor * weight_tensor * coefficients
         result = np.sum(summatory, axis=-1)
+        # summing along the last axis will give the correct shape
         assert result.shape == (self.batch_size, self.K, self.J)
         return result
 
@@ -98,20 +98,23 @@ class CHUNeuralNetwork(TransformerMixin):
         Return:
         ------
         ndarray
-            the values that will be used in the plasicity_rule function
+            the values that will be used in the plasticity_rule function
         """
         def ranking():
+            columns = np.arange(0, self.K, 1)
+            sort = np.argsort(self.hidden_neurons)
+            sort = sort.T
+            # we to identify want the biggest and k-th-est biggest value from
+            # each row of the hidden_neurons matrix
+            rows_biggest = sort[-1]
+            rows_kth = sort[-self.k]
             result = np.zeros(self.hidden_neurons.shape)
-            sortvalues = np.argsort(self.hidden_neurons)
-            # from lowest to highest
-            result[sortvalues[self.K-1]] = 1
-            result[sortvalues[self.k]] = -self.delta
+            result[columns, rows_biggest] = 1
+            result[columns, rows_kth] = -self.delta
             return result
         ranks = ranking()
         g_tensor = np.repeat(ranks, self.J, axis=-1)
-        g_tensor = np.reshape(g_tensor, (self.K, self.J))
-        assert g_tensor[0][0] == g_tensor[0][1]
-        g_tensor = np.repeat([g_tensor], self.batch_size, axis=0)
+        g_tensor = np.reshape(g_tensor, (self.batch_size, self.K, self.J))
         assert g_tensor[0][0][0] == g_tensor[0][0][1]
         return g_tensor
 
@@ -131,15 +134,20 @@ class CHUNeuralNetwork(TransformerMixin):
         Equation [3] of the article, with h as the argument of g().
         """
         inputs_tensor = np.repeat(self.batch, self.K, axis=0)
-        inputs_tensor = np.reshape(inputs_tensor,
-                                   (self.batch_size, self.K, self.J))
-        weights_tensor = np.repeat([self.weight_matrix],
-                                   self.batch_size, axis=0)
+        inputs_tensor = np.reshape(inputs_tensor, (self.batch_size,
+                                                   self.K, self.J))
+        weights_tensor = np.repeat([self.weight_matrix], self.batch_size,
+                                   axis=0)
 
         minuend = self.R ** self.p * inputs_tensor
         subtrahend = np.multiply(self.product(), weights_tensor)
         result = self.g() * (minuend - subtrahend)
-        return np.sum(result, axis=-1)  # summing over all results in the batch
+        return np.sum(result, axis=0)  # summing over all results in the batch
+
+    def radius(self):
+        powers = self.hidden_neurons
+        powers.fill(self.p)
+        return np.sum(np.power(np.abs(self.hidden_neurons), powers))
 
 
 
@@ -167,6 +175,7 @@ class CHUNeuralNetwork(TransformerMixin):
             result = np.append(result, [self.weight_matrix.dot(x)], axis=0)
         result = np.delete(result, 0, axis=0)  # delete the placeholder
         return result
+
     def fit(self, X, y=None):
         # TODO is it right to add y?
         """Fit the weights to the data provided.
@@ -182,16 +191,22 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork:
             the network itself
         """
+
         def batch(iterable, n):
             lenght = len(iterable)
             for ndx in range(0, lenght, n):
                 yield iterable[ndx:min(ndx + n, lenght)]
+
         global x
+
         for b in batch(X, self.batch_size):
             x += 1
-            print(x)
-            #print("questo è il valore di un neurone", self.hidden_neurons[1])
             self.batch = b
-            #print("questo è il valore di un input", self.inputs[1])
+            self.hidden_neurons = np.einsum("ij,kj->ki",
+                                            self.weight_matrix, self.batch)
+            # ^ dot product between each input vector and weight_matrix
+            print(self.hidden_neurons[0])
             self.weight_matrix += self.plasticity_rule()
+            # ^ updating the weight matrix
+
         return self

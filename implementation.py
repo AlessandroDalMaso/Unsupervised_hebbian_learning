@@ -27,7 +27,7 @@ fitted = layer1.fit(X_test)
 transformed = fitted.transform([X_test[0]])
 """
 toy = chu.CHUNeuralNetwork(4)
-a = np.random.rand(100, 4)
+a = np.random.rand(10, 4)
 fitted_toy = toy.fit(a)
 tranformed_toy = toy.transform(a)
 
