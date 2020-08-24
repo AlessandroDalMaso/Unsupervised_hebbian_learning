@@ -54,7 +54,7 @@ class CHUNeuralNetwork(TransformerMixin):
 # %% Defining main constants in the init function
 
 
-    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=200, p=3, k=7, delta=4, R=1, w_ihn=1,  # TODO k=7, K=2000
+    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=200, p=3, k=7, delta=4, R=1,  # TODO k=7, K=2000
                  scale=1, batch_size=1):
         self.K = n_of_hidden_neurons
         self.J = n_of_input_neurons
@@ -62,10 +62,12 @@ class CHUNeuralNetwork(TransformerMixin):
         self.k = k
         self.delta = delta
         self.R = R
-        self.w_inh = w_ihn
-        self.hidden_neurons = np.empty(batch_size, K)
-        self.inputs = np.empty(J)
-        self.weight_matrix = np.random.normal(0, 1/math.sqrt(K), (K, J))
+        self.hidden_neurons = np.empty((batch_size, n_of_hidden_neurons))
+        self.inputs = np.empty(n_of_input_neurons)
+        self.weight_matrix = np.random.normal(0,
+                                              1/math.sqrt(n_of_hidden_neurons),
+                                              (n_of_hidden_neurons,
+                                               n_of_input_neurons))
         # The weight initialization follows a convention i found online.
         self.scale = scale
         self.batch_size = batch_size
@@ -101,11 +103,12 @@ class CHUNeuralNetwork(TransformerMixin):
             the values that will be used in the plasticity_rule function
         """
         def ranking():
-            columns = np.arange(0, self.K, 1)
+            columns = np.arange(0, self.batch_size, 1)
             sort = np.argsort(self.hidden_neurons)
+            # sorts along last axis by default
             sort = sort.T
-            # we to identify want the biggest and k-th-est biggest value from
-            # each row of the hidden_neurons matrix
+            # we want to identify want the biggest and k-th-est biggest value
+            # from each row of the hidden_neurons matrix
             rows_biggest = sort[-1]
             rows_kth = sort[-self.k]
             result = np.zeros(self.hidden_neurons.shape)
@@ -141,13 +144,23 @@ class CHUNeuralNetwork(TransformerMixin):
 
         minuend = self.R ** self.p * inputs_tensor
         subtrahend = np.multiply(self.product(), weights_tensor)
-        result = self.g() * (minuend - subtrahend)
+        result = np.multiply(self.g(), (minuend - subtrahend))
         return np.sum(result, axis=0)  # summing over all results in the batch
 
     def radius(self):
-        powers = self.hidden_neurons
+        """Calculate a quantity that should converge to R.
+
+        Elevate the absolute value of each hidden neuron (calculated for the
+        first data point) to p, then sum these quantities toghether.
+
+        Returns:
+        --------
+        Float
+            the quantity descripted above.
+        """
+        powers = self.hidden_neurons[0]
         powers.fill(self.p)
-        return np.sum(np.power(np.abs(self.hidden_neurons), powers))
+        return np.sum(np.power(np.abs(self.hidden_neurons[0]), powers))
 
 
 
@@ -169,11 +182,12 @@ class CHUNeuralNetwork(TransformerMixin):
         ndarray of shape (n_samples, n_features)
             Transformed array.
         """
-        result = np.empty((1, self.K))
+        result = [self.weight_matrix.dot(x) for x in X]
+        #result = np.empty((1, self.K))
         # ^ give the correct shape to result
-        for x in X:
-            result = np.append(result, [self.weight_matrix.dot(x)], axis=0)
-        result = np.delete(result, 0, axis=0)  # delete the placeholder
+        #for x in X:
+        #    result = np.append(result, [self.weight_matrix.dot(x)], axis=0)
+        #result = np.delete(result, 0, axis=0)  # delete the placeholder
         return result
 
     def fit(self, X, y=None):
@@ -197,16 +211,14 @@ class CHUNeuralNetwork(TransformerMixin):
             for ndx in range(0, lenght, n):
                 yield iterable[ndx:min(ndx + n, lenght)]
 
-        global x
-
         for b in batch(X, self.batch_size):
-            x += 1
             self.batch = b
             self.hidden_neurons = np.einsum("ij,kj->ki",
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
-            print(self.hidden_neurons[0])
+            print(self.hidden_neurons[0][0])
             self.weight_matrix += self.plasticity_rule()
             # ^ updating the weight matrix
+            a = input("batch processed, press enter to continue")
 
         return self
