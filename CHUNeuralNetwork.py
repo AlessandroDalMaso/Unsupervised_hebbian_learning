@@ -83,8 +83,8 @@ class CHUNeuralNetwork(TransformerMixin):
                                   axis=0)
         weight_tensor = np.reshape(weight_tensor, shape)
         weights_abs = np.abs(weight_tensor)
-        powers = input_tensor
-        powers.fill(self.p-2)
+        powers = input_tensor.copy() # commit
+        powers.fill(self.p-2) # power più banale
         coefficients = np.power(weights_abs, powers)
         summatory = input_tensor * weight_tensor * coefficients
         result = np.sum(summatory, axis=-1)
@@ -107,7 +107,7 @@ class CHUNeuralNetwork(TransformerMixin):
             sort = np.argsort(self.hidden_neurons)
             # sorts along last axis by default
             sort = sort.T
-            # we want to identify want the biggest and k-th-est biggest value
+            # we want to identify the biggest and k-th-est biggest value
             # from each row of the hidden_neurons matrix
             rows_biggest = sort[-1]
             rows_kth = sort[-self.k]
