@@ -54,7 +54,7 @@ class CHUNeuralNetwork(TransformerMixin):
 # %% Defining main constants in the init function
 
     def __init__(self, n_of_input_neurons, n_of_hidden_neurons=200, p=3, k=7,
-                 delta=4, R=1, scale=1, batch_size=1):  # TODO k=7, K=2000
+                 delta=4, R=1, scale=1, batch_size=2):  # TODO k=7, K=2000
         self.K = n_of_hidden_neurons
         self.J = n_of_input_neurons
         self.batch_size = batch_size
@@ -126,7 +126,13 @@ class CHUNeuralNetwork(TransformerMixin):
         return np.sum(np.abs(self.hidden_neurons[0]) ** self.p)
 
     def transform(self, X):
-        return [self.weight_matrix @ x for x in X]
+        return [self.weight_matrix.dot(x) for x in X]  # TODO @ operator
+        """
+        result = np.array([X[0]])
+        for x in X:
+            result = np.append(result, x)
+        np.delete(result, 0)
+        return result"""
 
     def fit(self, X, y=None):
         """Fit the weights to the data provided.
@@ -145,18 +151,21 @@ class CHUNeuralNetwork(TransformerMixin):
 
         def batchize(iterable, size):
             # credit: https://stackoverflow.com/users/3868326/kmaschta
+            (x_i, y_i) = iterable.shape
+            if x_i % size:
+                raise Exception("sample size (", x_i,
+                                ") is not a multiple of batch", size)
             lenght = len(iterable)
             for n in range(0, lenght, size):
-                yield iterable[n:min(n + size, lenght)]
+                yield iterable[n:n + size]
 
         for b in batchize(X, self.batch_size):
             self.batch = b
             self.hidden_neurons = np.einsum("ij,kj->ki",
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
-            print(self.hidden_neurons[0][0])
             self.weight_matrix += self.plasticity_rule()
             # ^ updating the weight matrix
-            input("batch processed, press enter to continue")
+            #input("batch processed, press enter to continue")
 
         return self

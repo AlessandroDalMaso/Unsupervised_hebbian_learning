@@ -27,17 +27,21 @@ if not exists('./test'):
 
 # %% doing the thing
 
-np.random.seed(12345)
-"""
+test = open('./test', 'rb')
+X_test = test.read()
+test.close()
+
 layer1 = chu.CHUNeuralNetwork(784)
 fitted = layer1.fit(X_test)
-transformed = fitted.transform([X_test[0]])
+
+transformed = fitted.transform(X_test[0])
+
 """
 toy = chu.CHUNeuralNetwork(4)
 a = np.random.rand(10, 4)
 fitted_toy = toy.fit(a)
 tranformed_toy = toy.transform(a)
-
+"""
 # %% image representation
 """
 image = np.reshape(fitted.weight_matrix[1], (28, 28))
