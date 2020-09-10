@@ -19,7 +19,7 @@ np.random.seed(12345)
 # %% loading and splitting the MNIST dataset
 if not exists('./test'):
     X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
-    X_train, X_test, y1, y2 = train_test_split(X, y, test_size=0.001)
+    X_train, X_test, y1, y2 = train_test_split(X, y, test_size=0.1)
     test = open('test', 'wb')
     pickle.dump(X_test, test)
     test.close()
@@ -43,16 +43,10 @@ fitted_toy = toy.fit(a)
 tranformed_toy = toy.transform(a)
 """
 # %% image representation
-"""
-image = np.reshape(fitted.weight_matrix[1], (28, 28))
-fig, ax = plt.subplots()
-ax = plt.imshow(image)
-plt.savefig("fig.png")
-ori = np.reshape(X_test[0], (28, 28))
-fig2, ax2 = plt.subplots()
-ax2 = ori
-ax2 = plt.imshow(ax2)
-plt.savefig("fig2.png")
-"""
+for i in range(4):
+    image = np.reshape(X_test[i], (28, 28))
+    fig, ax = plt.subplots()
+    ax = plt.imshow(image)
+    plt.savefig("{}".format(i))
 
 

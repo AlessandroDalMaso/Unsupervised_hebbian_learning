@@ -53,8 +53,8 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main constants in the init function
 
-    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=200, p=3, k=7,
-                 delta=4, R=1, scale=1, batch_size=2):  # TODO k=7, K=2000
+    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=3, k=7,
+                 delta=4, R=1, scale=1, batch_size=2):
         self.K = n_of_hidden_neurons
         self.J = n_of_input_neurons
         self.batch_size = batch_size
@@ -126,7 +126,7 @@ class CHUNeuralNetwork(TransformerMixin):
         return np.sum(np.abs(self.hidden_neurons[0]) ** self.p)
 
     def transform(self, X):
-        return [x @ self.weight_matrix for x in X]  # TODO @ operator
+        return self.weight_matrix @ X.T
         """
         result = np.array([X[0]])
         for x in X:
@@ -165,6 +165,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
             self.weight_matrix += self.plasticity_rule()
+            print("batch processed")
             # ^ updating the weight matrix
             #input("batch processed, press enter to continue")
 
