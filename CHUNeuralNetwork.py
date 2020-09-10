@@ -126,7 +126,7 @@ class CHUNeuralNetwork(TransformerMixin):
         return np.sum(np.abs(self.hidden_neurons[0]) ** self.p)
 
     def transform(self, X):
-        return [self.weight_matrix.dot(x) for x in X]  # TODO @ operator
+        return [x @ self.weight_matrix for x in X]  # TODO @ operator
         """
         result = np.array([X[0]])
         for x in X:

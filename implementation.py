@@ -11,7 +11,7 @@ from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import CHUNeuralNetwork as chu
-from pickle import dump
+import pickle
 from os.path import exists
 
 np.random.seed(12345)
@@ -21,14 +21,14 @@ if not exists('./test'):
     X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
     X_train, X_test, y1, y2 = train_test_split(X, y, test_size=0.001)
     test = open('test', 'wb')
-    dump(X_test, test)
+    pickle.dump(X_test, test)
     test.close()
 
 
 # %% doing the thing
 
 test = open('./test', 'rb')
-X_test = test.read()
+X_test = pickle.load(test)
 test.close()
 
 layer1 = chu.CHUNeuralNetwork(784)
