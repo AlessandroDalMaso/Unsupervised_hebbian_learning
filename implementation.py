@@ -50,8 +50,8 @@ if not exists('./database_7000'):
 # %% doing the thing
 
 test = open('./test', 'rb')
-X_test = pickle.load(test)
-test.close()
+X_test = pickle.load(database_70)
+database_70.close()
 
 layer1 = chu.CHUNeuralNetwork(784)
 fitted = layer1.fit(X_test)
