@@ -99,20 +99,21 @@ class CHUNeuralNetwork(TransformerMixin):
         minuend = self.R ** self.p * self.batch
         minuend = np.repeat(minuend, self.K, axis=0)
         minuend = np.reshape(minuend, (self.batch_size, self.K, self.J))
-        # TODO remove repeats
+        # i wish there was a way to do it whitout repeats
         subtrahend = np.einsum("ij,jk->ijk",
                                self.product(), self.weight_matrix)
         # multiply the n-th vector in the second matrix by the n-th scalar in
         # a vector of the the 1st matrix. repeat for each vector in the 2nd
         # matrix
         factor = minuend - subtrahend
-        return np.einsum("ij,ijk->jk", self.g(), factor)
+        result = np.einsum("ij,ijk->jk", self.g(), factor)
+        return result
         # multiply each weight of the synapsis w_ab relative to the hidden
         # neuron a and the input neuron b by g(a), wich only depends on the
         # value of the hidden neuron a. then sum over the batch to update the
         # weight matrix.
 
-    def radius(self):
+    def radius(self):  # TODO not useful in our implementation
         """Return a value that should converge to the R parameter.
 
         raise to the power of p the absolute values of the hidden neurons,
@@ -152,21 +153,19 @@ class CHUNeuralNetwork(TransformerMixin):
         def batchize(iterable, size):
             # credit: https://stackoverflow.com/users/3868326/kmaschta
             (x_i, y_i) = iterable.shape
-            if x_i % size:
-                raise Exception("sample size (", x_i,
-                                ") is not a multiple of batch", size)
             lenght = len(iterable)
             for n in range(0, lenght, size):
-                yield iterable[n:n + size]
+                yield iterable[n:min(n + size, lenght)]
 
         for b in batchize(X, self.batch_size):
             self.batch = b
+            self.batch_size = np.size(b, 0)  # i hope this is right.
             self.hidden_neurons = np.einsum("ij,kj->ki",
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
             self.weight_matrix += self.plasticity_rule()
-            print("batch processed")
+            print(self.hidden_neurons[0][0])
             # ^ updating the weight matrix
-            #input("batch processed, press enter to continue")
+            # input("batch processed, press enter to continue")
 
         return self

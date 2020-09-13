@@ -18,6 +18,18 @@ np.random.seed(12345)
 
 # %% loading and splitting the MNIST dataset
 
+# an alternative method
+"""
+for i in {7, 70, 700, 7000}:
+    if not exists('./database_{}'.format(i)):
+        X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
+        X_train, X_test, y1, y2 = train_test_split(X, y, test_size=i/70000)
+        globals()['database_{}'.format(i)] = open('database_{}'.format(i), 'wb')
+        pickle.dump(globals()['database_{}'.format(i)],
+                    globals()['database_{}'.format(i)])
+    globals()['database_{}'.format(i)].close()
+"""
+
 if not exists('./database_7'):
     X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
     X_train, X_test_7, y1, y2 = train_test_split(X, y, test_size=0.0001)
@@ -49,28 +61,24 @@ if not exists('./database_7000'):
 
 # %% doing the thing
 
-test = open('./test', 'rb')
-X_test = pickle.load(database_70)
-database_70.close()
+database_700 = open('./database_700', 'rb')
+X_test = pickle.load(database_700)
+database_700.close()
+# note to self: remember to change the number on all three lines
 
 layer1 = chu.CHUNeuralNetwork(784)
-fitted = layer1.fit(X_test)
+fitted = layer1.fit(X_test[:431])  # the problem is at 432
 
 transformed = fitted.transform(X_test[0])
 
-"""
-toy = chu.CHUNeuralNetwork(4)
-a = np.random.rand(10, 4)
-fitted_toy = toy.fit(a)
-tranformed_toy = toy.transform(a)
-"""
+
 # %% image representation
 
 fig, ax = plt.subplots()
 image = np.reshape(transformed, (50, 40))
 ax = plt.imshow(image)
 
-for i in range(20):
+for i in range(3):
     synapsys, axsyn = plt.subplots()
     image = np.reshape(fitted.weight_matrix[i], (28, 28))
     axsyn = plt.imshow(image)
