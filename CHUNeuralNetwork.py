@@ -73,6 +73,10 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main equations and objects
 
+    def bigger1000(X):
+        X = np.abs(X)
+        X2 = np.where(X > 1000, 0, 1)
+        return np.any(X2)
     def product(self):
         coefficients = np.abs(self.weight_matrix) ** (self.p - 2)
         subproduct = self.weight_matrix * coefficients
@@ -128,12 +132,6 @@ class CHUNeuralNetwork(TransformerMixin):
 
     def transform(self, X):
         return self.weight_matrix @ X.T
-        """
-        result = np.array([X[0]])
-        for x in X:
-            result = np.append(result, x)
-        np.delete(result, 0)
-        return result"""
 
     def fit(self, X, y=None):
         """Fit the weights to the data provided.
@@ -164,7 +162,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
             self.weight_matrix += self.plasticity_rule()
-            print(self.hidden_neurons[0][0])
+            print(self.bigger1000(self.weight_matrix))
             # ^ updating the weight matrix
             # input("batch processed, press enter to continue")
 
