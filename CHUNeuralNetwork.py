@@ -18,9 +18,9 @@ class CHUNeuralNetwork(TransformerMixin):
 
     Parameters
     ----------
-        K:
+        n_of_hidden_neurons:
             the number of hidden neurons
-        J:
+        n_of_input_neurons:
             the number of visible neurons (e.g. the number of features)
         p:
             exponent of the lebesgue norm used (se product function)
@@ -30,16 +30,10 @@ class CHUNeuralNetwork(TransformerMixin):
             regulates the weakening discussed above
         R:
             Radius of the sphere on wich the weights will converge
-        w_inh:
-            inhibition parameter
-        hidden_neurons:
-            initial values for those neurons.
-        inputs:
-            initial value for input neurons
-        weight_matrix:
-            the weights of the network.
         scale:
             a time scale.
+        batch_size:
+            the size of the minibatches in wich the data will be processed.
 
     Notes
     -----
@@ -63,6 +57,8 @@ class CHUNeuralNetwork(TransformerMixin):
         self.delta = delta
         self.R = R
         self.hidden_neurons = np.zeros((batch_size, n_of_hidden_neurons))
+        # each 1-D array is calculated for a different element of the input
+        # batch
         self.inputs = np.empty(n_of_input_neurons)
         self.weight_matrix = np.random.normal(0,
                                               1/math.sqrt(n_of_hidden_neurons),
@@ -79,6 +75,10 @@ class CHUNeuralNetwork(TransformerMixin):
         return np.any(X2)
 
     def product(self):
+        """Define a product for later use.
+
+        TODO
+        """
         coefficients = np.abs(self.weight_matrix) ** (self.p - 2)
         subproduct = self.weight_matrix * coefficients
         return np.einsum("ij,kj->ki", subproduct, self.batch)
@@ -86,6 +86,22 @@ class CHUNeuralNetwork(TransformerMixin):
         # the result shape is (batch_size, K)
 
     def g(self):
+        """Return a coefficient that modulates hebbian and anti-hebbian
+        learning.
+
+        Return a matrix with the same shape of hidden_neurons with zero,
+        positive and negative values.
+
+        Returns
+        -------
+        ndarray
+            the coefficient that modulates hebbian learning.
+
+        Notes
+        -----
+        the implementation is the same described in the "a fast implementation"
+        section of the reference article.
+        """
         sort = np.argsort(self.hidden_neurons)
         # sorts along last axis by default
         sort = sort.T
@@ -101,7 +117,16 @@ class CHUNeuralNetwork(TransformerMixin):
         # the result shape is (batch_size, K)
 
     def plasticity_rule(self):
+        """Returns the value used to update the weight matrix
 
+        Corresponds to equation [3] of the article, but substituting the hidden
+        neuron value to Q.
+
+        Returns
+        -------
+        ndarray
+            the value to be added to the weight matrix.
+        """
         shape = (self.batch_size, self.n_of_hidden_neurons,
                  self.n_of_input_neurons)
 
@@ -122,8 +147,22 @@ class CHUNeuralNetwork(TransformerMixin):
         # value of the hidden neuron a. then sum over the batch to update the
         # weight matrix.
 
-    def transform(self, X):
-        return self.weight_matrix @ X.T
+    def transform(self, data):
+        """Return the data preprocessed, to be used as input for a supervised
+        learning layer
+
+        process the raw data by multiplying them by the weight matrix.
+
+        Parameters
+        ----------
+        data
+            the raw data matrix
+
+        Returns
+        ndarray
+            the extracted features data
+        """
+        return self.weight_matrix @ data.T
 
     def fit(self, X, y=None):
         """Fit the weights to the data provided.
