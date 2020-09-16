@@ -47,8 +47,8 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main constants in the init function
 
-    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=2, k=7,
-                 delta=4, R=1, scale=1, batch_size=2):
+    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=3, k=7,
+                 delta=0.4, R=1, scale=1, batch_size=2):
         self.n_of_hidden_neurons = n_of_hidden_neurons
         self.n_of_input_neurons = n_of_input_neurons
         self.batch_size = batch_size
@@ -128,7 +128,7 @@ class CHUNeuralNetwork(TransformerMixin):
             the value to be added to the weight matrix.
         """
         shape = (self.batch_size, self.n_of_hidden_neurons,
-                 self.n_of_input_neurons)
+                 self.n_of_input_neurons)  # for later use
 
         minuend = self.R ** self.p * self.batch
         minuend = np.repeat(minuend, self.n_of_hidden_neurons, axis=0)
