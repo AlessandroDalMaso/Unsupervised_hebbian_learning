@@ -53,10 +53,10 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main constants in the init function
 
-    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=3, k=7,
+    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=2, k=7,
                  delta=4, R=1, scale=1, batch_size=2):
-        self.K = n_of_hidden_neurons
-        self.J = n_of_input_neurons
+        self.n_of_hidden_neurons = n_of_hidden_neurons
+        self.n_of_input_neurons = n_of_input_neurons
         self.batch_size = batch_size
         self.p = p
         self.k = k
@@ -68,15 +68,16 @@ class CHUNeuralNetwork(TransformerMixin):
                                               1/math.sqrt(n_of_hidden_neurons),
                                               (n_of_hidden_neurons,
                                                n_of_input_neurons))
-        # The weight initialization follows a convention i found online.
+        # The weights are initialized with a gaussian distribution.
         self.scale = scale
 
 # %% Defining main equations and objects
 
-    def bigger1000(X):
+    def bigger10000(self, X):
         X = np.abs(X)
-        X2 = np.where(X > 1000, 0, 1)
+        X2 = X > 10000
         return np.any(X2)
+
     def product(self):
         coefficients = np.abs(self.weight_matrix) ** (self.p - 2)
         subproduct = self.weight_matrix * coefficients
@@ -100,9 +101,13 @@ class CHUNeuralNetwork(TransformerMixin):
         # the result shape is (batch_size, K)
 
     def plasticity_rule(self):
+
+        shape = (self.batch_size, self.n_of_hidden_neurons,
+                 self.n_of_input_neurons)
+
         minuend = self.R ** self.p * self.batch
-        minuend = np.repeat(minuend, self.K, axis=0)
-        minuend = np.reshape(minuend, (self.batch_size, self.K, self.J))
+        minuend = np.repeat(minuend, self.n_of_hidden_neurons, axis=0)
+        minuend = np.reshape(minuend, shape)
         # i wish there was a way to do it whitout repeats
         subtrahend = np.einsum("ij,jk->ijk",
                                self.product(), self.weight_matrix)
@@ -110,25 +115,12 @@ class CHUNeuralNetwork(TransformerMixin):
         # a vector of the the 1st matrix. repeat for each vector in the 2nd
         # matrix
         factor = minuend - subtrahend
-        result = np.einsum("ij,ijk->jk", self.g(), factor)
+        result = np.einsum("ij,ijk->jk", self.g(), factor) / self.scale
         return result
         # multiply each weight of the synapsis w_ab relative to the hidden
         # neuron a and the input neuron b by g(a), wich only depends on the
         # value of the hidden neuron a. then sum over the batch to update the
         # weight matrix.
-
-    def radius(self):  # TODO not useful in our implementation
-        """Return a value that should converge to the R parameter.
-
-        raise to the power of p the absolute values of the hidden neurons,
-        then sum those values toghether.
-
-        Returns
-        -------
-        float:
-            the radius of convergence
-        """
-        return np.sum(np.abs(self.hidden_neurons[0]) ** self.p)
 
     def transform(self, X):
         return self.weight_matrix @ X.T
@@ -162,7 +154,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
             self.weight_matrix += self.plasticity_rule()
-            print(self.bigger1000(self.weight_matrix))
+            print(self.bigger10000(self.weight_matrix))
             # ^ updating the weight matrix
             # input("batch processed, press enter to continue")
 

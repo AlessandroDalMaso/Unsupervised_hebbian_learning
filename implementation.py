@@ -25,6 +25,13 @@ if not exists('./database_7000'):
     pickle.dump(X_test_7000, database_7000)
     database_7000.close()
 
+# %% toy model testing
+"""
+a = np.random.rand(30)
+a = np.reshape(a, (3, 10))
+toy_network = chu.CHUNeuralNetwork(10)
+toy_network = toy_network.fit(a)
+"""
 # %% doing the thing
 
 database_7000 = open('./database_7000', 'rb')
@@ -33,7 +40,7 @@ database_7000.close()
 # note to self: remember to change the number on all three lines
 
 layer1 = chu.CHUNeuralNetwork(784)
-fitted = layer1.fit(X_test[:432])  # the problem is at 432
+fitted = layer1.fit(X_test[:100])  # the problem is at 432
 
 transformed = fitted.transform(X_test[0])
 
@@ -41,9 +48,9 @@ transformed = fitted.transform(X_test[0])
 # %% image representation
 
 
-for i in range(10):
+for i in range(1):
     synapsys, axsyn = plt.subplots()
-    image = np.reshape(fitted.weight_matrix[i+1492
+    image = np.reshape(fitted.weight_matrix[i
                                             ], (28, 28))
     axsyn = plt.imshow(image)
     plt.savefig("{}".format(i))
