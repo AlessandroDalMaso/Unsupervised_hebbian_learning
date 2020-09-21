@@ -6,7 +6,7 @@ Author: Alessandro Dal Maso
 import numpy as np
 import math
 from sklearn.base import TransformerMixin
-
+import pickle as pk
 
 class CHUNeuralNetwork(TransformerMixin):
     """Extract features from data using a biologically-inspired algorithm.
@@ -48,7 +48,7 @@ class CHUNeuralNetwork(TransformerMixin):
 # %% Defining main constants in the init function
 
     def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=3, k=7,
-                 delta=0.4, R=1, scale=1, batch_size=2):
+                 delta=0.4, R=1, scale=1, batch_size=2, save_matrices=False):
         self.n_of_hidden_neurons = n_of_hidden_neurons
         self.n_of_input_neurons = n_of_input_neurons
         self.batch_size = batch_size
@@ -66,6 +66,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                                n_of_input_neurons))
         # The weights are initialized with a gaussian distribution.
         self.scale = scale
+        self.save_matrices = save_matrices
 
 # %% Defining main equations and objects
 
@@ -81,7 +82,12 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         coefficients = np.abs(self.weight_matrix) ** (self.p - 2)
         subproduct = self.weight_matrix * coefficients
-        return np.einsum("ij,kj->ki", subproduct, self.batch)
+        result = np.einsum("ij,kj->ki", subproduct, self.batch)
+        if self.save_matrices:
+            product_r = open('./product_r', 'wb')
+            pk.dump(result, product_r)
+            product_r.close()
+        return result
         # multiply every vector in the 2nd matrix by the 1st matrix.
         # the result shape is (batch_size, K)
 
@@ -113,6 +119,10 @@ class CHUNeuralNetwork(TransformerMixin):
         result = np.zeros(self.hidden_neurons.shape)
         result[columns, rows_biggest] = 1
         result[columns, rows_kth] = -self.delta
+        if self.save_matrices:
+            g_r = open('./g_r', 'wb')
+            pk.dump(result, g_r)
+            g_r.close()
         return result
         # the result shape is (batch_size, K)
 
@@ -141,6 +151,10 @@ class CHUNeuralNetwork(TransformerMixin):
         # matrix
         factor = minuend - subtrahend
         result = np.einsum("ij,ijk->jk", self.g(), factor) / self.scale
+        if self.save_matrices:
+            plasticity_r = open('./plasticity_r', 'wb')
+            pk.dump(result, plasticity_r)
+            plasticity_r.close()
         return result
         # multiply each weight of the synapsis w_ab relative to the hidden
         # neuron a and the input neuron b by g(a), wich only depends on the
@@ -189,12 +203,18 @@ class CHUNeuralNetwork(TransformerMixin):
         for b in batchize(X, self.batch_size):
             self.batch = b
             self.batch_size = np.size(b, 0)  # i hope this is right.
+            if self.save_matrices:
+                weights_r = open('./weights_r', 'wb')
+                pk.dump(self.weight_matrix, weights_r)
+                weights_r.close()
+                hidden_neurons_r = open('./hidden_r', 'wb')
+                pk.dump(self.hidden_neurons, hidden_neurons_r)
+                hidden_neurons_r.close()
             self.hidden_neurons = np.einsum("ij,kj->ki",
                                             self.weight_matrix, self.batch)
             # ^ dot product between each input vector and weight_matrix
             self.weight_matrix += self.plasticity_rule()
-            print(self.bigger10000(self.weight_matrix))
+            self.weight_matrix = self.weight_matrix/np.amax(self.weight_matrix)
+            # TODO remove
             # ^ updating the weight matrix
-            # input("batch processed, press enter to continue")
-
         return self

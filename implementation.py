@@ -40,19 +40,18 @@ database_7000.close()
 # note to self: remember to change the number on all three lines
 
 layer1 = chu.CHUNeuralNetwork(784)
-fitted = layer1.fit(X_test[:100])  # the problem is at 432
+layer1 = layer1.fit(X_test[:7000])  # the problem is at 432
 
-transformed = fitted.transform(X_test[0])
+transformed = layer1.transform(X_test[0])
 
 
 # %% image representation
 
 
-for i in range(1):
+for i in range(10):
     synapsys, axsyn = plt.subplots()
-    image = np.reshape(fitted.weight_matrix[i
-                                            ], (28, 28))
-    axsyn = plt.imshow(image)
+    image = np.reshape(layer1.weight_matrix[i], (28, 28))
+    axsyn = plt.imshow(image, cmap='bwr')
     plt.savefig("{}".format(i))
 
 
