@@ -40,7 +40,7 @@ database_7000.close()
 # note to self: remember to change the number on all three lines
 
 layer1 = chu.CHUNeuralNetwork(784)
-layer1 = layer1.fit(X_test[:7000])  # the problem is at 432
+layer1 = layer1.fit(X_test[:7])  # the problem is at 432
 
 transformed = layer1.transform(X_test[0])
 
