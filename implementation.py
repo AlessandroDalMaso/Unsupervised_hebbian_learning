@@ -14,7 +14,7 @@ import CHUNeuralNetwork as chu
 import pickle
 from os.path import exists
 
-np.random.seed(12345)
+np.random.seed(1024)
 
 # %% loading and splitting the MNIST dataset
 
@@ -32,15 +32,16 @@ a = np.reshape(a, (3, 10))
 toy_network = chu.CHUNeuralNetwork(10)
 toy_network = toy_network.fit(a)
 """
-# %% doing the thing
+
+# %% real thing testing
 
 database_7000 = open('./database_7000', 'rb')
 X_test = pickle.load(database_7000)
 database_7000.close()
 # note to self: remember to change the number on all three lines
 
-layer1 = chu.CHUNeuralNetwork(784)
-layer1 = layer1.fit(X_test[:7])  # the problem is at 432
+layer1 = chu.CHUNeuralNetwork(784, save_matrices=True)
+layer1 = layer1.fit(X_test[:7], 2)  # the problem is at 432
 
 transformed = layer1.transform(X_test[0])
 
@@ -48,7 +49,7 @@ transformed = layer1.transform(X_test[0])
 # %% image representation
 
 
-for i in range(10):
+for i in range(2):
     synapsys, axsyn = plt.subplots()
     image = np.reshape(layer1.weight_matrix[i], (28, 28))
     axsyn = plt.imshow(image, cmap='bwr')

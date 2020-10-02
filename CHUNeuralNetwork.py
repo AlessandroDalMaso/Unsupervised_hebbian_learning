@@ -7,25 +7,16 @@ import numpy as np
 import math
 from sklearn.base import TransformerMixin
 import pickle as pk
+from scipy.integrate import odeint
 
 # %% defining external functions
 
-def bigger10000(matrix):
-    X = np.abs(matrix)
-    bool_matrix = X > 10000
-    return np.any(bool_matrix)
 
-
-def product(weight_matrix, p, save_matrices, batch):
-    """Define a product for later use.
-
-    TODO
+def product(weight_matrix, batch, p, save_matrices):
+    """TODO.
     """
     coefficients = np.abs(weight_matrix) ** (p - 2)
-    subproduct = weight_matrix * coefficients
-    result = np.einsum("ij,kj->ki", subproduct, batch)
-    # multiply every vector in the 2nd matrix by the 1st matrix.
-    # the result shape is (batch_size, K)
+    result = np.einsum("jk,jk,ik->ij", weight_matrix, coefficients, batch)
     if save_matrices:
         product_r = open('./product_r', 'wb')
         pk.dump(result, product_r)
@@ -33,7 +24,7 @@ def product(weight_matrix, p, save_matrices, batch):
     return result
 
 
-def g(hidden_neurons, k, batch_size, delta, save_matrices):
+def g(hidden_neurons, k, delta, save_matrices):
     """Return a coefficient that modulates hebbian and anti-hebbian learning.
 
     Return a matrix with the same shape of hidden_neurons with zero,
@@ -56,7 +47,7 @@ def g(hidden_neurons, k, batch_size, delta, save_matrices):
     # from each row of the hidden_neurons matrix
     rows_biggest = sort[-1]
     rows_kth = sort[-k]
-    columns = np.arange(0, batch_size, 1)
+    columns = np.arange(0, len(hidden_neurons), 1)
     result = np.zeros(hidden_neurons.shape)
     result[columns, rows_biggest] = 1
     result[columns, rows_kth] = -delta
@@ -68,35 +59,26 @@ def g(hidden_neurons, k, batch_size, delta, save_matrices):
     # the result shape is (batch_size, K)
 
 
-def plasticity_rule(batch_size, n_of_hidden_neurons, n_of_input_neurons, batch,
-                    R, p, weight_matrix, scale, save_matrices, hidden_neurons,
-                    k, delta):
-    """Returns the value used to update the weight matrix
+def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
+                    hidden_neurons, k, delta):
+    """Returns the value used to update the weight matrix.
 
     Corresponds to equation [3] of the article, but substituting the hidden
     neuron value to Q.
 
-    Returns
-    -------
+    Return
+    ------
     ndarray
         the value to be added to the weight matrix.
     """
-    shape = (batch_size, n_of_hidden_neurons,
-             n_of_input_neurons)  # for later use
-
-    minuend = R ** p * batch
-    minuend = np.repeat(minuend, n_of_hidden_neurons, axis=0)
-    minuend = np.reshape(minuend, shape)
-    # i wish there was a way to do it whitout repeats
-    subtrahend = np.einsum("ij,jk->ijk", product(weight_matrix, p,
-                                                 save_matrices, batch),
+    g_result = g(hidden_neurons, k, delta, save_matrices)
+    #print(batch.shape)
+    minuend = R ** p * np.einsum("ij,ik->jk", g_result, batch)
+    product_result = product(weight_matrix, batch, p, save_matrices)
+    subtrahend = np.einsum("ij,ij,jk->jk", g_result, product_result,
                            weight_matrix)
-    # multiply the n-th vector in the second matrix by the n-th scalar in
-    # a vector of the the 1st matrix. repeat for each vector in the 2nd
-    # matrix
-    factor = minuend - subtrahend
-    result = np.einsum("ij,ijk->jk", g(hidden_neurons, k, batch_size, delta,
-                                       save_matrices), factor) / scale
+
+    result = (minuend - subtrahend) / scale
     if save_matrices:
         plasticity_r = open('./plasticity_r', 'wb')
         pk.dump(result, plasticity_r)
@@ -106,6 +88,19 @@ def plasticity_rule(batch_size, n_of_hidden_neurons, n_of_input_neurons, batch,
     # neuron a and the input neuron b by g(a), wich only depends on the
     # value of the hidden neuron a. then sum over the batch to update the
     # weight
+
+
+def linear_plasticity_rule(weight_array, time, R, p, batch, scale, save_matrices,
+                           hidden_neurons, k, delta, n_of_hidden_neurons,
+                           n_of_input_neurons):
+
+    shape = (n_of_hidden_neurons, n_of_input_neurons)
+    weight_matrix = np.reshape(weight_array, shape)
+
+    update = plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
+                             hidden_neurons, k, delta)
+    np.ravel(update)
+    return update
 
 
 def batchize(iterable, size):
@@ -122,7 +117,6 @@ def batchize(iterable, size):
         the number of elements in a barch.
 
     Return
-    TODO ask professor
     ------
     """
     # credit: https://stackoverflow.com/users/3868326/kmaschta
@@ -174,18 +168,13 @@ class CHUNeuralNetwork(TransformerMixin):
 # %% Defining main constants in the init function
 
     def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=3, k=7,
-                 delta=0.4, R=1, scale=1, batch_size=2, save_matrices=False):
+                 delta=0.4, R=1, scale=1, save_matrices=False):
         self.n_of_hidden_neurons = n_of_hidden_neurons
         self.n_of_input_neurons = n_of_input_neurons
-        self.batch_size = batch_size
         self.p = p
         self.k = k
         self.delta = delta
         self.R = R
-        self.hidden_neurons = np.zeros((batch_size, n_of_hidden_neurons))
-        # each 1-D array is calculated for a different element of the input
-        # batch
-        self.inputs = np.empty(n_of_input_neurons)
         self.weight_matrix = np.random.normal(0,
                                               1/math.sqrt(n_of_hidden_neurons),
                                               (n_of_hidden_neurons,
@@ -214,7 +203,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         return self.weight_matrix @ data.T
 
-    def fit(self, X, y=None):
+    def fit(self, X, batch_size=2, y=None):
         """Fit the weights to the data provided.
 
         for each data point add to each weight the corresponding increment.
@@ -228,9 +217,24 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork:
             the network itself
         """
-        for b in batchize(X, self.batch_size):
-            self.batch = b
-            self.batch_size = np.size(b, 0)
+        (hiddens, inputs) = self.weight_matrix.shape
+        for batch in batchize(X, batch_size):
+            hidden_neurons = np.einsum("jk,ik->ij", self.weight_matrix,
+                                       batch)
+            # ^ dot product between each input vector and weight_matrix
+            time = np.array([0, 10000])  # TODO change in 1e6
+
+            weights_array = np.reshape(self.weight_matrix,
+                                       self.weight_matrix.size)
+
+            args = (self.R, self.p, batch, self.scale, self.save_matrices,
+                    hidden_neurons, self.k, self.delta, hiddens, inputs)
+
+            update = odeint(linear_plasticity_rule, weights_array, time, args)
+
+            self.weight_matrix += update
+            # ^ updating the weight matrix
+
             if self.save_matrices:
                 weights_r = open('./weights_r', 'wb')
                 pk.dump(self.weight_matrix, weights_r)
@@ -238,18 +242,4 @@ class CHUNeuralNetwork(TransformerMixin):
                 hidden_neurons_r = open('./hidden_r', 'wb')
                 pk.dump(self.hidden_neurons, hidden_neurons_r)
                 hidden_neurons_r.close()
-            self.hidden_neurons = np.einsum("ij,kj->ki", self.weight_matrix,
-                                            self.batch)
-            # ^ dot product between each input vector and weight_matrix
-            self.weight_matrix += plasticity_rule(self.batch_size,
-                                                  self.n_of_hidden_neurons,
-                                                  self.n_of_input_neurons,
-                                                  self.batch,
-                                                  self.R, self.p,
-                                                  self.weight_matrix,
-                                                  self.scale,
-                                                  self.save_matrices,
-                                                  self.hidden_neurons,
-                                                  self.k, self.delta)
-            # ^ updating the weight matrix
         return self
