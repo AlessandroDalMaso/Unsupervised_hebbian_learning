@@ -93,7 +93,6 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
     # value of the hidden neuron a. then sum over the batch to update the
     # weight
 
-
 def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
                            save_matrices, hidden_neurons, k, delta,
                            n_of_hidden_neurons, n_of_input_neurons):
@@ -129,7 +128,6 @@ def batchize(iterable, size):
     lenght = len(iterable)
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
-
 
 # %% defining the class
 
@@ -225,7 +223,7 @@ class CHUNeuralNetwork(TransformerMixin):
             hidden_neurons = np.einsum("jk,ik->ij", self.weight_matrix,
                                        batch)
             # ^ dot product between each input vector and weight_matrix
-            time = np.array([0, 10000])  # TODO change in 1e6
+            time = np.array([0, 20])  # TODO change in 1e6
 
             weights_array = np.reshape(self.weight_matrix,
                                        self.weight_matrix.size)
@@ -234,8 +232,10 @@ class CHUNeuralNetwork(TransformerMixin):
                     hidden_neurons, self.k, self.delta,
                     n_of_hidden_neurons, n_of_input_neurons)
 
-            update = odeint(linear_plasticity_rule, weights_array, time, args)
+            odeint_result = odeint(linear_plasticity_rule, weights_array, time,
+                                   args)
 
+            update = np.reshape(odeint_result[1], self.weight_matrix.shape)
             self.weight_matrix += update
             # ^ updating the weight matrix
             print('hi')
