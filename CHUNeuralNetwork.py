@@ -9,6 +9,8 @@ from math import sqrt
 from sklearn.base import TransformerMixin
 from scipy.integrate import odeint
 
+
+
 # %% defining external functions
 
 
@@ -74,7 +76,6 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
     """
     global x
     x += 1
-    print(x)
     g_result = g(hidden_neurons, k, delta, save_matrices)
     minuend = R ** p * np.einsum("ij,ik->jk", g_result, batch)
     product_result = product(weight_matrix, batch, p, save_matrices)
@@ -96,7 +97,6 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
 def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
                            save_matrices, hidden_neurons, k, delta,
                            n_of_hidden_neurons, n_of_input_neurons):
-
     shape = (n_of_hidden_neurons, n_of_input_neurons)
     weight_matrix = np.reshape(weight_array, shape)
 
@@ -104,6 +104,8 @@ def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
                                     save_matrices, hidden_neurons, k, delta)
 
     update_array = np.ravel(update_matrix)
+    # save evolution values
+
     return update_array
 
 
@@ -170,7 +172,7 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main constants in the init function
 
-    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=2000, p=3, k=7,
+    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=7, p=3, k=2,
                  delta=0.4, R=1, scale=1, save_matrices=False):
         self.p = p
         self.k = k
@@ -219,11 +221,12 @@ class CHUNeuralNetwork(TransformerMixin):
             the network itself
         """
         (n_of_hidden_neurons, n_of_input_neurons) = self.weight_matrix.shape
+        states = np.array([]) #TODO remove
         for batch in batchize(X, batch_size):
             hidden_neurons = np.einsum("jk,ik->ij", self.weight_matrix,
                                        batch)
             # ^ dot product between each input vector and weight_matrix
-            time = np.array([0, 20])  # TODO change in 1e6
+            time = np.array([0, 1e5])
 
             weights_array = np.reshape(self.weight_matrix,
                                        self.weight_matrix.size)
@@ -238,12 +241,12 @@ class CHUNeuralNetwork(TransformerMixin):
             update = np.reshape(odeint_result[1], self.weight_matrix.shape)
             self.weight_matrix += update
             # ^ updating the weight matrix
-            print('hi')
             if self.save_matrices:
                 weights_r = open('./weights_r', 'wb')
                 dump(self.weight_matrix, weights_r)
                 weights_r.close()
                 hidden_neurons_r = open('./hidden_r', 'wb')
-                dump(self.hidden_neurons, hidden_neurons_r)
+                dump(hidden_neurons, hidden_neurons_r)
                 hidden_neurons_r.close()
+
         return self
