@@ -1,0 +1,49 @@
+ReLu
+riscrivere il programma in lazy implementation e con meno chiamate a einsum possibili
+	togliere le cose dall'init
+	toglierele da implementation
+	toglierle da 
+fare snakeviz
+mettere optimize = path ad einsum
+fare l'evoluzione con 7 neuroni
+FIT SOVRASCRIVE SOVRESCRIVE SOVRASCRIVE
+come faccio a togliere n_of_input_neurons dall'init? >>> le cose vengono istanziate on demand
+activation function PERCEPITA DALL'UTENTE
+odeint funzione generale
+mettere le docstring con gli output con le dimensioni (vedi numpy)
+wrapping su plasticity rulke con odeint
+odeint accetta solo dei vettori
+non tenere la batch globale
+batch_size param di fits
+hdf5 al posto di pickle
+git
+pep 8 + se una cosa prende più linee la si separa da una linea bianca.
+informal testing
+unit testing with pyesting
+property testing with hypotesis
+run -d (?)
+breakpoints
+grappa library
+logging/eliot
+docstrings?
+lessons 10, af 8
+DOI: codice univoco dell'articolo
+
+DOCUMENTATION
+numpy-style docstrings
+	short summary
+	deprecation warning
+	extended summary
+	params
+	returns
+	yelds
+	raises
+	warnings
+	notes
+	references
+
+typying
+comments
+semantic versioning
+changelog
+markdown online docs -> from docstrings later

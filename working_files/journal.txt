@@ -1,0 +1,5 @@
+20/10/2020
+	Ho cominciato a tenere questo diario come suggeritomi dal professor
+	Giampieri. Oggi ho eliminato il salvare le matrici - non mi stupisco che
+	open.io mi occupasse la maggior parte del tempo! Adesso devo implementare
+	la lazy implementation.
