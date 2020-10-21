@@ -10,16 +10,37 @@ from sklearn.base import TransformerMixin
 from scipy.integrate import odeint
 
 
-
 # %% defining external functions
 
 
 def product(weight_matrix, batch, p, save_matrices):
-    """TODO.
+    """Return a matrix that contains the product from the original article.
+
+    This matrix contains the products of the input neurons with the synapses
+    of each hidden neurons. it is not the euclidean product between these two
+    quantities but the product defined in equation [2] of the original article.
+
+    Parameters
+    ----------
+    weight_matrix
+        the matrix of the synapses of the hidden neurons.
+    batch
+        the value of the input neurons.
+    p
+        the Lebesgue exponent used to define the product.
+    save_matrices
+        a debugging boolean option.
+
+    Returns
+    -------
+    ndarray
+        the matrix of all scalar products between input neurons and the
+        synapses of a single hidden neuron.
     """
     coefficients = np.abs(weight_matrix) ** (p - 2)
     result = np.einsum("jk,jk,ik->ij", weight_matrix, coefficients, batch)
     if save_matrices:
+        # for testing purposes. won't be executed in the final version
         product_r = open('./product_r', 'wb')
         dump(result, product_r)
         product_r.close()
@@ -31,6 +52,17 @@ def g(hidden_neurons, k, delta, save_matrices):
 
     Return a matrix with the same shape of hidden_neurons with zero,
     positive and negative values.
+
+    Parameters
+    ----------
+    hidden_neurons
+        the matrix (one vector per element in the batch) of hidden neurons
+    k
+        the k-th-est biggest value neuron will be suppressed...
+    delta
+        ...by this amount.
+    save_matrices
+        a debugging boolean option.
 
     Returns
     -------
@@ -54,13 +86,13 @@ def g(hidden_neurons, k, delta, save_matrices):
     result[columns, rows_biggest] = 1
     result[columns, rows_kth] = -delta
     if save_matrices:
+        # for testing purposes. won't be executed in the final version
         g_r = open('./g_r', 'wb')
         dump(result, g_r)
         g_r.close()
     return result
     # the result shape is (batch_size, K)
 
-x = 0
 
 def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
                     hidden_neurons, k, delta):
@@ -68,23 +100,43 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
 
     Corresponds to equation [3] of the article, but substituting the hidden
     neuron value to Q.
+    Parameters
+    ----------
+    weight_matrix
+        the matrix of the synapses of the hidden neurons.
+    R
+        The radius at wich the product between the synapses of each hidden
+        neuron and the input neurons will converge.
+    p
+        the Lebesgue exponent used to define the product.
+    batch
+        the value of the input neurons.
+    scale
+        a scaling parameter.
+    save_matrices
+        a debugging boolean option.
+    hidden_neurons:
+        the matrix (one vector per element in the batch) of hidden neurons
+    k
+        the k-th-est biggest value neuron will be suppressed...
+    delta
+        ...by this amount.
 
-    Return
-    ------
+    Returns
+    -------
     ndarray
         the value to be added to the weight matrix.
     """
-    global x
-    x += 1
     g_result = g(hidden_neurons, k, delta, save_matrices)
-    minuend = R ** p * np.einsum("ij,ik->jk", g_result, batch)
     product_result = product(weight_matrix, batch, p, save_matrices)
+    minuend = R ** p * np.einsum("ij,ik->jk", g_result, batch)
     subtrahend = np.einsum("ij,ij,jk->jk", g_result, product_result,
                            weight_matrix)
 
     result = (minuend - subtrahend) / scale
 
     if save_matrices:
+        # for testing purposes. won't be executed in the final version
         plasticity_r = open('./plasticity_r', 'wb')
         dump(result, plasticity_r)
         plasticity_r.close()
@@ -94,9 +146,48 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
     # value of the hidden neuron a. then sum over the batch to update the
     # weight
 
+
 def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
                            save_matrices, hidden_neurons, k, delta,
                            n_of_hidden_neurons, n_of_input_neurons):
+    """Does the same as plasticity_rule, but takes a time vector and a weight
+    array instead of a matrix to be compatible with numpy.integrate.odeint.
+
+    Corresponds to equation [3] of the article, but substituting the hidden
+    neuron value to Q.
+    Parameters
+    ----------
+    weight_array
+        the matrix of the synapses of the hidden neurons, reshaped to an array.
+    time
+        the integration time of the differential equation
+    R
+        The radius at wich the product between the synapses of each hidden
+        neuron and the input neurons will converge.
+    p
+        the Lebesgue exponent used to define the product.
+    batch
+        the value of the input neurons.
+    scale
+        a scaling parameter.
+    save_matrices
+        a debugging boolean option.
+    hidden_neurons:
+        the matrix (one vector per element in the batch) of hidden neurons
+    k
+        the k-th-est biggest value neuron will be suppressed...
+    delta
+        ...by this amount.
+    n_of_hidden_neurons:
+        the number of hidden neurons in the network.
+    n_of_input_neurons:
+        the number of input neurons in the network.
+
+    Returns
+    -------
+    ndarray
+        the value to be added to the weight matrix.
+    """
     shape = (n_of_hidden_neurons, n_of_input_neurons)
     weight_matrix = np.reshape(weight_array, shape)
 
@@ -104,8 +195,6 @@ def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
                                     save_matrices, hidden_neurons, k, delta)
 
     update_array = np.ravel(update_matrix)
-    # save evolution values
-
     return update_array
 
 
@@ -164,6 +253,10 @@ class CHUNeuralNetwork(TransformerMixin):
     -----
         The name conventions for the variable is the same used in the article,
         when possible.
+        As this network is composed of only two layers, the hidden neurons
+        aren't actually hidden, but will be in practice as this network is
+        meant to be used in conjunction with a second, supervised network that
+        will take the hidden neurons layer as its input layer.
 
     References
     ----------
@@ -221,7 +314,6 @@ class CHUNeuralNetwork(TransformerMixin):
             the network itself
         """
         (n_of_hidden_neurons, n_of_input_neurons) = self.weight_matrix.shape
-        states = np.array([]) #TODO remove
         for batch in batchize(X, batch_size):
             hidden_neurons = np.einsum("jk,ik->ij", self.weight_matrix,
                                        batch)
@@ -242,6 +334,7 @@ class CHUNeuralNetwork(TransformerMixin):
             self.weight_matrix += update
             # ^ updating the weight matrix
             if self.save_matrices:
+                # for testing purposes. won't be executed in the final version
                 weights_r = open('./weights_r', 'wb')
                 dump(self.weight_matrix, weights_r)
                 weights_r.close()
