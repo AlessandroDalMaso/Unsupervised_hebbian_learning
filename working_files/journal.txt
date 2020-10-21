@@ -3,3 +3,5 @@
 	Giampieri. Oggi ho eliminato il salvare le matrici - non mi stupisco che
 	open.io mi occupasse la maggior parte del tempo! Adesso devo implementare
 	la lazy implementation.
+21/10/2020
+	Ho riscritto le docstrings, ma ancora devo implementare l'approcio lazy.
