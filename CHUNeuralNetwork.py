@@ -225,6 +225,17 @@ def batchize(iterable, size):
 
 
 def ReLU(matrix):
+    """Return the maximum between zero and the argument value for each scalar.
+
+    Parameters
+    ----------
+    matrix
+        The input currents of the neural network
+    Return
+    ------
+    ndarray
+        the hidden neurons value
+    """
     return np.maximum(matrix, 0)
 
 

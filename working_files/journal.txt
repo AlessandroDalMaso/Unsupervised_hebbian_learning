@@ -6,4 +6,11 @@
 21/10/2020
 	Ho riscritto le docstrings, ma ancora devo implementare l'approcio lazy.
 22/10/2020
-	Ho implementato l'approcio lazy. Risultato: un errore mai visto prima che non riesco a risolvere. Devo cercare di risolverlo prima di parlare con Giampieri.
+	Ho implementato l'approcio lazy. Risultato: un errore mai visto prima che
+	non riesco a risolvere. Devo cercare di risolverlo prima di parlare con
+	Giampieri.
+23/10/2020
+    Ho risolto, stava lavorando con 784 neuroni hidden. Ho finalmente aggiunto
+    l'activation function. il tempo di esecuzione è su minuto ad immagine con
+    cinque neuroni. Ho provato a modificare il parametro Dfun di odeint, ma
+    peggiora la situazione.
