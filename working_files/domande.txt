@@ -1,0 +1,4 @@
+far presente la cosa della funzione di attivazione
+documentazione di cprofile
+perchè prima vedevo einsum e adesso odeint?
+non capisco gli icicle.

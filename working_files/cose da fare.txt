@@ -1,12 +1,14 @@
-ReLu
+ottimizzare odeint
+Capire se ReLu o no
 riscrivere il programma in lazy implementation e con meno chiamate a einsum possibili
 	togliere le cose dall'init
 	toglierele da implementation
-	toglierle da 
+	toglierle dal resto della classe
 fare snakeviz
 mettere optimize = path ad einsum
 fare l'evoluzione con 7 neuroni
 FIT SOVRASCRIVE SOVRESCRIVE SOVRASCRIVE
+imparare ipython
 come faccio a togliere n_of_input_neurons dall'init? >>> le cose vengono istanziate on demand
 activation function PERCEPITA DALL'UTENTE
 odeint funzione generale

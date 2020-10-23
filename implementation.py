@@ -41,9 +41,9 @@ database_7000 = open('./database_7000', 'rb')
 X_test = pickle.load(database_7000)
 database_7000.close()
 
-layer1 = chu.CHUNeuralNetwork(784)
+layer1 = chu.CHUNeuralNetwork()
 start_time = time.time()
-layer1 = layer1.fit(X_test[:1], 2)  # the problem is at 432
+layer1 = layer1.fit(X_test[:1])  # the problem is at 432
 print("--- %s seconds ---" % (time.time() - start_time))
 transformed = layer1.transform(X_test[0])
 
@@ -53,4 +53,5 @@ for i in range(2):
     synapsys, axsyn = plt.subplots()
     image = np.reshape(layer1.weight_matrix[i], (28, 28))
     axsyn = plt.imshow(image, cmap='bwr')
-    plt.savefig("{}".format(i))"""
+    plt.savefig("{}".format(i))
+"""

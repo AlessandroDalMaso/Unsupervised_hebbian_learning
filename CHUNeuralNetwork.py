@@ -1,5 +1,5 @@
 """
-Created on Tue Jun 23 10:43:19 2020
+Created on Tue Jun 23 10:43:19 2020.
 
 Author: Alessandro Dal Maso
 """
@@ -96,10 +96,11 @@ def g(hidden_neurons, k, delta, save_matrices):
 
 def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
                     hidden_neurons, k, delta):
-    """Returns the value used to update the weight matrix.
+    """Return the value used to update the weight matrix.
 
     Corresponds to equation [3] of the article, but substituting the hidden
     neuron value to Q.
+
     Parameters
     ----------
     weight_matrix
@@ -150,11 +151,13 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
 def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
                            save_matrices, hidden_neurons, k, delta,
                            n_of_hidden_neurons, n_of_input_neurons):
-    """Does the same as plasticity_rule, but takes a time vector and a weight
-    array instead of a matrix to be compatible with numpy.integrate.odeint.
+    """Return the value used to update the weight matrix.
 
+    Does the same as plasticity_rule, but takes a time vector and a weight
+    array instead of a matrix to be compatible with numpy.integrate.odeint.
     Corresponds to equation [3] of the article, but substituting the hidden
     neuron value to Q.
+
     Parameters
     ----------
     weight_array
@@ -220,7 +223,13 @@ def batchize(iterable, size):
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
 
+
+def ReLU(matrix):
+    return np.maximum(matrix, 0)
+
+
 # %% defining the class
+
 
 class CHUNeuralNetwork(TransformerMixin):
     """Extract features from data using a biologically-inspired algorithm.
@@ -265,21 +274,23 @@ class CHUNeuralNetwork(TransformerMixin):
 
 # %% Defining main constants in the init function
 
-    def __init__(self, n_of_input_neurons, n_of_hidden_neurons=7, p=3, k=2,
-                 delta=0.4, R=1, scale=1, save_matrices=False):
+    def __init__(self, n_of_hidden_neurons=5, p=3, k=2,
+                 delta=0.4, R=1, scale=1, activation_function = ReLU):
         self.p = p
         self.k = k
         self.delta = delta
         self.R = R
-        self.weight_matrix = np.random.normal(0,
-                                              1/sqrt(n_of_hidden_neurons),
-                                              (n_of_hidden_neurons,
-                                               n_of_input_neurons))
-        # The weights are initialized with a gaussian distribution.
         self.scale = scale
-        self.save_matrices = save_matrices
+        self.n_of_hidden_neurons = n_of_hidden_neurons
+        self.activation_function = activation_function
+
 
 # %% Defining main equations and objects
+
+    def activation_function(hidden_neurons):
+        """
+        """
+        return np.where(hidden_neurons < 0, 0, hidden_neurons)
 
     def transform(self, data):
         """Process the raw data by multiplying them by the weight matrix.
@@ -298,8 +309,10 @@ class CHUNeuralNetwork(TransformerMixin):
             the extracted features data
         """
         return self.weight_matrix @ data.T
+        # TODO: check the behavior of other scikit neural networks. how do they
+        # behave when no fitting was done?
 
-    def fit(self, X, batch_size=2, y=None):
+    def fit(self, X, batch_size=2, save_matrices=False, y=None):
         """Fit the weights to the data provided.
 
         for each data point add to each weight the corresponding increment.
@@ -313,27 +326,36 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork:
             the network itself
         """
-        (n_of_hidden_neurons, n_of_input_neurons) = self.weight_matrix.shape
+        (n_of_samples, n_of_input_neurons) = X.shape
+
+        self.weight_matrix = np.random.normal(0,
+                                              1/sqrt(self.n_of_hidden_neurons),
+                                              (self.n_of_hidden_neurons,
+                                               n_of_input_neurons))
+        # The weights are initialized with a gaussian distribution.
+
         for batch in batchize(X, batch_size):
-            hidden_neurons = np.einsum("jk,ik->ij", self.weight_matrix,
-                                       batch)
+            currents = np.einsum("jk,ik->ij", self.weight_matrix, batch)
             # ^ dot product between each input vector and weight_matrix
+            hidden_neurons = self.activation_function(currents)
             time = np.array([0, 1e5])
 
             weights_array = np.reshape(self.weight_matrix,
                                        self.weight_matrix.size)
 
-            args = (self.R, self.p, batch, self.scale, self.save_matrices,
+            args = (self.R, self.p, batch, self.scale, save_matrices,
                     hidden_neurons, self.k, self.delta,
-                    n_of_hidden_neurons, n_of_input_neurons)
+                    self.n_of_hidden_neurons, n_of_input_neurons)
 
             odeint_result = odeint(linear_plasticity_rule, weights_array, time,
                                    args)
 
             update = np.reshape(odeint_result[1], self.weight_matrix.shape)
+
             self.weight_matrix += update
-            # ^ updating the weight matrix
-            if self.save_matrices:
+            # updating the weight matrix
+
+            if save_matrices:
                 # for testing purposes. won't be executed in the final version
                 weights_r = open('./weights_r', 'wb')
                 dump(self.weight_matrix, weights_r)
