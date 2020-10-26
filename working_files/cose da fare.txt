@@ -1,4 +1,4 @@
-ottimizzare odeint
+fare snakeviz con odeint o tutti gli altri
 Capire se ReLu o no
 riscrivere il programma in lazy implementation e con meno chiamate a einsum possibili
 	togliere le cose dall'init

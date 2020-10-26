@@ -7,7 +7,7 @@ import numpy as np
 from pickle import dump
 from math import sqrt
 from sklearn.base import TransformerMixin
-from scipy.integrate import odeint
+from scipy.integrate import odeint, solve_ivp
 
 
 # %% defining external functions
@@ -148,7 +148,7 @@ def plasticity_rule(weight_matrix, R, p, batch, scale, save_matrices,
     # weight
 
 
-def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
+def linear_plasticity_rule(time, weight_array, R, p, batch, scale,
                            save_matrices, hidden_neurons, k, delta,
                            n_of_hidden_neurons, n_of_input_neurons):
     """Return the value used to update the weight matrix.
@@ -160,10 +160,10 @@ def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
 
     Parameters
     ----------
-    weight_array
-        the matrix of the synapses of the hidden neurons, reshaped to an array.
     time
         the integration time of the differential equation
+    weight_array
+        the matrix of the synapses of the hidden neurons, reshaped to an array.
     R
         The radius at wich the product between the synapses of each hidden
         neuron and the input neurons will converge.
@@ -192,6 +192,7 @@ def linear_plasticity_rule(weight_array, time, R, p, batch, scale,
         the value to be added to the weight matrix.
     """
     shape = (n_of_hidden_neurons, n_of_input_neurons)
+    print(weight_array)
     weight_matrix = np.reshape(weight_array, shape)
 
     update_matrix = plasticity_rule(weight_matrix, R, p, batch, scale,
@@ -299,7 +300,18 @@ class CHUNeuralNetwork(TransformerMixin):
 # %% Defining main equations and objects
 
     def activation_function(hidden_neurons):
-        """
+        """Return the hidden neuron value if positive, zero otherwise.
+
+        Rectifier Linear Unit activation function.
+
+        Parameters
+        ----------
+        hidden_neurons
+            the neuron layer to activate
+        Return
+        ------
+        ndarray
+            The activation values.
         """
         return np.where(hidden_neurons < 0, 0, hidden_neurons)
 
@@ -321,7 +333,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         return self.weight_matrix @ data.T
         # TODO: check the behavior of other scikit neural networks. how do they
-        # behave when no fitting was done?
+        # behave when no fitting is done?
 
     def fit(self, X, batch_size=2, save_matrices=False, y=None):
         """Fit the weights to the data provided.
@@ -349,20 +361,20 @@ class CHUNeuralNetwork(TransformerMixin):
             currents = np.einsum("jk,ik->ij", self.weight_matrix, batch)
             # ^ dot product between each input vector and weight_matrix
             hidden_neurons = self.activation_function(currents)
-            time = np.array([0, 1e5])
-
-            weights_array = np.reshape(self.weight_matrix,
-                                       self.weight_matrix.size)
+            weight_array = np.ravel(self.weight_matrix)
 
             args = (self.R, self.p, batch, self.scale, save_matrices,
                     hidden_neurons, self.k, self.delta,
                     self.n_of_hidden_neurons, n_of_input_neurons)
 
-            odeint_result = odeint(linear_plasticity_rule, weights_array, time,
-                                   args)
+            # odeint_result = odeint(linear_plasticity_rule, weight_array,
+            #                       [0, 1e5], args, tfirst=True)
 
-            update = np.reshape(odeint_result[1], self.weight_matrix.shape)
-
+            # update = np.reshape(odeint_result[1], self.weight_matrix.shape)
+            bunch = solve_ivp(linear_plasticity_rule, (0, 1e5), weight_array,
+                              method='RK45', args=args)
+            result = bunch.y[:, -1]
+            update = np.reshape(result, self.weight_matrix.shape)
             self.weight_matrix += update
             # updating the weight matrix
 

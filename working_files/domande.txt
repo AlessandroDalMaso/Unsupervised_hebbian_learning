@@ -1,5 +1,4 @@
-far presente la cosa della funzione di attivazione
-documentazione di cprofile
-perchè prima vedevo einsum e adesso odeint?
-non capisco gli icicle.
-banded jacobian?
+perché la jacobiana è sempre quadrata?
+perchè non riesco ad accedere a scikit?
+non c'è una funzione transform, ma solo una fit and tranform nei moduli base di scikit?
+come faccio a fare type checking per la shape? assert?

@@ -14,3 +14,11 @@
     l'activation function. il tempo di esecuzione è su minuto ad immagine con
     cinque neuroni. Ho provato a modificare il parametro Dfun di odeint, ma
     peggiora la situazione.
+24/10/2020
+    Giorno di riposo.
+25/10/2020
+    Da guardare: trasformata di Randon.
+26/10/2020
+    Ho passato un giorno a capire un errore banale, ma nel frattempo ho
+    imparato le funzioni lambda e i breakpoint di spyder. Ora posso finalmente
+    vedere i vari metodi di integrazione.
