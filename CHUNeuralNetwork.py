@@ -22,9 +22,9 @@ def rank_finder(hidden_neurons):
     """
     sort = np.argsort(hidden_neurons)
     # sorts along last axis by default
-    first_neurons = sort[:, -1]
-    seventh_neurons = sort[:, -7]
-    return (first_neurons, seventh_neurons)
+    first_indexes = sort[:, -1]
+    seventh_indexes = sort[:, -7]
+    return (first_indexes, seventh_indexes)
 
 
 def product(weight_matrix, batch, p):
@@ -49,4 +49,10 @@ def product(weight_matrix, batch, p):
     """
     coefficients = np.abs(weight_matrix) ** p
     return np.einsum("ik,jk,jk->ij", batch, weight_matrix, coefficients)
+
+
+def plasticity_rule(weight_matrix, batch, R, p, first_indexes,
+                    seventh_indexes, product, time_scale):
+    #TODO
+    
 

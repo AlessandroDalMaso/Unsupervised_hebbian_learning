@@ -26,3 +26,4 @@ def test_product_basic():
     
     
 test_rank_finder_basic()
+test_product_basic()
