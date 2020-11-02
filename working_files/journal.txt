@@ -22,3 +22,16 @@
     Ho passato un giorno a capire un errore banale, ma nel frattempo ho
     imparato le funzioni lambda e i breakpoint di spyder. Ora posso finalmente
     vedere i vari metodi di integrazione.
+27/10/2020
+	I metodi di integrazione sono tutti più lenti di odeint, ma forse posso
+	implementare solve_ivp in modo vettorizzato?
+28/10/2020
+	Niente da fare. Cosa posso tentare ora?
+29/10/2020
+30/10/2020
+	Forse ho trovato: fare l'evoluzione solo per gli hidden neurons che
+	effettivamente cambiano
+31/10/2020
+	riposo
+01/11/2020
+	Sto implementando, molto a rilento.

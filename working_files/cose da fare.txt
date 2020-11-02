@@ -1,22 +1,6 @@
-fare snakeviz con odeint o tutti gli altri
-Capire se ReLu o no
-riscrivere il programma in lazy implementation e con meno chiamate a einsum possibili
-	togliere le cose dall'init
-	toglierele da implementation
-	toglierle dal resto della classe
-fare snakeviz
-mettere optimize = path ad einsum
-fare l'evoluzione con 7 neuroni
-FIT SOVRASCRIVE SOVRESCRIVE SOVRASCRIVE
-imparare ipython
-come faccio a togliere n_of_input_neurons dall'init? >>> le cose vengono istanziate on demand
-activation function PERCEPITA DALL'UTENTE
-odeint funzione generale
-mettere le docstring con gli output con le dimensioni (vedi numpy)
-wrapping su plasticity rulke con odeint
-odeint accetta solo dei vettori
-non tenere la batch globale
-batch_size param di fits
+riscriverlo con solo 2 neuroni cambiati, con la tecnica di selezione di numpy
+fare il path di odeint
+fare lo jacobiano se necessario
 hdf5 al posto di pickle
 git
 pep 8 + se una cosa prende più linee la si separa da una linea bianca.
@@ -27,10 +11,7 @@ run -d (?)
 breakpoints
 grappa library
 logging/eliot
-docstrings?
-lessons 10, af 8
-DOI: codice univoco dell'articolo
-
+trasformata di randon
 DOCUMENTATION
 numpy-style docstrings
 	short summary
