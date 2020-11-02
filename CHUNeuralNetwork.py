@@ -28,7 +28,25 @@ def rank_finder(hidden_neurons):
 
 
 def product(weight_matrix, batch, p):
-    """."""
+    """Multiply the inputs by the synapses weights.
+
+    define coefficients, the multiply weight_matrix, coefficients, and the data
+    in a single operation.
+
+    parameters
+    ----------
+    weight_matrix
+        the matrix of the synapses
+    batch
+        the data
+    p
+        the Lebesgue norm exponent
+
+    return
+    ------
+    ndarray, shape (no. of elements in the batch, no. of hidden neurons)
+        the product for each hidden neuron and each data sample.
+    """
     coefficients = np.abs(weight_matrix) ** p
     return np.einsum("ik,jk,jk->ij", batch, weight_matrix, coefficients)
 
