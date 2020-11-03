@@ -15,14 +15,12 @@ def test_rank_finder_basic():
 
 
 def test_product_basic():
-    weight_matrix = np.array([[ 0, 1],
-                              [-2, 0]])
+    weights = np.array([-0.4, 1])
     batch = np.array([[ 0,   -0.4],
                       [ 3,    3  ],
                       [-2,    4  ]])
     p = 3
-    result = CHU.product(weight_matrix, batch, p)
-    # TODO think of a test!
+    assert CHU.product(weights, batch, p).shape == (3,)
     
     
 test_rank_finder_basic()

@@ -4,3 +4,6 @@ le docstring dei test?
 ignorare E201?
 automatic linting: disabilitarlo?
 il test da pensare
+incomunicabilità della cosa
+"nested sequence of objects"
+una funzione con tanti args pernde t+più tempo per essere inizializzata?
