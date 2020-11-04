@@ -53,15 +53,15 @@ def product(weights, batch, p):
     return np.sum(product, axis=1)
 
 
-def plasticity_rule(time, weights, batch, first_index, seventh_index,
-                    time_scale, R, p, delta):
-    product_result = product(weights, batch, p)
-    v_1 = batch[:,first_index]
-    w_1 = weights[first_index]
-    v_7 = batch[:,seventh_index]
-    w_7 = weights[seventh_index]
-    result_1 = R ** p * v_1 - product_result * w_1
-    result_7 = -1 * delta * (R ** p * v_7 - product_result * w_7)
-    update = np.zeros(weights.size)
-    update[first_index] = result_1
-    update[seventh_index] = result_7
+def plasticity_rule_hebbian(product_result, single_weight, visible_neurons, R,
+                            p, one_over_time_scale):
+    subtrahend = R ** p * visible_neurons
+    minuend = product_result * single_weight
+    return (subtrahend - minuend) * one_over_time_scale
+
+
+def plasticity_rule_anti(product_result, single_weight, visible_neurons, R, p,
+                        delta, one_over_time_scale):
+    subtrahend = R ** p * visible_neurons
+    minuend = product_result * single_weight
+    return (subtrahend - minuend) * (-delta) * one_over_time_scale

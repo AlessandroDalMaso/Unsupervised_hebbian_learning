@@ -35,3 +35,7 @@
 	riposo
 01/11/2020
 	Sto implementando, molto a rilento.
+02/11/2020
+03/11/2020
+04/11/2020
+	Ho fatto uno schemino che mi rende il tutto più chiaro e sto implementando.

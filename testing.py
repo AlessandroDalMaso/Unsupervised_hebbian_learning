@@ -22,6 +22,20 @@ def test_product_basic():
     p = 3
     assert CHU.product(weights, batch, p).shape == (3,)
     
-    
+
+
+def test_plasticity_rule_hebbian_basic():
+    product_result = np.array([-0.3, 1, 0])
+    single_weight = 0.2
+    visible_neurons = np.array([0, -2, 3])
+    R = 1
+    p = 3
+    one_over_time_scale = 1
+    result = CHU.plasticity_rule_hebbian(product_result, single_weight,
+                                   visible_neurons, R, p, one_over_time_scale)
+    assert result.shape == (3,)
+
+
 test_rank_finder_basic()
 test_product_basic()
+test_plasticity_rule_hebbian_basic()

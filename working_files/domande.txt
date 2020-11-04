@@ -1,9 +1,2 @@
-posso implementare il prodotto in modo semplice, che non dipenda da wi?
-pytest è più scomodo di eseguire?
-le docstring dei test?
-ignorare E201?
 automatic linting: disabilitarlo?
-il test da pensare
-incomunicabilità della cosa
-"nested sequence of objects"
-una funzione con tanti args pernde t+più tempo per essere inizializzata?
+come potrei chiamare i visible neurons in hebbian learning?
