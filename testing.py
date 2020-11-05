@@ -14,28 +14,42 @@ def test_rank_finder_basic():
     assert not np.any(hidden_neurons[[0, 1], first_neurons] - [7, 4])
 
 
-def test_product_basic():
+def test_product_shape():
     weights = np.array([-0.4, 1])
     batch = np.array([[ 0,   -0.4],
                       [ 3,    3  ],
                       [-2,    4  ]])
     p = 3
     assert CHU.product(weights, batch, p).shape == (3,)
-    
 
 
-def test_plasticity_rule_hebbian_basic():
+def test_plasticity_rule_hebbian_shape():
     product_result = np.array([-0.3, 1, 0])
     single_weight = 0.2
     visible_neurons = np.array([0, -2, 3])
     R = 1
     p = 3
-    one_over_time_scale = 1
+    one_over_scale = 1
     result = CHU.plasticity_rule_hebbian(product_result, single_weight,
-                                   visible_neurons, R, p, one_over_time_scale)
+                                         visible_neurons, R, p, one_over_scale)
+    assert result.shape == (3,)
+
+
+def test_plasticity_rule_anti_shape():
+    product_result = np.array([1, 0, -2])
+    single_weight = -2.5
+    visible_neurons = np.array([1, 1, 0])
+    R = 1
+    p = 3
+    one_over_scale = 1
+    delta = -0.4
+    result = CHU.plasticity_rule_anti(product_result, single_weight,
+                                         visible_neurons, R, p, one_over_scale,
+                                         delta)
     assert result.shape == (3,)
 
 
 test_rank_finder_basic()
-test_product_basic()
-test_plasticity_rule_hebbian_basic()
+test_product_shape()
+test_plasticity_rule_hebbian_shape()
+test_plasticity_rule_anti_shape()

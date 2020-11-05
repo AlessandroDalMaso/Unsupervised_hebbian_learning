@@ -1,2 +1,1 @@
-automatic linting: disabilitarlo?
 come potrei chiamare i visible neurons in hebbian learning?

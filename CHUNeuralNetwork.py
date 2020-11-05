@@ -54,14 +54,67 @@ def product(weights, batch, p):
 
 
 def plasticity_rule_hebbian(product_result, single_weight, visible_neurons, R,
-                            p, one_over_time_scale):
+                            p, one_over_scale):
+    """Calculate the update value for the most activated synapsis.
+
+    Apply equation [3] of the original article only for the single most
+    activated synapsis, but vectorized over all samples in the batch.
+
+    Parameters
+    ----------
+    product_result
+        The product between the synapse of the neuron and the input data, as
+        defined by equation [2] of the original article.
+    single_weight
+        The weight of the synapsis.
+    visible_neurons
+        The i-th value for each sample in the data.
+    R
+        The radius of convergence.
+    p
+        The lebesgue norm exponent.
+    one_over_scale:
+        A parameter that modulates the evolution speed of the equation.
+
+    Return
+    ------
+    ndarray, same shape as product_result and visible_neurons (1d)
+        The update value for the most-activated synapsis.
+    """
     subtrahend = R ** p * visible_neurons
     minuend = product_result * single_weight
-    return (subtrahend - minuend) * one_over_time_scale
+    return (subtrahend - minuend) * one_over_scale
 
 
 def plasticity_rule_anti(product_result, single_weight, visible_neurons, R, p,
-                        delta, one_over_time_scale):
+                         one_over_scale, delta):
+    """Calculate the update value for the k-th least activated synapsis.
+
+    Apply equation [3] of the original article only for the k-th least
+    activated synapsis, but vectorized over all samples in the batch.
+
+    Parameters
+    ----------
+    product_result
+        The product between the synapse of the neuron and the input data, as
+        defined by equation [2] of the original article.
+    single_weight
+        The weight of the synapsis.
+    visible_neurons
+        The i-th value for each sample in the data
+    R
+        The radius of convergence.
+    p
+        The lebesgue norm exponent.
+    one_over_scale:
+        A parameter that modulates the evolution speed of the equation.
+    delta:
+        
+    Return
+    ------
+    ndarray, same shape as product_result and visible_neurons (1d)
+        The update value for the synapsis.
+    """
     subtrahend = R ** p * visible_neurons
     minuend = product_result * single_weight
-    return (subtrahend - minuend) * (-delta) * one_over_time_scale
+    return (subtrahend - minuend) * (-delta) * one_over_scale
