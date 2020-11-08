@@ -77,3 +77,4 @@ test_plasticity_rule_hebbian_shape()
 test_plasticity_rule_anti_shape()
 test_relu_positive()
 test_hidden_neurons_func_basic()
+

@@ -157,4 +157,30 @@ def hidden_neurons_func(batch, weight_matrix, activation_function):
     """
     currents = np.einsum("ik,jk->ij", batch, weight_matrix)
     return activation_function(currents)
-    
+
+
+def batchize(iterable, size):
+    """Put iterables in batches.
+
+    Returns a new iterable wich yelds an array of the argument iterable in a
+    list.
+
+    Parameters
+    ----------
+    iterable:
+        the iterable to be batchized.
+    size:
+        the number of elements in a batch.
+
+    Return
+    ------
+    iterable
+        of wich each element is an n-sized list of the argument iterable.
+
+    Notes
+    -----
+    credit: https://stackoverflow.com/users/3868326/kmaschta
+    """
+    lenght = len(iterable)
+    for n in range(0, lenght, size):
+        yield iterable[n:min(n + size, lenght)]
