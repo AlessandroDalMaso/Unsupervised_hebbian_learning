@@ -118,3 +118,43 @@ def plasticity_rule_anti(product_result, single_weight, visible_neurons, R, p,
     subtrahend = R ** p * visible_neurons
     minuend = product_result * single_weight
     return (subtrahend - minuend) * (-delta) * one_over_scale
+
+
+def relu(currents):
+    """Default activation function.
+
+    Arguments
+    ---------
+    currents
+        Linear combination between synapses and inputs.
+    Return
+    ------
+    ndarray (same shape as current)
+        The final value of the neurons
+    """
+    return np.where(currents < 0, 0, currents)
+
+
+def hidden_neurons_func(batch, weight_matrix, activation_function):
+    """Calculate hidden neurons value
+    
+    Calculate the dot product between each sample in the data and
+    weight_matrix, the pass it to the activation function.
+
+    Parameters
+    ----------
+    batch
+        The input values.
+    weight_matrix
+        The values of the synapses for each hidden neuron.7
+    activation_function
+        The activation function.
+
+    Return
+    ------
+    ndarray, shape (n of samples in batch, n of hidden neurons)
+        the hidden neurons activation values.
+    """
+    currents = np.einsum("ik,jk->ij", batch, weight_matrix)
+    return activation_function(currents)
+    

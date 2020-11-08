@@ -49,7 +49,31 @@ def test_plasticity_rule_anti_shape():
     assert result.shape == (3,)
 
 
+def test_relu_positive():
+    hidden_neurons = np.array([[0,  0,  0],
+                               [2, -2,  3]])
+    assert np.all(CHU.relu(hidden_neurons) >= 0)
+
+
+def test_hidden_neurons_func_basic():
+    batch = np.array([[-2,  3, -2],
+                      [ 0, -2,  2],
+                      [-2,-10,  2],
+                      [0,   1,  0]])
+    weight_matrix = np.array([[0, 1, -1],
+                              [1,-1,  9]])
+    activation_function = CHU.relu
+    
+    result = CHU.hidden_neurons_func(batch, weight_matrix, activation_function)
+    prod = weight_matrix @ batch[0]
+    positive = np.where(prod < 0, 0, prod)
+    comparison = result[0] == positive
+    assert comparison.all()
+
+
 test_rank_finder_basic()
 test_product_shape()
 test_plasticity_rule_hebbian_shape()
 test_plasticity_rule_anti_shape()
+test_relu_positive()
+test_hidden_neurons_func_basic()
