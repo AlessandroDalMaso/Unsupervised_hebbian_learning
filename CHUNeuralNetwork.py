@@ -7,27 +7,12 @@ from scipy.integrate import odeint
 # %% defining external equaltions
 
 
-def rank_finder(hidden_neurons):
-    """find and return the indices of the 1st and 7th neurons by activation.
-
-    Argsort the neurons, the select the 1rs and 7th ones from each sample.
-
-    arguments
-    ---------
-    hidden_neurons
-        the neurons to be sorted
-    return
-    ------
-    ndarray, shape (2, no. of samples in the batch)
-    """
-    sort = np.argsort(hidden_neurons)
-    # sorts along last axis by default
-    first_indexes = sort[:, -1]
-    seventh_indexes = sort[:, -7]
-    return (first_indexes, seventh_indexes)
+def rank_finder(hidden_neurons, k):
+    sorting = np.argsort(hidden_neurons)
+    return (sorting[:,-1], sorting[:,-k])
 
 
-def product(weights, batch, p):
+def product(weight_vector, input_vector, p):
     """Multiply the inputs by the synapses weights of a single neuron.
 
     define coefficients, the multiply the weights, coefficients, and the data
@@ -47,114 +32,56 @@ def product(weights, batch, p):
     ndarray, shape (no. of elements in the batch, no. of hidden neurons)
         the product for each hidden neuron and each data sample.
     """
-    coefficients = np.abs(weights) ** p
-    product = weights * coefficients * batch
-    # k,k,ik->ik thanks to broadcasting
+    coefficients = np.abs(weight_vector) ** p
+    product = weight_vector * coefficients * input_vector
     return np.sum(product, axis=1)
 
 
-def plasticity_rule_hebbian(product_result, single_weight, visible_neurons, R,
-                            p, one_over_scale):
-    """Calculate the update value for the most activated synapsis.
+def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
+    """Calculate the update value for a row for weight_matrix.
 
-    Apply equation [3] of the original article only for the single most
-    activated synapsis, but vectorized over all samples in the batch.
-
-    Parameters
-    ----------
-    product_result
-        The product between the synapse of the neuron and the input data, as
-        defined by equation [2] of the original article.
-    single_weight
-        The weight of the synapsis.
-    visible_neurons
-        The i-th value for each sample in the data.
-    R
-        The radius of convergence.
-    p
-        The lebesgue norm exponent.
-    one_over_scale:
-        A parameter that modulates the evolution speed of the equation.
-
-    Return
-    ------
-    ndarray, same shape as product_result and visible_neurons (1d)
-        The update value for the most-activated synapsis.
-    """
-    subtrahend = R ** p * visible_neurons
-    minuend = product_result * single_weight
-    return (subtrahend - minuend) * one_over_scale
-
-
-def plasticity_rule_anti(product_result, single_weight, visible_neurons, R, p,
-                         one_over_scale, delta):
-    """Calculate the update value for the k-th least activated synapsis.
-
-    Apply equation [3] of the original article only for the k-th least
-    activated synapsis, but vectorized over all samples in the batch.
+    The update is zero for all but the most activated and the k-th most
+    activated neuron.
 
     Parameters
     ----------
-    product_result
-        The product between the synapse of the neuron and the input data, as
-        defined by equation [2] of the original article.
-    single_weight
-        The weight of the synapsis.
-    visible_neurons
-        The i-th value for each sample in the data
-    R
-        The radius of convergence.
-    p
-        The lebesgue norm exponent.
-    one_over_scale:
-        A parameter that modulates the evolution speed of the equation.
-    delta:
-        
-    Return
-    ------
-    ndarray, same shape as product_result and visible_neurons (1d)
-        The update value for the synapsis.
+    weight_vector
+        A row of weight_matrix to calculte the update for.
+    batch
+        the data
+    first_index
+        the index of the most activated neuron in weight_vector
+    
     """
-    subtrahend = R ** p * visible_neurons
-    minuend = product_result * single_weight
-    return (subtrahend - minuend) * (-delta) * one_over_scale
+    product_result = product(weight_vector, input_vector, p)
+    minuend = R ** p * input_vector
+    subtrahend = product_result * weight_vector
+    return g * (minuend - subtrahend) * one_over_scale
+
+def plasticity_rule_vectorized(weight_matrix, batch, g, p, R, one_over_scale,
+                               indexes_hebbian, indexes_anti):
+    update = np.zeros(weight_matrix.shape)
+    for i in range(len(batch)):
+
+        j = indexes_hebbian[i]
+        weight_vector = weight_matrix[j]
+        input_vector = batch[i]
+        update[j] += plasticity_rule(weight_vector, input_vector, 1, p, R,
+                                    one_over_scale)
+
+        j2 = indexes_anti[i]
+        weight_vector = weight_matrix[j2]
+        update[j2] += plasticity_rule(weight_vector, input_vector, 1, p, R,
+                                    one_over_scale)
+
+    return update
 
 
 def relu(currents):
-    """Default activation function.
-
-    Arguments
-    ---------
-    currents
-        Linear combination between synapses and inputs.
-    Return
-    ------
-    ndarray (same shape as current)
-        The final value of the neurons
-    """
     return np.where(currents < 0, 0, currents)
 
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
-    """Calculate hidden neurons value
-    
-    Calculate the dot product between each sample in the data and
-    weight_matrix, the pass it to the activation function.
-
-    Parameters
-    ----------
-    batch
-        The input values.
-    weight_matrix
-        The values of the synapses for each hidden neuron.7
-    activation_function
-        The activation function.
-
-    Return
-    ------
-    ndarray, shape (n of samples in batch, n of hidden neurons)
-        the hidden neurons activation values.
-    """
     currents = np.einsum("ik,jk->ij", batch, weight_matrix)
     return activation_function(currents)
 

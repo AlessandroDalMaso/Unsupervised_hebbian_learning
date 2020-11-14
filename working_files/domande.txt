@@ -1,2 +1,1 @@
-come potrei chiamare i visible neurons in hebbian learning?
-fit e actual fit?
+dove è più veloce mettere product?

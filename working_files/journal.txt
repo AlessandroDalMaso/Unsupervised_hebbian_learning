@@ -39,3 +39,15 @@
 03/11/2020
 04/11/2020
 	Ho fatto uno schemino che mi rende il tutto più chiaro e sto implementando.
+10/11/2020
+	Mi sono dimenticato di aggiornare questo diario. Devo ancora prendere
+	l'abitudine.
+	Ho un problema: plasticity_rule deve conoscere gli indici degli
+	hidden_neurons da cambiare, e anche uno slide di weight_matrix, quindi devo
+	usare un ciclo for. idee:
+	-zip (MOLTO PI§ VELOCE)
+	-vectorize spiegato dal prof
+14/11/2020
+	Mi sono dimenticato di nuovo di aggiornare questo diario. Ho messo una sveglia per ricordarmi.
+	Il programma adesso funziona così: rank_finder mi manda una tupla di 2 array 1d che mi danno l'indice k su ciascuna riga i,
+	e li passo a plasticity_rule_vectorized, che poi passa tutto a plasticity_rule con 1d data e 1d weights, e returna 1d.s
