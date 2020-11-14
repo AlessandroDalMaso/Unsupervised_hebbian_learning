@@ -34,7 +34,7 @@ def product(weight_vector, input_vector, p):
     """
     coefficients = np.abs(weight_vector) ** p
     product = weight_vector * coefficients * input_vector
-    return np.sum(product, axis=1)
+    return np.sum(product)
 
 
 def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
@@ -58,8 +58,8 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
     subtrahend = product_result * weight_vector
     return g * (minuend - subtrahend) * one_over_scale
 
-def plasticity_rule_vectorized(weight_matrix, batch, g, p, R, one_over_scale,
-                               indexes_hebbian, indexes_anti):
+def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
+                               one_over_scale, indexes_hebbian, indexes_anti):
     update = np.zeros(weight_matrix.shape)
     for i in range(len(batch)):
 
@@ -71,8 +71,8 @@ def plasticity_rule_vectorized(weight_matrix, batch, g, p, R, one_over_scale,
 
         j2 = indexes_anti[i]
         weight_vector = weight_matrix[j2]
-        update[j2] += plasticity_rule(weight_vector, input_vector, 1, p, R,
-                                    one_over_scale)
+        update[j2] += plasticity_rule(weight_vector, input_vector, -delta, p,
+                                      R, one_over_scale)
 
     return update
 
@@ -111,3 +111,4 @@ def batchize(iterable, size):
     lenght = len(iterable)
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
+
