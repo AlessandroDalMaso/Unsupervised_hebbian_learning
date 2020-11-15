@@ -52,7 +52,6 @@ def test_plasticity_rule_shape():
 
     result = CHU.plasticity_rule(weight_vector, input_vector, g, p, R,
                                  one_over_scale)
-    print(result)
 
 def test_plasticity_rule_vectorized():
     batch = np.array([[-2,  3, -2],
@@ -70,7 +69,7 @@ def test_plasticity_rule_vectorized():
     result = CHU.plasticity_rule_vectorized(weight_matrix, batch, delta, p,
                                             R, one_over_scale,
                                             indexes_hebbian, indexes_anti)
-    #print(result)
+    print(result)
 
 test_rank_finder_basic()
 test_product_shape()

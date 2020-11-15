@@ -32,7 +32,7 @@ def product(weight_vector, input_vector, p):
     ndarray, shape (no. of elements in the batch, no. of hidden neurons)
         the product for each hidden neuron and each data sample.
     """
-    coefficients = np.abs(weight_vector) ** p
+    coefficients = np.abs(weight_vector) ** (p -2)
     product = weight_vector * coefficients * input_vector
     return np.sum(product)
 
