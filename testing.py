@@ -65,7 +65,7 @@ def test_plasticity_rule_vectorized():
     R = 1
     one_over_scale = 1
     indexes_hebbian = [0, 1, 0, 1]
-    indexes_anti = np.array([1,1,0,0])
+    indexes_anti = np.array([1,0,1,0])
     result = CHU.plasticity_rule_vectorized(weight_matrix, batch, delta, p,
                                             R, one_over_scale,
                                             indexes_hebbian, indexes_anti)

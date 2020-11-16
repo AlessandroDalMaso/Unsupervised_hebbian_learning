@@ -51,3 +51,6 @@
 	Mi sono dimenticato di nuovo di aggiornare questo diario. Ho messo una sveglia per ricordarmi.
 	Il programma adesso funziona così: rank_finder mi manda una tupla di 2 array 1d che mi danno l'indice k su ciascuna riga i,
 	e li passo a plasticity_rule_vectorized, che poi passa tutto a plasticity_rule con 1d data e 1d weights, e returna 1d.s
+15/11/2020
+16/11/2020
+	Sto cercando di testare plsticity_rule_vectorized.

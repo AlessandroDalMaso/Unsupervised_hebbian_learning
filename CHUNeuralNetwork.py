@@ -83,6 +83,8 @@ def relu(currents):
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
     currents = np.einsum("ik,jk->ij", batch, weight_matrix)
+    currents2 = batch @ weight_matrix.T
+    assert np.array_equal(currents, currents2)
     return activation_function(currents)
 
 
