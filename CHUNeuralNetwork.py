@@ -1,7 +1,7 @@
 from sklearn.base import TransformerMixin
 import numpy as np
 from math import sqrt
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp
 
 
 # %% defining external equaltions
@@ -114,3 +114,49 @@ def batchize(iterable, size):
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
 
+# %% defining the class
+
+
+class CHUNeuralNetwork(TransformerMixin):
+    """
+    """
+
+    def __init__(self, n_hiddens=2000, delta=0.4, p=3, R=1, scale=1, k=7,
+                 activation_function=relu):
+        self.n_hiddens = n_hiddens
+        self.delta = delta
+        self.p = p
+        self.R = R
+        self.one_over_scale = 1/scale
+        self.k = k
+        self.activation_function = relu
+
+    def transform(self, X):
+        return hidden_neurons_func(X, self.weight_matrix,
+                                   self.activation_function)
+
+    def fit(self, X, batch_size=2):
+        n_visibles = len(X[0])
+        self.weight_matrix = np.random.normal(0,
+                                              1/sqrt(self.n_hiddens),
+                                              (self.n_hiddens, n_visibles))
+        # The weights are initialized with a gaussian distribution.
+        for batch in batchize(X, batch_size):
+
+            hidden_neurons = hidden_neurons_func(batch, self.weight_matrix,
+                                                 self.activation_function)
+
+            (indexes_hebbian, indexes_anti) = rank_finder(hidden_neurons,
+                                                          self.k)
+            args = (batch, self.delta, self.p, self.R, self.one_over_scale,
+                    indexes_hebbian, indexes_anti)
+
+            bunch = solve_ivp(plasticity_rule_vectorized, (0, 1e4),
+                               self.weight_matrix, method='RK45',
+                               Vectorized=True, args=args)
+            update = bunch.y[:-1]
+            self.weight_matrix += update
+            return self
+
+    def fit_transform(self, X, batch_size=2):
+        return self.fit(X, batch_size).transform(X)
