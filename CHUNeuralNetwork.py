@@ -3,11 +3,14 @@ import numpy as np
 from math import sqrt
 from scipy.integrate import solve_ivp
 
-
 # %% defining external equaltions
 
 
-def rank_finder(hidden_neurons, k):
+def rank_finder(batch, weight_matrix, activation_function, k):
+
+    hidden_neurons = hidden_neurons_func(batch, weight_matrix,
+                                         activation_function)
+
     sorting = np.argsort(hidden_neurons)
     return (sorting[:,-1], sorting[:,-k])
 
@@ -82,9 +85,8 @@ def relu(currents):
 
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
-    currents = np.einsum("ik,jk->ij", batch, weight_matrix)
-    currents2 = batch @ weight_matrix.T
-    assert np.array_equal(currents, currents2)
+    currents = batch @ weight_matrix.T
+    # ik,jk->ij
     return activation_function(currents)
 
 
@@ -144,22 +146,21 @@ class CHUNeuralNetwork(TransformerMixin):
                                    self.activation_function)
 
     def fit(self, X, batch_size=2):
-        n_visibles = len(X[0])
-        dims = (self.n_hiddens, n_visibles)
+        dims = (self.n_hiddens, len(X[0]))
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
         for batch in batchize(X, batch_size):
 
-            hidden_neurons = hidden_neurons_func(batch, self.weight_matrix,
-                                                 self.activation_function)
-
-            (indexes_hebbian, indexes_anti) = rank_finder(hidden_neurons,
+            (indexes_hebbian, indexes_anti) = rank_finder(batch,
+                                                          self.weight_matrix,
+                                                          self.activation_function,
                                                           self.k)
-            starting_weights = np.ravel(self.weight_matrix)
+
+            starting_array = np.ravel(self.weight_matrix)
             args = (batch, self.delta, self.p, self.R, self.one_over_scale,
                     indexes_hebbian, indexes_anti, dims)
 
-            bunch = solve_ivp(ivp_helper, (0, 1e4), starting_weights,
+            bunch = solve_ivp(ivp_helper, (0, 1e4), starting_array,
                               method='RK45', args=args)
 
             update_array = bunch.y[:,-1]
