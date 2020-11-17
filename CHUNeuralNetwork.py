@@ -64,14 +64,14 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
     for i in range(len(batch)):
 
         j = indexes_hebbian[i]
-        weight_vector = weight_matrix[j]
+        weight_vector_1 = weight_matrix[j]
         input_vector = batch[i]
-        update[j] += plasticity_rule(weight_vector, input_vector, 1, p, R,
+        update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p, R,
                                     one_over_scale)
 
         j2 = indexes_anti[i]
-        weight_vector = weight_matrix[j2]
-        update[j2] += plasticity_rule(weight_vector, input_vector, -delta, p,
+        weight_vector_2 = weight_matrix[j2]
+        update[j2] += plasticity_rule(weight_vector_2, input_vector, -delta, p,
                                       R, one_over_scale)
 
     return update
@@ -114,6 +114,14 @@ def batchize(iterable, size):
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
 
+def ivp_helper(time, array, *args):
+    (batch, delta, p, R, one_over_scale, indexes_hebbian, indexes_anti,
+     dims) = args
+    matrix = np.reshape(array, dims)
+    update_matrix = plasticity_rule_vectorized(matrix, batch, delta, p, R,
+                                               one_over_scale, indexes_hebbian,
+                                               indexes_anti)
+    return np.ravel(update_matrix)
 # %% defining the class
 
 
@@ -137,9 +145,8 @@ class CHUNeuralNetwork(TransformerMixin):
 
     def fit(self, X, batch_size=2):
         n_visibles = len(X[0])
-        self.weight_matrix = np.random.normal(0,
-                                              1/sqrt(self.n_hiddens),
-                                              (self.n_hiddens, n_visibles))
+        dims = (self.n_hiddens, n_visibles)
+        self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
         for batch in batchize(X, batch_size):
 
@@ -148,14 +155,16 @@ class CHUNeuralNetwork(TransformerMixin):
 
             (indexes_hebbian, indexes_anti) = rank_finder(hidden_neurons,
                                                           self.k)
+            starting_weights = np.ravel(self.weight_matrix)
             args = (batch, self.delta, self.p, self.R, self.one_over_scale,
-                    indexes_hebbian, indexes_anti)
+                    indexes_hebbian, indexes_anti, dims)
 
-            bunch = solve_ivp(plasticity_rule_vectorized, (0, 1e4),
-                               self.weight_matrix, method='RK45',
-                               Vectorized=True, args=args)
-            update = bunch.y[:-1]
-            self.weight_matrix += update
+            bunch = solve_ivp(ivp_helper, (0, 1e4), starting_weights,
+                              method='RK45', args=args)
+
+            update_array = bunch.y[:,-1]
+            update_matrix = np.reshape(update_array, dims)
+            self.weight_matrix += update_matrix
             return self
 
     def fit_transform(self, X, batch_size=2):

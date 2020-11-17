@@ -69,7 +69,14 @@ def test_plasticity_rule_vectorized():
     result = CHU.plasticity_rule_vectorized(weight_matrix, batch, delta, p,
                                             R, one_over_scale,
                                             indexes_hebbian, indexes_anti)
-    print(result)
+    batch2 = np.array([[0, 0, 0],
+                       [0, 0, 0],
+                       [0, 0, 0],
+                       [0, 0, 0]])
+    result2 = CHU.plasticity_rule_vectorized(weight_matrix, batch2, delta, p,
+                                            R, one_over_scale,
+                                            indexes_hebbian, indexes_anti)
+    assert np.array_equal(result2, np.zeros(weight_matrix.shape))
 
 test_rank_finder_basic()
 test_product_shape()
