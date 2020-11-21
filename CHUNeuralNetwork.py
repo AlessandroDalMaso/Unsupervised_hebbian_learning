@@ -160,11 +160,17 @@ class CHUNeuralNetwork(TransformerMixin):
             args = (batch, self.delta, self.p, self.R, self.one_over_scale,
                     indexes_hebbian, indexes_anti, dims)
 
-            bunch = solve_ivp(ivp_helper, (0, 1e4), starting_array,
-                              method='RK45', args=args)
+            #bunch = solve_ivp(ivp_helper, (0, 1e4), starting_array,
+            #                  method='RK45', args=args)
 
-            update_array = bunch.y[:,-1]
-            update_matrix = np.reshape(update_array, dims)
+            #update_array = bunch.y[:,-1]
+            #update_matrix = np.reshape(update_array, dims)
+            update_matrix = plasticity_rule_vectorized(self.weight_matrix,
+                                                       batch, self.delta,
+                                                       self.p, self.R,
+                                                       self.one_over_scale,
+                                                       indexes_hebbian,
+                                                       indexes_anti)
             self.weight_matrix += update_matrix
             return self
 

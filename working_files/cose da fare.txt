@@ -1,3 +1,4 @@
+far girare il codice
 riscriverlo con solo 2 neuroni cambiati, con la tecnica di selezione di numpy
 fare il path di odeint
 fare lo jacobiano se necessario

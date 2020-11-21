@@ -1,5 +1,1 @@
-hidden_neurons_func
-come funziona tranform, e come faccio per scoprirlo da solo?
-come funziona l'eredità in python? e in scikit?
-solve_ivp y0?
-messaggi di git troppo stringati per ricostruire?
+iscriversi al secondo anno
