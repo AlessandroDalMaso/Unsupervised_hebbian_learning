@@ -145,12 +145,15 @@ class CHUNeuralNetwork(TransformerMixin):
         return hidden_neurons_func(X, self.weight_matrix,
                                    self.activation_function)
 
-    def fit(self, X, batch_size=2):
+    def fit(self, X, batch_size):
         dims = (self.n_hiddens, len(X[0]))
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
+        x = 0
         for batch in batchize(X, batch_size):
-
+            
+            x += 1
+            print(x)
             (indexes_hebbian, indexes_anti) = rank_finder(batch,
                                                           self.weight_matrix,
                                                           self.activation_function,
@@ -172,7 +175,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                                        indexes_hebbian,
                                                        indexes_anti)
             self.weight_matrix += update_matrix
-            return self
+        return self
 
     def fit_transform(self, X, batch_size=2):
         return self.fit(X, batch_size).transform(X)

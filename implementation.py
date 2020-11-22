@@ -35,15 +35,18 @@ X_train = np.array(pd.read_hdf("database_file"))/225.
 
 layer1 = chu.CHUNeuralNetwork()
 start_time = time.time()
-layer1 = layer1.fit(X_train[:1000]/225)
+rng = np.random.default_rng()
+for i in range(0,1):
+    rng.shuffle(X_train)
+    layer1 = layer1.fit(X_train, batch_size=10000)
 print("--- %s seconds ---" % (time.time() - start_time))
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
-"""
-for i in range(2):
+
+for i in range(10):
     synapsys, axsyn = plt.subplots()
     image = np.reshape(layer1.weight_matrix[i], (28, 28))
     axsyn = plt.imshow(image, cmap='bwr')
     plt.savefig("{}".format(i))
-"""
+
