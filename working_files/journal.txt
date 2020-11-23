@@ -36,7 +36,6 @@
 01/11/2020
 	Sto implementando, molto a rilento.
 02/11/2020
-03/11/2020
 04/11/2020
 	Ho fatto uno schemino che mi rende il tutto più chiaro e sto implementando.
 10/11/2020
@@ -54,3 +53,5 @@
 15/11/2020
 16/11/2020
 	Sto cercando di testare plsticity_rule_vectorized.
+23/11/2020
+	È da molto che non aggiorno. Non so che fine abbia fatto la sveglia. Comunque dopo aver riscritto l'intero programma finalmente sembra funzionare. Spero davvero che stavolta sia la volta buona...

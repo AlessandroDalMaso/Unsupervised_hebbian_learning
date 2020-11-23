@@ -50,8 +50,8 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
     ----------
     weight_vector
         A row of weight_matrix to calculte the update for.
-    batch
-        the data
+    input_vector
+        the data sample
     first_index
         the index of the most activated neuron in weight_vector
     """
@@ -62,6 +62,36 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
 
 def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
                                one_over_scale, indexes_hebbian, indexes_anti):
+    """Calculate the update dW of weight_matrix.
+
+    Each sample in batch updates only two rows of weight_matrix: the one
+    corresponding to the most activated hidden neuron and the one corresponding
+    to the k-th most activated.
+
+    Parameters
+    ----------
+    weight_matrix
+        The matrix to update.
+    batch
+        the data
+    delta
+        The relative strenght of anti-hebbian learning.
+    p
+        Lebesgue norm exponent.
+    R
+        The radius of the sphere at wich the hidden neurons will converge.
+    one_over_scale
+        One over the time scale of learning.
+    indexes_hebbian
+        The indexes of the hidden neurons wich will undergo hebbian learning.
+    indexes_anti
+        The indexes of the hidden neurons wich will undergo anti-hebbian
+        learning.
+    Return
+    -----
+    update
+        ndarray, same shape as weight_matrix.
+    """
     update = np.zeros(weight_matrix.shape)
     for i in range(len(batch)):
 
@@ -133,7 +163,45 @@ def ivp_helper(time, array, *args):
 
 
 class CHUNeuralNetwork(TransformerMixin):
-    """
+    """Extract features from data using a biologically-inspired algorithm.
+
+    Competing Hidden Units Neural Network. A 2-layers neural network
+    that implements competition between patterns, learning unsupervised. The
+    data transformed can then be used with a second, supervised, layer. See
+    the article in the notes for a more complete explanation.
+
+    Parameters
+    ----------
+        n_hiddens:
+            the number of hidden neurons
+        delta:
+            Relative strenght of anti-hebbian learning.
+        p:
+            Exponent of the lebesgue norm used (see product function).
+        R:
+            Radius of the sphere on wich the weights will converge.
+        n_of_input_neurons:
+            the number of visible neurons (e.g. the number of features)
+        one_over_scale:
+            One over the time scale of learning.
+        k:
+            The k-th most activated hidden neuron will undergo anti-hebbian
+            learning.
+        activation_function:
+            The activation function of the hidden neurons.
+
+    Notes
+    -----
+        The name conventions for the variable is the same used in the article,
+        when possible.
+        As this network is composed of only two layers, the hidden neurons
+        aren't actually hidden, but will be in practice as this network is
+        meant to be used in conjunction with a second, supervised network that
+        will take the hidden neurons layer as its input layer.
+
+    References
+    ----------
+        doi: 10.1073/pnas.1820458116
     """
 
     def __init__(self, n_hiddens=2000, delta=0.4, p=3, R=1, scale=1, k=7,
@@ -152,6 +220,25 @@ class CHUNeuralNetwork(TransformerMixin):
                                    self.activation_function)
 
     def fit(self, X, batch_size):
+        """Fit the weigths to the data.
+
+        Intialize the matrix of weights, the put the data in minibatches and
+        update the matrix for each minibatch.
+
+        Parameters
+        ----------
+        self
+            The network itself.
+        X
+            The data to fit. Shape: (sample, feature).
+        batch_size
+            Number of elements in a batch.
+
+        Return
+        ------
+        CHUNeuralNetwork
+            The network itself.
+        """
         dims = (self.n_hiddens, len(X[0]))
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
