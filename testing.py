@@ -1,8 +1,4 @@
-"""
-Created on Sun Nov  1 17:26:42 2020
-
-@author: Ale
-"""
+"""Test public functions of CHUNeuralNetwork."""
 import CHUNeuralNetwork as CHU
 import numpy as np
 
@@ -31,11 +27,11 @@ def test_hidden_neurons_func_basic():
     batch = np.array([[-2,  3, -2],
                       [ 0, -2,  2],
                       [-2,-10,  2],
-                      [0,   1,  0]])
-    weight_matrix = np.array([[0, 1, -1],
-                              [1,-1,  9]])
+                      [ 0,  1,  0]])
+    weight_matrix = np.array([[0,  1, -1],
+                              [1, -1,  9]])
     activation_function = CHU.relu
-    
+
     result = CHU.hidden_neurons_func(batch, weight_matrix, activation_function)
     prod = weight_matrix @ batch[0]
     positive = np.where(prod < 0, 0, prod)
@@ -44,7 +40,7 @@ def test_hidden_neurons_func_basic():
 
 def test_plasticity_rule_shape():
     weight_vector = np.array([0, 1, -2, 3])
-    input_vector = np.array([ 0, 1, 0, 1])
+    input_vector = np.array([0, 1, 0, 1])
     g = -0.4
     p = 3
     one_over_scale = 1
@@ -57,15 +53,15 @@ def test_plasticity_rule_vectorized():
     batch = np.array([[-2,  3, -2],
                       [ 0, -2,  2],
                       [-2,-10,  2],
-                      [0,   1,  0]])
-    weight_matrix = np.array([[0, 1, -1],
-                              [1,-1,  9]])
+                      [ 0,  1,  0]])
+    weight_matrix = np.array([[0,  1, -1],
+                              [1, -1,  9]])
     delta = 0.4
     p = 3
     R = 1
     one_over_scale = 1
     indexes_hebbian = [0, 1, 0, 1]
-    indexes_anti = np.array([1,0,1,0])
+    indexes_anti = np.array([1 ,0, 1, 0])
     result = CHU.plasticity_rule_vectorized(weight_matrix, batch, delta, p,
                                             R, one_over_scale,
                                             indexes_hebbian, indexes_anti)
@@ -74,9 +70,10 @@ def test_plasticity_rule_vectorized():
                        [0, 0, 0],
                        [0, 0, 0]])
     result2 = CHU.plasticity_rule_vectorized(weight_matrix, batch2, delta, p,
-                                            R, one_over_scale,
-                                            indexes_hebbian, indexes_anti)
+                                             R, one_over_scale,
+                                             indexes_hebbian, indexes_anti)
     assert np.array_equal(result2, np.zeros(weight_matrix.shape))
+
 
 test_rank_finder_basic()
 test_product_shape()
@@ -84,4 +81,3 @@ test_relu_positive()
 test_plasticity_rule_shape()
 test_hidden_neurons_func_basic()
 test_plasticity_rule_vectorized()
-

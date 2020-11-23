@@ -1,3 +1,4 @@
+
 from sklearn.base import TransformerMixin
 import numpy as np
 from math import sqrt
@@ -7,12 +8,11 @@ from scipy.integrate import solve_ivp
 
 
 def rank_finder(batch, weight_matrix, activation_function, k):
-
+    """Return the indexes of the first and k-th most activated neurons."""
     hidden_neurons = hidden_neurons_func(batch, weight_matrix,
                                          activation_function)
-
     sorting = np.argsort(hidden_neurons)
-    return (sorting[:,-1], sorting[:,-k])
+    return (sorting[:, -1], sorting[:, -k])
 
 
 def product(weight_vector, input_vector, p):
@@ -21,7 +21,7 @@ def product(weight_vector, input_vector, p):
     define coefficients, the multiply the weights, coefficients, and the data
     in a single operation.
 
-    parameters
+    Parameters
     ----------
     weight_matrix
         the matrix of the synapses
@@ -35,7 +35,7 @@ def product(weight_vector, input_vector, p):
     ndarray, shape (no. of elements in the batch, no. of hidden neurons)
         the product for each hidden neuron and each data sample.
     """
-    coefficients = np.abs(weight_vector) ** (p -2)
+    coefficients = np.abs(weight_vector) ** (p - 2)
     product = weight_vector * coefficients * input_vector
     return np.sum(product)
 
@@ -54,7 +54,6 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
         the data
     first_index
         the index of the most activated neuron in weight_vector
-    
     """
     product_result = product(weight_vector, input_vector, p)
     minuend = R ** p * input_vector
@@ -70,7 +69,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
         weight_vector_1 = weight_matrix[j]
         input_vector = batch[i]
         update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p, R,
-                                    one_over_scale)
+                                     one_over_scale)
 
         j2 = indexes_anti[i]
         weight_vector_2 = weight_matrix[j2]
@@ -81,10 +80,12 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
 
 
 def relu(currents):
+    """Is the default activation function."""
     return np.where(currents < 0, 0, currents)
 
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
+    """Calculate hidden neurons activations."""
     currents = batch @ weight_matrix.T
     # ik,jk->ij
     return activation_function(currents)
@@ -116,7 +117,9 @@ def batchize(iterable, size):
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
 
+
 def ivp_helper(time, array, *args):
+    """Is a version of plasticity_rule_vectorized compatible with solve_ivp."""
     (batch, delta, p, R, one_over_scale, indexes_hebbian, indexes_anti,
      dims) = args
     matrix = np.reshape(array, dims)
@@ -124,6 +127,8 @@ def ivp_helper(time, array, *args):
                                                one_over_scale, indexes_hebbian,
                                                indexes_anti)
     return np.ravel(update_matrix)
+
+
 # %% defining the class
 
 
@@ -142,6 +147,7 @@ class CHUNeuralNetwork(TransformerMixin):
         self.activation_function = relu
 
     def transform(self, X):
+        """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix,
                                    self.activation_function)
 
@@ -151,7 +157,7 @@ class CHUNeuralNetwork(TransformerMixin):
         # The weights are initialized with a gaussian distribution.
         x = 0
         for batch in batchize(X, batch_size):
-            
+
             x += 1
             print(x)
             (indexes_hebbian, indexes_anti) = rank_finder(batch,
@@ -178,4 +184,5 @@ class CHUNeuralNetwork(TransformerMixin):
         return self
 
     def fit_transform(self, X, batch_size=2):
+        """Fit the data, then transform it."""
         return self.fit(X, batch_size).transform(X)
