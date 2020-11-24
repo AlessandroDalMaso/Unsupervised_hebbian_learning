@@ -1,15 +1,10 @@
-far girare il codice
-riscriverlo con solo 2 neuroni cambiati, con la tecnica di selezione di numpy
+iscriversi al secondo anno
+mettere le immagini in un unica
+vmin, vmax simmetrici in modo che il bianco sia lo zero.
+mattere i neuroni a 100
 fare il path di odeint
 fare lo jacobiano se necessario
-hdf5 al posto di pickle
-git
-pep 8 + se una cosa prende più linee la si separa da una linea bianca.
-informal testing
-unit testing with pyesting
 property testing with hypotesis
-run -d (?)
-breakpoints
 grappa library
 logging/eliot
 trasformata di randon

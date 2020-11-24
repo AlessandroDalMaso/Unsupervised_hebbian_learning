@@ -1,7 +1,1 @@
-iscriversi al secondo anno
-con 1e5 "float object cannot be interpreted as integer"
-ma perché serve un equazione differenziale? perché mi sono messo a implementare odeint?
-ma non è meglio tenere l'update da parte e scaricarli tutti alla fine di una epoch?
-riga strana
-dimarkov?
-docstring dei moduli?
+discutere il cprofiling

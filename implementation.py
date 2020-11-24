@@ -32,12 +32,12 @@ print(time.time()-start)
 """
 # %% MNIST database testing
 
-X_train = np.array(pd.read_hdf("database_file"))/225.
+X_train = np.array(pd.read_hdf("database_file"))/255.
 
 layer1 = chu.CHUNeuralNetwork()
 start_time = time.time()
 rng = np.random.default_rng()
-for i in range(0, 4):
+for i in range(0, 1):
     rng.shuffle(X_train)
     layer1 = layer1.fit(X_train, batch_size=50000)
 print("--- %s seconds ---" % (time.time() - start_time))
@@ -48,5 +48,5 @@ transformed = layer1.transform(X_train[0])
 for i in range(10):
     synapsys, axsyn = plt.subplots()
     image = np.reshape(layer1.weight_matrix[i], (28, 28))
-    axsyn = plt.imshow(image, cmap='bwr')
+    axsyn = plt.imshow(image, cmap='bwr') # vmin, vmax
     plt.savefig("{}".format(i))

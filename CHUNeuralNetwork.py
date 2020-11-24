@@ -23,10 +23,10 @@ def product(weight_vector, input_vector, p):
 
     Parameters
     ----------
-    weight_matrix
-        the matrix of the synapses
-    batch
-        the data
+    weight_vector
+        the vector of the synapses weights
+    input_vector
+        the data sample
     p
         the Lebesgue norm exponent
 
@@ -59,6 +59,7 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
     minuend = R ** p * input_vector
     subtrahend = product_result * weight_vector
     return g * (minuend - subtrahend) * one_over_scale
+
 
 def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
                                one_over_scale, indexes_hebbian, indexes_anti):
@@ -116,8 +117,9 @@ def relu(currents):
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
     """Calculate hidden neurons activations."""
-    currents = batch @ weight_matrix.T
-    # ik,jk->ij
+    #currents = batch @ (weight_matrix.T)
+    #currents = np.einsum("ik,jk->ij", batch, weight_matrix)
+    currents = np.einsum("ik,kj->ij", batch, weight_matrix.T)
     return activation_function(currents)
 
 
@@ -243,6 +245,7 @@ class CHUNeuralNetwork(TransformerMixin):
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
         x = 0
+        update = np.zeros(self.weight_matrix.shape)
         for batch in batchize(X, batch_size):
 
             x += 1
@@ -252,22 +255,23 @@ class CHUNeuralNetwork(TransformerMixin):
                                                           self.activation_function,
                                                           self.k)
 
-            starting_array = np.ravel(self.weight_matrix)
-            args = (batch, self.delta, self.p, self.R, self.one_over_scale,
-                    indexes_hebbian, indexes_anti, dims)
+            #starting_array = np.ravel(self.weight_matrix)
+            #args = (batch, self.delta, self.p, self.R, self.one_over_scale,
+            #        indexes_hebbian, indexes_anti, dims)
 
             #bunch = solve_ivp(ivp_helper, (0, 1e4), starting_array,
             #                  method='RK45', args=args)
 
             #update_array = bunch.y[:,-1]
             #update_matrix = np.reshape(update_array, dims)
-            update_matrix = plasticity_rule_vectorized(self.weight_matrix,
-                                                       batch, self.delta,
-                                                       self.p, self.R,
-                                                       self.one_over_scale,
-                                                       indexes_hebbian,
-                                                       indexes_anti)
-            self.weight_matrix += update_matrix
+            batch_update = plasticity_rule_vectorized(self.weight_matrix,
+                                                      batch, self.delta,
+                                                      self.p, self.R,
+                                                      self.one_over_scale,
+                                                      indexes_hebbian,
+                                                      indexes_anti)
+            update += batch_update
+        self.weight_matrix += update
         return self
 
     def fit_transform(self, X, batch_size=2):
