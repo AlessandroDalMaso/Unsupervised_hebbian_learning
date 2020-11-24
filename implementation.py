@@ -45,8 +45,13 @@ transformed = layer1.transform(X_train[0])
 
 # %% image representation
 
-for i in range(10):
+n_images = 10
+
+vmax = np.amax(layer1.weight_matrix[:n_images])
+vmin = -vmax
+
+for i in range(n_images):
     synapsys, axsyn = plt.subplots()
     image = np.reshape(layer1.weight_matrix[i], (28, 28))
-    axsyn = plt.imshow(image, cmap='bwr') # vmin, vmax
+    axsyn = plt.imshow(image, cmap='bwr', vmax=vmax, vmin=vmin)
     plt.savefig("{}".format(i))
