@@ -37,9 +37,12 @@ X_train = np.array(pd.read_hdf("database_file"))/255.
 layer1 = chu.CHUNeuralNetwork()
 start_time = time.time()
 rng = np.random.default_rng()
-for i in range(0, 1):
+x=0
+for i in range(150):
+    x+=1
     rng.shuffle(X_train)
     layer1 = layer1.fit(X_train, batch_size=50000)
+    print(x)
 print("--- %s seconds ---" % (time.time() - start_time))
 transformed = layer1.transform(X_train[0])
 
@@ -47,7 +50,7 @@ transformed = layer1.transform(X_train[0])
 
 n_images = 10
 
-vmax = np.amax(layer1.weight_matrix[:n_images])
+vmax = np.amax(np.abs(layer1.weight_matrix[:n_images]))
 vmin = -vmax
 
 for i in range(n_images):

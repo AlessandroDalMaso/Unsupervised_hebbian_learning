@@ -1,9 +1,7 @@
+controllare le dcstring
+controllare i test
+controllare lo schemino
 iscriversi al secondo anno
-mettere le immagini in un unica
-vmin, vmax simmetrici in modo che il bianco sia lo zero.
-mattere i neuroni a 100
-fare il path di odeint
-fare lo jacobiano se necessario
 property testing with hypotesis
 grappa library
 logging/eliot

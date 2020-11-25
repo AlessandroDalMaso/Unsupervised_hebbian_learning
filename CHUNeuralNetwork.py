@@ -1,3 +1,4 @@
+"""A biology-inspired data transformer."""
 
 from sklearn.base import TransformerMixin
 import numpy as np
@@ -18,22 +19,26 @@ def rank_finder(batch, weight_matrix, activation_function, k):
 def product(weight_vector, input_vector, p):
     """Multiply the inputs by the synapses weights of a single neuron.
 
-    define coefficients, the multiply the weights, coefficients, and the data
+    define coefficients, then multiply the weights, coefficients, and the data
     in a single operation.
 
     Parameters
     ----------
     weight_vector
-        the vector of the synapses weights
+        The vector of the synapses weights.
     input_vector
-        the data sample
+        The data sample.
     p
-        the Lebesgue norm exponent
+        The Lebesgue norm exponent.
 
-    return
+    Return
     ------
     ndarray, shape (no. of elements in the batch, no. of hidden neurons)
         the product for each hidden neuron and each data sample.
+
+    Notes
+    -----
+    Equation [2] of the referenced article.
     """
     coefficients = np.abs(weight_vector) ** (p - 2)
     product = weight_vector * coefficients * input_vector
@@ -41,7 +46,7 @@ def product(weight_vector, input_vector, p):
 
 
 def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
-    """Calculate the update value for a row for weight_matrix.
+    """Calculate the update value for a single row for weight_matrix.
 
     The update is zero for all but the most activated and the k-th most
     activated neuron.
@@ -94,7 +99,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
         ndarray, same shape as weight_matrix.
     """
     update = np.zeros(weight_matrix.shape)
-    for i in range(len(batch)):
+    for i in range(len(batch)): #  if there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
         weight_vector_1 = weight_matrix[j]
@@ -166,12 +171,12 @@ def ivp_helper(time, array, *args):
 
 
 class CHUNeuralNetwork(TransformerMixin):
-    """Extract features from data using a biologically-inspired algorithm.
+    """Extract features from data using a biology-inspired algorithm.
 
     Competing Hidden Units Neural Network. A 2-layers neural network
     that implements competition between patterns, learning unsupervised. The
-    data transformed can then be used with a second, supervised, layer. See
-    the article in the notes for a more complete explanation.
+    data transformed can then be used with a second, layer, supervised or not.
+    See the article referenced in the notes for a more exhaustive explanation.
 
     Parameters
     ----------
@@ -199,15 +204,14 @@ class CHUNeuralNetwork(TransformerMixin):
         when possible.
         As this network is composed of only two layers, the hidden neurons
         aren't actually hidden, but will be in practice as this network is
-        meant to be used in conjunction with a second, supervised network that
-        will take the hidden neurons layer as its input layer.
+        meant to be used in conjunction with at least another layer.
 
     References
     ----------
         doi: 10.1073/pnas.1820458116
     """
 
-    def __init__(self, n_hiddens=100, delta=0.4, p=3, R=1, scale=1, k=7,
+    def __init__(self, n_hiddens=2000, delta=0.4, p=3, R=1, scale=1, k=7,
                  activation_function=relu):
         self.n_hiddens = n_hiddens
         self.delta = delta
@@ -245,11 +249,11 @@ class CHUNeuralNetwork(TransformerMixin):
         dims = (self.n_hiddens, len(X[0]))
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
-        x = 0
+        x = 0  # TODO remove
         update = np.zeros(self.weight_matrix.shape)
         for batch in batchize(X, batch_size):
 
-            x += 1
+            x += 1  # TODO remove
             (indexes_hebbian, indexes_anti) = rank_finder(batch,
                                                           self.weight_matrix,
                                                           self.activation_function,
@@ -271,7 +275,6 @@ class CHUNeuralNetwork(TransformerMixin):
                                                       indexes_hebbian,
                                                       indexes_anti)
             update += batch_update
-            print(x)
         self.weight_matrix += update
         return self
 
