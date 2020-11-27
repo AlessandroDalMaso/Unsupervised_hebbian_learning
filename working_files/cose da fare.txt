@@ -1,4 +1,3 @@
-controllare i test
 controllare lo schemino
 iscriversi al secondo anno
 property testing with hypotesis
