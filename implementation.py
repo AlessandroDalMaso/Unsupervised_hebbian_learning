@@ -20,7 +20,7 @@ if not exists('./database_file'):
     mnist_train_dataframe = pd.DataFrame(mnist_train)
     mnist_train_dataframe.to_hdf("database_file", key="key")
 
-X_train = np.array(pd.read_hdf("database_file"))/255.
+database = np.array(pd.read_hdf("database_file"))/255.
 
 # %% toy model testing
 """
@@ -31,21 +31,19 @@ toy_network = chu.CHUNeuralNetwork(n_hiddens=10)
 toy_network.fit(a)
 print(time.time()-start)
 """
-# %% MNIST database testing
+# %% Setting up the data
 
-n_hiddens = 100
+epochs = 1
 
-layer1 = chu.CHUNeuralNetwork(n_hiddens)
+layer1 = chu.CHUNeuralNetwork(n_hiddens=100, scale=10)
 rng = np.random.default_rng()
+X_train = rng.shuffle(database)
+for i in range(epochs-1):
+    X_train = np.concatenate((X_train, rng.shuffle(database)), axis = 0)
 
-# %%
+# %% fit and transform
 
-x=0
-for i in range(1):
-    x+=1
-    rng.shuffle(X_train)
-    layer1 = layer1.fit(X_train, batch_size=50000)
-    print(x, " epochs have been processed")
+layer1 = layer1.fit(X_train, batch_size=50000)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
@@ -64,7 +62,3 @@ im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
 plt.colorbar()
 plt.savefig("image")
-
-
-
-

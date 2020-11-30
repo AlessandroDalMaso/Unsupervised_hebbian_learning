@@ -63,7 +63,8 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
     product_result = product(weight_vector, input_vector, p)
     minuend = R ** p * input_vector
     subtrahend = product_result * weight_vector
-    return g * (minuend - subtrahend) * one_over_scale
+    row_update = g * (minuend - subtrahend) * one_over_scale
+    return row_update
 
 
 def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
@@ -98,21 +99,21 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
     update
         ndarray, same shape as weight_matrix.
     """
-    update = np.zeros(weight_matrix.shape)
-    for i in range(len(batch)): #  if there's a better way, i haven't found it.
+    batch_update = np.zeros(weight_matrix.shape)
+    for i in range(len(batch)): #  If there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
         weight_vector_1 = weight_matrix[j]
         input_vector = batch[i]
-        update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p, R,
+        batch_update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p, R,
                                      one_over_scale)
 
         j2 = indexes_anti[i]
         weight_vector_2 = weight_matrix[j2]
-        update[j2] += plasticity_rule(weight_vector_2, input_vector, -delta, p,
+        batch_update[j2] += plasticity_rule(weight_vector_2, input_vector, -delta, p,
                                       R, one_over_scale)
 
-    return update
+    return batch_update
 
 
 def relu(currents):
@@ -247,6 +248,9 @@ class CHUNeuralNetwork(TransformerMixin):
             The network itself.
         """
         dims = (self.n_hiddens, len(X[0]))
+        if hasattr(self, "weight_matrix"): #  ask: is it the correct way?
+            raise Warning("fitting more than once will overwrite previous\
+                           results!")
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
         update = np.zeros(self.weight_matrix.shape)
@@ -273,6 +277,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                                       indexes_hebbian,
                                                       indexes_anti)
             update += batch_update
+        # update = update / np.amax(np.abs(update))
         self.weight_matrix += update
         return self
 
