@@ -211,7 +211,7 @@ class CHUNeuralNetwork(TransformerMixin):
         doi: 10.1073/pnas.1820458116
     """
 
-    def __init__(self, n_hiddens=2000, delta=0.4, p=3, R=1, scale=1, k=7,
+    def __init__(self, n_hiddens=100, delta=0.4, p=3, R=1, scale=1, k=7,
                  activation_function=relu):
         self.n_hiddens = n_hiddens
         self.delta = delta
@@ -249,11 +249,9 @@ class CHUNeuralNetwork(TransformerMixin):
         dims = (self.n_hiddens, len(X[0]))
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
-        x = 0  # TODO remove
         update = np.zeros(self.weight_matrix.shape)
         for batch in batchize(X, batch_size):
 
-            x += 1  # TODO remove
             (indexes_hebbian, indexes_anti) = rank_finder(batch,
                                                           self.weight_matrix,
                                                           self.activation_function,

@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import pandas as pd
 from os.path import exists
-import time
 import CHUNeuralNetwork as chu
 
 np.random.seed(1024)
@@ -21,6 +20,8 @@ if not exists('./database_file'):
     mnist_train_dataframe = pd.DataFrame(mnist_train)
     mnist_train_dataframe.to_hdf("database_file", key="key")
 
+X_train = np.array(pd.read_hdf("database_file"))/255.
+
 # %% toy model testing
 """
 start = time.time()
@@ -32,29 +33,38 @@ print(time.time()-start)
 """
 # %% MNIST database testing
 
-X_train = np.array(pd.read_hdf("database_file"))/255.
+n_hiddens = 100
 
-layer1 = chu.CHUNeuralNetwork()
-start_time = time.time()
+layer1 = chu.CHUNeuralNetwork(n_hiddens)
 rng = np.random.default_rng()
+
+# %%
+
 x=0
-for i in range(150):
+for i in range(1):
     x+=1
     rng.shuffle(X_train)
     layer1 = layer1.fit(X_train, batch_size=50000)
-    print(x)
-print("--- %s seconds ---" % (time.time() - start_time))
+    print(x, " epochs have been processed")
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
 
-n_images = 10
+counter = 0
+image=np.zeros((28*3, 28*4))
+matrix = layer1.weight_matrix.copy()
+for y in range(3):
+    for x in range(4):
+        image[y*28:(y+1)*28, x*28:(x+1)*28] = np.reshape(matrix[counter], (28,28))
+        counter += 1
 
-vmax = np.amax(np.abs(layer1.weight_matrix[:n_images]))
-vmin = -vmax
+vmax = np.amax(np.abs(image))
 
-for i in range(n_images):
-    synapsys, axsyn = plt.subplots()
-    image = np.reshape(layer1.weight_matrix[i], (28, 28))
-    axsyn = plt.imshow(image, cmap='bwr', vmax=vmax, vmin=vmin)
-    plt.savefig("{}".format(i))
+im, ax = plt.subplots()
+ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
+plt.colorbar()
+plt.savefig("image")
+
+
+
+

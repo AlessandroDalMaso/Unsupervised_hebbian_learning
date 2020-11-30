@@ -1,5 +1,2 @@
-https://en.wikipedia.org/wiki/Projection-slice_theorem
-tempi: 384s con 10 epochs, 7900 secondi con 200 epochs
-spyderr sottolinea?
-sorting[-2]?
-con tranform va l'activation function=
+
+

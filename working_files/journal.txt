@@ -54,4 +54,6 @@
 16/11/2020
 	Sto cercando di testare plsticity_rule_vectorized.
 23/11/2020
-	È da molto che non aggiorno. Non so che fine abbia fatto la sveglia. Comunque dopo aver riscritto l'intero programma finalmente sembra funzionare. Spero davvero che stavolta sia la volta buona...
+	Dopo aver riscritto l'intero programma finalmente sembra funzionare. Spero davvero che stavolta sia la volta buona...
+27/11/2020
+	È davvero la volta buona sembra, ma domani devo scegliere se laurearsi a marzo o luglio.

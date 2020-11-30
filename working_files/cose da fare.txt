@@ -1,9 +1,11 @@
-controllare lo schemino
+variare i parametri
+batch costituiti casualmente o non casualmente?
+trasformata di randon
+ripassare reti neurali
 iscriversi al secondo anno
 property testing with hypotesis
 grappa library
 logging/eliot
-trasformata di randon
 DOCUMENTATION
 numpy-style docstrings
 	short summary
