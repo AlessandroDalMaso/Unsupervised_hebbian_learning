@@ -37,13 +37,15 @@ epochs = 1
 
 layer1 = chu.CHUNeuralNetwork(n_hiddens=100, scale=10)
 rng = np.random.default_rng()
-X_train = rng.shuffle(database)
+rng.shuffle(database)
+X_train = database.copy()
 for i in range(epochs-1):
-    X_train = np.concatenate((X_train, rng.shuffle(database)), axis = 0)
+    rng.shuffle(database)
+    X_train = np.concatenate((X_train, database), axis=0)
 
 # %% fit and transform
 
-layer1 = layer1.fit(X_train, batch_size=50000)
+layer1 = layer1.fit(X_train, 50000)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation

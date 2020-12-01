@@ -1,8 +1,7 @@
 variare i parametri
-batch costituiti casualmente o non casualmente?
-trasformata di randon
-ripassare reti neurali
-iscriversi al secondo anno
+1) sul database MNIST fare le prove degli effetti con diversi batch
+2) sulle cellule vedere come classifica e quale sia la struttura delle connessioni quando ha appreso
+3) vedere come delle trasformazioni sulle immagini in input mi cambiano il successo di classificazione
 property testing with hypotesis
 grappa library
 logging/eliot

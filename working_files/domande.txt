@@ -1,2 +1,2 @@
-
+perché random.shuffle non è pura?
 
