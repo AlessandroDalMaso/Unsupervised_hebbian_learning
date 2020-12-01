@@ -1,3 +1,7 @@
+far chiamare rank_finder da plasticity_rule?
+	aggiustare schemino e docstrings
+scrivere la docstring della nuova funzione
+testare la nuova funzione
 variare i parametri
 1) sul database MNIST fare le prove degli effetti con diversi batch
 2) sulle cellule vedere come classifica e quale sia la struttura delle connessioni quando ha appreso

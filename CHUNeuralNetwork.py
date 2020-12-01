@@ -212,7 +212,7 @@ class CHUNeuralNetwork(TransformerMixin):
         doi: 10.1073/pnas.1820458116
     """
 
-    def __init__(self, n_hiddens=100, delta=0.4, p=3, R=1, scale=10, k=7,
+    def __init__(self, n_hiddens, delta=0.4, p=3, R=1, scale=1e5, k=7,
                  activation_function=relu):
         self.n_hiddens = n_hiddens
         self.delta = delta
@@ -227,7 +227,7 @@ class CHUNeuralNetwork(TransformerMixin):
         return hidden_neurons_func(X, self.weight_matrix,
                                    self.activation_function)
 
-    def fit(self, X, batch_size):
+    def fit(self, X, epochs, batch_size=None):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -247,38 +247,37 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork
             The network itself.
         """
-        dims = (self.n_hiddens, len(X[0]))
+        if batch_size is None:
+            batch_size = len(X)
         if hasattr(self, "weight_matrix"): #  ask: is it the correct way?
             raise Warning("fitting more than once will overwrite previous\
                            results!")
+
+        dims = (self.n_hiddens, len(X[0]))
         self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
-        update = np.zeros(self.weight_matrix.shape)
-        for batch in batchize(X, batch_size):
 
-            (indexes_hebbian, indexes_anti) = rank_finder(batch,
-                                                          self.weight_matrix,
-                                                          self.activation_function,
-                                                          self.k)
-
-            #starting_array = np.ravel(self.weight_matrix)
-            #args = (batch, self.delta, self.p, self.R, self.one_over_scale,
-            #        indexes_hebbian, indexes_anti, dims)
-
-            #bunch = solve_ivp(ivp_helper, (0, 1e4), starting_array,
-            #                  method='RK45', args=args)
-
-            #update_array = bunch.y[:,-1]
-            #update_matrix = np.reshape(update_array, dims)
-            batch_update = plasticity_rule_vectorized(self.weight_matrix,
-                                                      batch, self.delta,
-                                                      self.p, self.R,
-                                                      self.one_over_scale,
-                                                      indexes_hebbian,
-                                                      indexes_anti)
-            update += batch_update
-        # update = update / np.amax(np.abs(update))
-        self.weight_matrix += update
+        database = X.copy()
+        rng = np.random.default_rng()
+        for epoch in epochs:
+            rng.shuffle(database)
+            update = np.zeros(self.weight_matrix.shape)
+            for batch in batchize(database, batch_size):
+    
+                (indexes_hebbian, indexes_anti) = rank_finder(batch,
+                                                              self.weight_matrix,
+                                                              self.activation_function,
+                                                              self.k)
+    
+                batch_update = plasticity_rule_vectorized(self.weight_matrix,
+                                                          batch, self.delta,
+                                                          self.p, self.R,
+                                                          self.one_over_scale,
+                                                          indexes_hebbian,
+                                                          indexes_anti)
+                update += batch_update
+            # update = update / np.amax(np.abs(update))
+            self.weight_matrix += update
         return self
 
     def fit_transform(self, X, batch_size=2):

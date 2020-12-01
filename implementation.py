@@ -26,19 +26,16 @@ database = np.array(pd.read_hdf("database_file"))/255.
 
 # %% Setting up the data
 
-layer1 = chu.CHUNeuralNetwork(n_hiddens=100, scale=10)
+layer1 = chu.CHUNeuralNetwork(100, scale=1e4)
 
-epochs = 1
+epochs = 2
 rng = np.random.default_rng()
 rng.shuffle(database)
 X_train = database.copy()
-for i in range(epochs-1):
-    rng.shuffle(database)
-    X_train = np.concatenate((X_train, database), axis=0)
 
 # %% fit and transform
 
-layer1 = layer1.fit(X_train, 50000)
+layer1 = layer1.fit(X_train, 1)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
@@ -56,7 +53,7 @@ def put_in_shape(matrix, rows, columns, indexes):
 
 indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]    
 
-image = put_in_shape(layer1.weight_matrix.copy(), 3, 4, 28, 28, indexes)
+image = put_in_shape(layer1.weight_matrix.copy(), 3, 4, indexes)
 
 
 vmax = np.amax(np.abs(image))
@@ -65,3 +62,6 @@ im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
 plt.colorbar()
 plt.savefig("image")
+
+im2, ax2 = plt.subplots()
+ax2 = plt.plot(layer1.weight_matrix)
