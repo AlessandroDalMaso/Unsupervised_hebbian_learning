@@ -212,7 +212,7 @@ class CHUNeuralNetwork(TransformerMixin):
         doi: 10.1073/pnas.1820458116
     """
 
-    def __init__(self, n_hiddens=100, delta=0.4, p=3, R=1, scale=1, k=7,
+    def __init__(self, n_hiddens=100, delta=0.4, p=3, R=1, scale=10, k=7,
                  activation_function=relu):
         self.n_hiddens = n_hiddens
         self.delta = delta

@@ -43,15 +43,14 @@ transformed = layer1.transform(X_train[0])
 
 # %% image representation
 
-def put_in_shape(matrix, rows, columns, lenght_x, lenght_y, indexes):
+def put_in_shape(matrix, rows, columns, indexes):
     counter = 0
-    image=np.zeros((lenght_y*rows, lenght_x*columns))
+    image=np.zeros((28*rows, 28*columns))
     for y in range(rows):
         for x in range(columns):
-            shape = (lenght_x, lenght_y)
+            shape = (28, 28)
             subimage = np.reshape(matrix[indexes[counter]], shape)
-            image[y*lenght_y:(y+1)*lenght_y,
-                  x*lenght_x:(x+1)*lenght_x] = subimage
+            image[y*28:(y+1)*28, x*28:(x+1)*28] = subimage
             counter += 1
     return image
 
