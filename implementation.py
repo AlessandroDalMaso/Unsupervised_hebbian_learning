@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from os.path import exists
 import CHUNeuralNetwork as chu
+from math import sqrt
 
 np.random.seed(1024)
 
@@ -22,20 +23,12 @@ if not exists('./database_file'):
 
 database = np.array(pd.read_hdf("database_file"))/255.
 
-# %% toy model testing
-"""
-start = time.time()
-a = np.random.rand(30)
-a = np.reshape(a, (3, 10))
-toy_network = chu.CHUNeuralNetwork(n_hiddens=10)
-toy_network.fit(a)
-print(time.time()-start)
-"""
+
 # %% Setting up the data
 
-epochs = 1
-
 layer1 = chu.CHUNeuralNetwork(n_hiddens=100, scale=10)
+
+epochs = 1
 rng = np.random.default_rng()
 rng.shuffle(database)
 X_train = database.copy()
@@ -50,13 +43,22 @@ transformed = layer1.transform(X_train[0])
 
 # %% image representation
 
-counter = 0
-image=np.zeros((28*3, 28*4))
-matrix = layer1.weight_matrix.copy()
-for y in range(3):
-    for x in range(4):
-        image[y*28:(y+1)*28, x*28:(x+1)*28] = np.reshape(matrix[counter], (28,28))
-        counter += 1
+def put_in_shape(matrix, rows, columns, lenght_x, lenght_y, indexes):
+    counter = 0
+    image=np.zeros((lenght_y*rows, lenght_x*columns))
+    for y in range(rows):
+        for x in range(columns):
+            shape = (lenght_x, lenght_y)
+            subimage = np.reshape(matrix[indexes[counter]], shape)
+            image[y*lenght_y:(y+1)*lenght_y,
+                  x*lenght_x:(x+1)*lenght_x] = subimage
+            counter += 1
+    return image
+
+indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]    
+
+image = put_in_shape(layer1.weight_matrix.copy(), 3, 4, 28, 28, indexes)
+
 
 vmax = np.amax(np.abs(image))
 
