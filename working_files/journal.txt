@@ -61,3 +61,5 @@
 	luglio sia. mi sono appena accorto che fittando ogni volta sovrascrivevo weight_matrix. andiamo bene...
 01/11/2020
 	*marzo.
+02/11/2020
+	Non converge.

@@ -67,8 +67,8 @@ def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
     return row_update
 
 
-def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
-                               one_over_scale, indexes_hebbian, indexes_anti):
+def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
+                               one_over_scale, activation_function):
     """Calculate the update dW of weight_matrix.
 
     Each sample in batch updates only two rows of weight_matrix: the one
@@ -100,6 +100,9 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
         ndarray, same shape as weight_matrix.
     """
     batch_update = np.zeros(weight_matrix.shape)
+
+    (indexes_hebbian, indexes_anti) = rank_finder(batch, weight_matrix,
+                                                  activation_function, k)
     for i in range(len(batch)): #  If there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
@@ -264,17 +267,12 @@ class CHUNeuralNetwork(TransformerMixin):
             update = np.zeros(self.weight_matrix.shape)
             for batch in batchize(database, batch_size):
     
-                (indexes_hebbian, indexes_anti) = rank_finder(batch,
-                                                              self.weight_matrix,
-                                                              self.activation_function,
-                                                              self.k)
-    
                 batch_update = plasticity_rule_vectorized(self.weight_matrix,
                                                           batch, self.delta,
                                                           self.p, self.R,
+                                                          self.k,
                                                           self.one_over_scale,
-                                                          indexes_hebbian,
-                                                          indexes_anti)
+                                                          self.activation_function)
                 update += batch_update
             # update = update / np.amax(np.abs(update))
             self.weight_matrix += update
