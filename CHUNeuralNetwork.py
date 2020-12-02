@@ -112,7 +112,6 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R,
         weight_vector_2 = weight_matrix[j2]
         batch_update[j2] += plasticity_rule(weight_vector_2, input_vector, -delta, p,
                                       R, one_over_scale)
-
     return batch_update
 
 
@@ -167,7 +166,8 @@ def ivp_helper(time, array, *args):
                                                indexes_anti)
     return np.ravel(update_matrix)
 
-
+def norms(matrix, p):
+    return np.sum(np.abs(matrix) ** p, axis=1)
 # %% defining the class
 
 
@@ -259,7 +259,7 @@ class CHUNeuralNetwork(TransformerMixin):
 
         database = X.copy()
         rng = np.random.default_rng()
-        for epoch in epochs:
+        for epoch in range(epochs):
             rng.shuffle(database)
             update = np.zeros(self.weight_matrix.shape)
             for batch in batchize(database, batch_size):
@@ -278,6 +278,7 @@ class CHUNeuralNetwork(TransformerMixin):
                 update += batch_update
             # update = update / np.amax(np.abs(update))
             self.weight_matrix += update
+            print("epoch has been processed.")
         return self
 
     def fit_transform(self, X, batch_size=2):

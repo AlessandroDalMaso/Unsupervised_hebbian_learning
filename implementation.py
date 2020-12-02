@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from os.path import exists
 import CHUNeuralNetwork as chu
-from math import sqrt
 
 np.random.seed(1024)
 
@@ -26,16 +25,14 @@ database = np.array(pd.read_hdf("database_file"))/255.
 
 # %% Setting up the data
 
-layer1 = chu.CHUNeuralNetwork(100, scale=1e4)
-
-epochs = 2
 rng = np.random.default_rng()
 rng.shuffle(database)
 X_train = database.copy()
 
 # %% fit and transform
 
-layer1 = layer1.fit(X_train, 1)
+layer1 = chu.CHUNeuralNetwork(n_hiddens=100)
+layer1 = layer1.fit(X=X_train, epochs=2)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
@@ -64,4 +61,4 @@ plt.colorbar()
 plt.savefig("image")
 
 im2, ax2 = plt.subplots()
-ax2 = plt.plot(layer1.weight_matrix)
+ax2 = plt.plot(chu.norms(layer1.weight_matrix, 3))

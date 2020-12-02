@@ -1,2 +1,5 @@
 perché random.shuffle non è pura?
+argomenti di default rendono il codice più chiaro?
+problema della convergenza
+sovrascrivere o no? e se sì come fare per processare più
 
