@@ -182,8 +182,41 @@ class CHUNeuralNetwork(TransformerMixin):
     data transformed can then be used with a second, layer, supervised or not.
     See the article referenced in the notes for a more exhaustive explanation.
 
-    Parameters
+    Notes
+    -----
+        The name conventions for the variable is the same used in the article,
+        when possible.
+        As this network is composed of only two layers, the hidden neurons
+        aren't actually hidden, but will be in practice as this network is
+        meant to be used in conjunction with at least another layer.
+
+    References
     ----------
+        doi: 10.1073/pnas.1820458116
+    """
+
+    def __init__(self):
+        pass
+
+    def transform(self, X, activation_function=relu):
+        """Transform the data."""
+        return hidden_neurons_func(X, self.weight_matrix, activation_function)
+
+    def fit(self, X, epochs,  n_hiddens, delta=0.4, p=3, R=1, scale=1e5, k=7,
+                 activation_function=relu, batch_size=None):
+        """Fit the weigths to the data.
+
+        Intialize the matrix of weights, the put the data in minibatches and
+        update the matrix for each minibatch.
+
+        Parameters
+        ----------
+        self
+            The network itself.
+        X
+            The data to fit. Shape: (sample, feature).
+        batch_size
+            Number of elements in a batch.
         n_hiddens:
             the number of hidden neurons
         delta:
@@ -201,50 +234,6 @@ class CHUNeuralNetwork(TransformerMixin):
             learning.
         activation_function:
             The activation function of the hidden neurons.
-
-    Notes
-    -----
-        The name conventions for the variable is the same used in the article,
-        when possible.
-        As this network is composed of only two layers, the hidden neurons
-        aren't actually hidden, but will be in practice as this network is
-        meant to be used in conjunction with at least another layer.
-
-    References
-    ----------
-        doi: 10.1073/pnas.1820458116
-    """
-
-    def __init__(self, n_hiddens, delta=0.4, p=3, R=1, scale=1e5, k=7,
-                 activation_function=relu):
-        self.n_hiddens = n_hiddens
-        self.delta = delta
-        self.p = p
-        self.R = R
-        self.one_over_scale = 1/scale
-        self.k = k
-        self.activation_function = relu
-
-    def transform(self, X):
-        """Transform the data."""
-        return hidden_neurons_func(X, self.weight_matrix,
-                                   self.activation_function)
-
-    def fit(self, X, epochs, batch_size=None):
-        """Fit the weigths to the data.
-
-        Intialize the matrix of weights, the put the data in minibatches and
-        update the matrix for each minibatch.
-
-        Parameters
-        ----------
-        self
-            The network itself.
-        X
-            The data to fit. Shape: (sample, feature).
-        batch_size
-            Number of elements in a batch.
-
         Return
         ------
         CHUNeuralNetwork
@@ -256,8 +245,8 @@ class CHUNeuralNetwork(TransformerMixin):
             raise Warning("fitting more than once will overwrite previous\
                            results!")
 
-        dims = (self.n_hiddens, len(X[0]))
-        self.weight_matrix = np.random.normal(0, 1/sqrt(self.n_hiddens), dims)
+        dims = (n_hiddens, len(X[0]))
+        self.weight_matrix = np.random.normal(0, 1/sqrt(n_hiddens), dims)
         # The weights are initialized with a gaussian distribution.
 
         database = X.copy()
@@ -268,11 +257,10 @@ class CHUNeuralNetwork(TransformerMixin):
             for batch in batchize(database, batch_size):
     
                 batch_update = plasticity_rule_vectorized(self.weight_matrix,
-                                                          batch, self.delta,
-                                                          self.p, self.R,
-                                                          self.k,
-                                                          self.one_over_scale,
-                                                          self.activation_function)
+                                                          batch, delta, p, R,
+                                                          k,
+                                                          1/scale,
+                                                          activation_function)
                 update += batch_update
             # update = update / np.amax(np.abs(update))
             self.weight_matrix += update
