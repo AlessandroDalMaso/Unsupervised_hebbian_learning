@@ -158,17 +158,6 @@ def batchize(iterable, size):
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
 
-
-def ivp_helper(time, array, *args):
-    """Is a version of plasticity_rule_vectorized compatible with solve_ivp."""
-    (batch, delta, p, R, one_over_scale, indexes_hebbian, indexes_anti,
-     dims) = args
-    matrix = np.reshape(array, dims)
-    update_matrix = plasticity_rule_vectorized(matrix, batch, delta, p, R,
-                                               one_over_scale, indexes_hebbian,
-                                               indexes_anti)
-    return np.ravel(update_matrix)
-
 def norms(matrix, p):
     return np.sum(np.abs(matrix) ** p, axis=1)
 # %% defining the class
