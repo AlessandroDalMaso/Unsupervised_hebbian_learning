@@ -106,6 +106,8 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     for i in range(len(batch)): #  If there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
+        if j==61:
+            pass #breakpoint()
         weight_vector_1 = weight_matrix[j]
         input_vector = batch[i]
         batch_update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p, R,
@@ -158,8 +160,18 @@ def batchize(iterable, size):
     for n in range(0, lenght, size):
         yield iterable[n:min(n + size, lenght)]
 
+
 def norms(matrix, p):
+    """p-norms of vectors in a matrix."""
     return np.sum(np.abs(matrix) ** p, axis=1)
+
+def slow_down(array, update, learn_rate=0.1):
+    a = np.amax(np.abs(array))
+    u = np.amax(np.abs(update))
+    if u > a * learn_rate:
+        return update * learn_rate * a / u
+    else:
+        return update
 # %% defining the class
 
 
@@ -249,7 +261,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                                           activation_function)
                 update += batch_update
             # update = update / np.amax(np.abs(update))
-            self.weight_matrix += update
+            self.weight_matrix += slow_down(self.weight_matrix, update)
             print("epoch has been processed.")
         return self
 

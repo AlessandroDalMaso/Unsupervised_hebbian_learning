@@ -1,6 +1,5 @@
-	aggiustare docstrings
-scrivere la docstring della nuova funzione
-testare la nuova funzione
+provare a vedere se c'è convergenza con il metodo di original
+vedere un singlo scalare
 variare i parametri
 1) sul database MNIST fare le prove degli effetti con diversi batch
 2) sulle cellule vedere come classifica e quale sia la struttura delle connessioni quando ha appreso
