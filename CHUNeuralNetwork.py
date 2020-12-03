@@ -87,13 +87,13 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         Lebesgue norm exponent.
     R
         The radius of the sphere at wich the hidden neurons will converge.
+    k
+        The rank of the hidden neuron whose synapses will undergo anti-hebbian
+        learning.
     one_over_scale
         One over the time scale of learning.
-    indexes_hebbian
-        The indexes of the hidden neurons wich will undergo hebbian learning.
-    indexes_anti
-        The indexes of the hidden neurons wich will undergo anti-hebbian
-        learning.
+    activation_function:
+        The activation function of the hidden neurons.
     Return
     -----
     update
@@ -200,12 +200,8 @@ class CHUNeuralNetwork(TransformerMixin):
 
         Parameters
         ----------
-        self
-            The network itself.
         X
             The data to fit. Shape: (sample, feature).
-        batch_size
-            Number of elements in a batch.
         n_hiddens:
             the number of hidden neurons
         delta:
@@ -214,15 +210,16 @@ class CHUNeuralNetwork(TransformerMixin):
             Exponent of the lebesgue norm used (see product function).
         R:
             Radius of the sphere on wich the weights will converge.
-        n_of_input_neurons:
-            the number of visible neurons (e.g. the number of features)
-        one_over_scale:
-            One over the time scale of learning.
+        scale:
+            The learning rate.
         k:
             The k-th most activated hidden neuron will undergo anti-hebbian
             learning.
         activation_function:
             The activation function of the hidden neurons.
+        batch_size
+            Number of elements in a batch.
+
         Return
         ------
         CHUNeuralNetwork
