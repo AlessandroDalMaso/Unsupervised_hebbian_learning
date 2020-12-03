@@ -1,5 +1,4 @@
-far chiamare rank_finder da plasticity_rule?
-	aggiustare schemino e docstrings
+	aggiustare docstrings
 scrivere la docstring della nuova funzione
 testare la nuova funzione
 variare i parametri

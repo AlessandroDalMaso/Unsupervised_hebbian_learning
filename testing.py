@@ -3,7 +3,7 @@ import CHUNeuralNetwork as chu
 import numpy as np
 
 
-def test_rank_finder_shape():
+def test_ranker_shape():
     batch = np.array([[-2,  3, -2],
                       [ 0, -2,  2],
                       [-2,-10,  2],
@@ -12,8 +12,8 @@ def test_rank_finder_shape():
                               [1, -1,  9]])
     k = 2
     activation_function = chu.relu
-    (learn_hebbian, learn_anti) = chu.rank_finder(batch, weight_matrix,
-                                                  activation_function, k)
+    (learn_hebbian, learn_anti) = chu.ranker(batch, weight_matrix,
+                                             activation_function, k)
     assert learn_hebbian.shape == (4,)
     assert learn_anti.shape == (4,)
 
@@ -69,23 +69,23 @@ def test_plasticity_rule_vectorized_null():
     delta = 0.4
     p = 3
     R = 1
+    k = 2
     one_over_scale = 1
-    indexes_hebbian = [0, 1, 0, 1]
-    indexes_anti = np.array([1 ,0, 1, 0])
+    activation_function = chu.relu
     result = chu.plasticity_rule_vectorized(weight_matrix, batch, delta, p,
-                                            R, one_over_scale,
-                                            indexes_hebbian, indexes_anti)
+                                            R, k, one_over_scale,
+                                            activation_function)
     batch2 = np.array([[0, 0, 0],
                        [0, 0, 0],
                        [0, 0, 0],
                        [0, 0, 0]])
     result2 = chu.plasticity_rule_vectorized(weight_matrix, batch2, delta, p,
-                                             R, one_over_scale,
-                                             indexes_hebbian, indexes_anti)
+                                             R, k, one_over_scale,
+                                             activation_function)
     assert np.array_equal(result2, np.zeros(weight_matrix.shape))
 
 
-test_rank_finder_shape()
+test_ranker_shape()
 test_product_odd()
 test_relu_positive()
 test_hidden_neurons_func_positive()

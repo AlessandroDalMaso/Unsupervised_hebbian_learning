@@ -8,7 +8,7 @@ from scipy.integrate import solve_ivp
 # %% defining external equaltions
 
 
-def rank_finder(batch, weight_matrix, activation_function, k):
+def ranker(batch, weight_matrix, activation_function, k):
     """Return the indexes of the first and k-th most activated neurons."""
     hidden_neurons = hidden_neurons_func(batch, weight_matrix,
                                          activation_function)
@@ -101,8 +101,8 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     """
     batch_update = np.zeros(weight_matrix.shape)
 
-    (indexes_hebbian, indexes_anti) = rank_finder(batch, weight_matrix,
-                                                  activation_function, k)
+    (indexes_hebbian, indexes_anti) = ranker(batch, weight_matrix,
+                                             activation_function, k)
     for i in range(len(batch)): #  If there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
