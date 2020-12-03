@@ -38,6 +38,7 @@ transformed = layer1.transform(X_train[0])
 # %% image representation
 
 def put_in_shape(matrix, rows, columns, indexes):
+    """represent some weights"""
     counter = 0
     image=np.zeros((28*rows, 28*columns))
     for y in range(rows):
