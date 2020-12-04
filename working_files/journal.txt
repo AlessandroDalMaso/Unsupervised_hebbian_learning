@@ -63,3 +63,5 @@
 	*marzo.
 02/11/2020
 	Non converge.
+04/11/2020
+	Devo prendere come riferimeto il codice di Hopfiled, non il paper. Voglio provare asostituire le mi funzioni in quel codice per vedere se compla lo stesso.

@@ -203,8 +203,9 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
-    def fit(self, X, epochs,  n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7,
-                 activation_function=relu, batch_size=None):
+    def fit(self, X, n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7,
+                 activation_function=relu, batch_size=None,
+                 n_epoch = None, n_epochs = None):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -239,32 +240,22 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         if batch_size is None:
             batch_size = len(X)
-        if hasattr(self, "weight_matrix"): #  ask: is it the correct way?
-            raise Warning("fitting more than once will overwrite previous\
-                           results!")
+        if not hasattr(self, "weight_matrix"): #  ask: is it the correct way?
+            dims = (n_hiddens, len(X[0]))
+            self.weight_matrix = np.random.normal(0, 1/sqrt(n_hiddens), dims)
+            # The weights are initialized with a gaussian distribution.
 
-        dims = (n_hiddens, len(X[0]))
-        self.weight_matrix = np.random.normal(0, 1/sqrt(n_hiddens), dims)
-        # The weights are initialized with a gaussian distribution.
+        update = np.zeros(self.weight_matrix.shape)
+        for batch in batchize(X, batch_size):
 
-        database = X.copy()
-        rng = np.random.default_rng()
-        for epoch in range(epochs):
-            rng.shuffle(database)
-            update = np.zeros(self.weight_matrix.shape)
-            for batch in batchize(database, batch_size):
-    
-                batch_update = plasticity_rule_vectorized(self.weight_matrix,
-                                                          batch, delta, p, R,
-                                                          k,
-                                                          1/scale,
-                                                          activation_function)
-                update += batch_update
-            update = update / np.amax(np.abs(update))
-            eps0= 1e-1    # learning rate
-            eps=eps0*(1-epoch/epochs)
-            self.weight_matrix += update
-            print("epoch has been processed.")
+            batch_update = plasticity_rule_vectorized(self.weight_matrix,
+                                                      batch, delta, p, R,
+                                                      k,
+                                                      1/scale,
+                                                      activation_function)
+            update += batch_update
+        self.weight_matrix += update
+        print("epoch has been processed.")
         return self
 
     def fit_transform(self, X, batch_size=2):

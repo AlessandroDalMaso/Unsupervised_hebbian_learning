@@ -32,7 +32,7 @@ X_train = database.copy()
 # %% fit and transform
 
 layer1 = chu.CHUNeuralNetwork()
-layer1 = layer1.fit( X=X_train, epochs=2, n_hiddens=100)
+layer1 = layer1.fit( X=X_train, n_hiddens=100)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
