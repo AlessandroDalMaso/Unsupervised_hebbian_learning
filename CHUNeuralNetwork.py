@@ -165,7 +165,7 @@ def norms(matrix, p):
     """p-norms of vectors in a matrix."""
     return np.sum(np.abs(matrix) ** p, axis=1)
 
-def slow_down(array, update, learn_rate=0.1):
+def slow_down(array, update, learn_rate=0.5):
     a = np.amax(np.abs(array))
     u = np.amax(np.abs(update))
     if u > a * learn_rate:
@@ -203,7 +203,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
-    def fit(self, X, epochs,  n_hiddens, delta=0.4, p=3, R=1, scale=1e5, k=7,
+    def fit(self, X, epochs,  n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7,
                  activation_function=relu, batch_size=None):
         """Fit the weigths to the data.
 
@@ -260,8 +260,10 @@ class CHUNeuralNetwork(TransformerMixin):
                                                           1/scale,
                                                           activation_function)
                 update += batch_update
-            # update = update / np.amax(np.abs(update))
-            self.weight_matrix += slow_down(self.weight_matrix, update)
+            update = update / np.amax(np.abs(update))
+            eps0= 1e-1    # learning rate
+            eps=eps0*(1-epoch/epochs)
+            self.weight_matrix += update
             print("epoch has been processed.")
         return self
 

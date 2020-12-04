@@ -1,4 +1,4 @@
-provare a vedere se c'è convergenza con il metodo di original
+provare a sostituire in original le mie funzioni
 vedere un singlo scalare
 variare i parametri
 1) sul database MNIST fare le prove degli effetti con diversi batch
