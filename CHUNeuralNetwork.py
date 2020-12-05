@@ -110,13 +110,13 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
             pass #breakpoint()
         weight_vector_1 = weight_matrix[j]
         input_vector = batch[i]
-        batch_update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p, R,
-                                     one_over_scale)
+        batch_update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p,
+                                           R, one_over_scale)
 
         j2 = indexes_anti[i]
         weight_vector_2 = weight_matrix[j2]
-        batch_update[j2] += plasticity_rule(weight_vector_2, input_vector, -delta, p,
-                                      R, one_over_scale)
+        batch_update[j2] += plasticity_rule(weight_vector_2, input_vector,
+                                            -delta, p, R, one_over_scale)
     return batch_update
 
 
@@ -127,11 +127,15 @@ def relu(currents):
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
     """Calculate hidden neurons activations."""
-    currents = batch @ (weight_matrix.T)
+    currents = batch @ np.transpose(weight_matrix)
     #currents2 = np.einsum("ik,jk->ij", batch, weight_matrix)
     #currents3 = np.einsum("ik,kj->ij", batch, weight_matrix.T)
     # TODO explain the different behavior
     return activation_function(currents)
+
+def hidden_neurons_func_2(batch, weight_matrix, p):
+    product = weight_matrix * np.abs(weight_matrix) ** p-2
+    return batch @ (product.T)
 
 
 def batchize(iterable, size):
