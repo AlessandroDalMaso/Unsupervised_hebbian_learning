@@ -15,10 +15,8 @@ np.random.seed(1024)
 
 if not exists('./database_file'):
     mnist, y = fetch_openml('mnist_784', version=1, return_X_y=True)
-    mnist_train, mnist_test, y1, y2 = train_test_split(mnist, y,
-                                                       test_size=0.28571)
-    mnist_train_dataframe = pd.DataFrame(mnist_train)
-    mnist_train_dataframe.to_hdf("database_file", key="key")
+    mnist_dataframe = pd.DataFrame(mnist)
+    mnist_dataframe.to_hdf("database_file", key="key")
 
 database = np.array(pd.read_hdf("database_file"))/255.
 
@@ -32,11 +30,12 @@ X_train = database.copy()
 # %% fit and transform
 
 layer1 = chu.CHUNeuralNetwork()
-epochs = 150
+epochs = 50
 for epoch in range(epochs):
     rng.shuffle(X_train)
-    layer1 = layer1.fit( X=X_train, n_hiddens=100,
+    layer1 = layer1.fit( X=X_train, n_hiddens=100, batch_size=100,
                         epoch=epoch, epochs=epochs)
+    print(epoch)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
