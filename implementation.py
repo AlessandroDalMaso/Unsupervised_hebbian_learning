@@ -32,11 +32,11 @@ X_train = database.copy()
 # %% fit and transform
 
 layer1 = chu.CHUNeuralNetwork()
-epochs = 2
+epochs = 150
 for epoch in range(epochs):
     rng.shuffle(X_train)
     layer1 = layer1.fit( X=X_train, n_hiddens=100,
-                        n_epoch=epoch, n_epochs=epochs)
+                        epoch=epoch, epochs=epochs)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
@@ -54,12 +54,8 @@ def put_in_shape(matrix, rows, columns, indexes):
     return image
 
 indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]    
-
 image = put_in_shape(layer1.weight_matrix.copy(), 3, 4, indexes)
-
-
 vmax = np.amax(np.abs(image))
-
 im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
 plt.colorbar()
@@ -67,3 +63,6 @@ plt.savefig("image")
 
 im2, ax2 = plt.subplots()
 ax2 = plt.plot(chu.norms(layer1.weight_matrix, 3))
+
+im3, ax3 = plt.subplots()
+ax3 = plt.plot(np.ravel(layer1.weight_matrix))

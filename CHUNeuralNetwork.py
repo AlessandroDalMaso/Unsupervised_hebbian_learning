@@ -64,10 +64,10 @@ def hidden_neurons_func_2(batch, weight_matrix, p):
     return batch @ (product.T)
 
 
-def ranker(batch, weight_matrix, activation_function, k):
+def ranker(batch, weight_matrix, activation_function, k, p):
     """Return the indexes of the first and k-th most activated neurons."""
-    hidden_neurons = hidden_neurons_func(batch, weight_matrix,
-                                         activation_function)
+    hidden_neurons = hidden_neurons_func_2(batch, weight_matrix,
+                                         p)
     sorting = np.argsort(hidden_neurons)
     return (sorting[:, -1], sorting[:, -k])
 
@@ -158,7 +158,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     batch_update = np.zeros(weight_matrix.shape)
 
     (indexes_hebbian, indexes_anti) = ranker(batch, weight_matrix,
-                                             activation_function, k)
+                                             activation_function, k, p)
     for i in range(len(batch)): #  If there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
@@ -208,8 +208,8 @@ class CHUNeuralNetwork(TransformerMixin):
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
     def fit(self, X, n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7,
-                 activation_function=relu, batch_size=None,
-                 n_epoch = None, n_epochs = None):
+                 activation_function=relu, batch_size=None, epoch = None,
+                 epochs = None):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -244,7 +244,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         if batch_size is None:
             batch_size = len(X)
-        if not hasattr(self, "weight_matrix"): #  ask: is it the correct way?
+        if not hasattr(self, "weight_matrix"): #  TODO ask: is it the correct way?
             dims = (n_hiddens, len(X[0]))
             self.weight_matrix = np.random.normal(0, 1/sqrt(n_hiddens), dims)
             # The weights are initialized with a gaussian distribution.
@@ -258,8 +258,9 @@ class CHUNeuralNetwork(TransformerMixin):
                                                       1/scale,
                                                       activation_function)
             update += batch_update
-        self.weight_matrix += update
-        print("epoch has been processed.")
+        scaled_update = scale_update(update, epoch, epochs)
+        print(scaled_update[10][10])
+        self.weight_matrix += scale_update(update, epoch, epochs)
         return self
 
     def fit_transform(self, X, batch_size=2):
