@@ -8,6 +8,65 @@ from scipy.integrate import solve_ivp
 # %% defining external equaltions
 
 
+def norms(matrix, p):
+    """p-norms of vectors in a matrix."""
+    return np.sum(np.abs(matrix) ** p, axis=1)
+
+
+def batchize(iterable, size):
+    """Put iterables in batches.
+
+    Returns a new iterable wich yelds an array of the argument iterable in a
+    list.
+
+    Parameters
+    ----------
+    iterable:
+        the iterable to be batchized.
+    size:
+        the number of elements in a batch.
+
+    Return
+    ------
+    iterable
+        of wich each element is an n-sized list of the argument iterable.
+
+    Notes
+    -----
+    credit: https://stackoverflow.com/users/3868326/kmaschta
+    """
+    lenght = len(iterable)
+    for n in range(0, lenght, size):
+        yield iterable[n:min(n + size, lenght)]
+
+
+def slow_down(array, update, learn_rate=0.5):
+    a = np.amax(np.abs(array))
+    u = np.amax(np.abs(update))
+    if u > a * learn_rate:
+        return update * learn_rate * a / u
+    else:
+        return update
+
+
+def relu(currents):
+    """Is the default activation function."""
+    return np.where(currents < 0, 0, currents)
+
+def hidden_neurons_func(batch, weight_matrix, activation_function):
+    """Calculate hidden neurons activations."""
+    currents = batch @ np.transpose(weight_matrix)
+    #currents2 = np.einsum("ik,jk->ij", batch, weight_matrix)
+    #currents3 = np.einsum("ik,kj->ij", batch, weight_matrix.T)
+    # TODO explain the different behavior
+    return activation_function(currents)
+
+
+def hidden_neurons_func_2(batch, weight_matrix, p):
+    product = weight_matrix * np.abs(weight_matrix) ** p-2
+    return batch @ (product.T)
+
+
 def ranker(batch, weight_matrix, activation_function, k):
     """Return the indexes of the first and k-th most activated neurons."""
     hidden_neurons = hidden_neurons_func(batch, weight_matrix,
@@ -120,62 +179,6 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     return batch_update
 
 
-def relu(currents):
-    """Is the default activation function."""
-    return np.where(currents < 0, 0, currents)
-
-
-def hidden_neurons_func(batch, weight_matrix, activation_function):
-    """Calculate hidden neurons activations."""
-    currents = batch @ np.transpose(weight_matrix)
-    #currents2 = np.einsum("ik,jk->ij", batch, weight_matrix)
-    #currents3 = np.einsum("ik,kj->ij", batch, weight_matrix.T)
-    # TODO explain the different behavior
-    return activation_function(currents)
-
-def hidden_neurons_func_2(batch, weight_matrix, p):
-    product = weight_matrix * np.abs(weight_matrix) ** p-2
-    return batch @ (product.T)
-
-
-def batchize(iterable, size):
-    """Put iterables in batches.
-
-    Returns a new iterable wich yelds an array of the argument iterable in a
-    list.
-
-    Parameters
-    ----------
-    iterable:
-        the iterable to be batchized.
-    size:
-        the number of elements in a batch.
-
-    Return
-    ------
-    iterable
-        of wich each element is an n-sized list of the argument iterable.
-
-    Notes
-    -----
-    credit: https://stackoverflow.com/users/3868326/kmaschta
-    """
-    lenght = len(iterable)
-    for n in range(0, lenght, size):
-        yield iterable[n:min(n + size, lenght)]
-
-
-def norms(matrix, p):
-    """p-norms of vectors in a matrix."""
-    return np.sum(np.abs(matrix) ** p, axis=1)
-
-def slow_down(array, update, learn_rate=0.5):
-    a = np.amax(np.abs(array))
-    u = np.amax(np.abs(update))
-    if u > a * learn_rate:
-        return update * learn_rate * a / u
-    else:
-        return update
 # %% defining the class
 
 
