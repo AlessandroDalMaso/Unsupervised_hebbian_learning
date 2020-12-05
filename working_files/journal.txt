@@ -65,3 +65,5 @@
 	Non converge.
 04/11/2020
 	Devo prendere come riferimeto il codice di Hopfiled, non il paper. Voglio provare asostituire le mi funzioni in quel codice per vedere se compla lo stesso.
+05/12/2020
+	Ho scoperto che anche il codice originale non converge se le batch sono troppo grandi...
