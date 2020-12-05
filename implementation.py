@@ -33,9 +33,10 @@ X_train = database.copy()
 
 layer1 = chu.CHUNeuralNetwork()
 epochs = 2
-for epoch in range(2):
+for epoch in range(epochs):
     rng.shuffle(X_train)
-    layer1 = layer1.fit( X=X_train, n_hiddens=100)
+    layer1 = layer1.fit( X=X_train, n_hiddens=100,
+                        n_epoch=epoch, n_epochs=epochs)
 transformed = layer1.transform(X_train[0])
 
 # %% image representation
