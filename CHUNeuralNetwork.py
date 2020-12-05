@@ -40,13 +40,10 @@ def batchize(iterable, size):
         yield iterable[n:min(n + size, lenght)]
 
 
-def slow_down(array, update, learn_rate=0.5):
-    a = np.amax(np.abs(array))
-    u = np.amax(np.abs(update))
-    if u > a * learn_rate:
-        return update * learn_rate * a / u
-    else:
-        return update
+def scale_update(update, epoch, epochs, learn_rate=0.2):
+    max_norm = np.amax(np.abs(update))
+    esp = learn_rate*(1-epoch/epochs)
+    return esp*update/max_norm
 
 
 def relu(currents):
