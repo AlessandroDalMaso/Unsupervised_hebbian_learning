@@ -61,7 +61,7 @@ def hidden_neurons_func(batch, weight_matrix, activation_function):
 
 def hidden_neurons_func_2(batch, weight_matrix, p):
     product = weight_matrix * np.abs(weight_matrix) ** p-2
-    return batch @ (product.T)
+    return product @ (batch.T)
 
 
 def ranker(batch, weight_matrix, activation_function, k, p):
