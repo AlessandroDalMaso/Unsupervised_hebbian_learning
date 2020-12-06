@@ -1,6 +1,1 @@
-argomenti di default rendono il codice più chiaro?
-problema della convergenza
-problema del debugger
-sovrascrivere o no? e se sì come fare per processare più
-come posso far funzionare il lazy approach con quello che dobbiamo fare?
-spostare tutti gli attributi dll'init a fit?
+come faccio a fare testing di argomenti al dfi fuori di una funzione? perché delta is not defined?

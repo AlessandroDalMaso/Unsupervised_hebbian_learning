@@ -67,3 +67,5 @@
 	Devo prendere come riferimeto il codice di Hopfiled, non il paper. Voglio provare asostituire le mi funzioni in quel codice per vedere se compla lo stesso.
 05/12/2020
 	Ho scoperto che anche il codice originale non converge se le batch sono troppo grandi...
+06/12/2020
+	Cercando di sostituire le mie funzioni allo script originale ho già scoperto un paio di bug.

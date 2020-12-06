@@ -33,7 +33,7 @@ layer1 = chu.CHUNeuralNetwork()
 epochs = 50
 for epoch in range(epochs):
     rng.shuffle(X_train)
-    layer1 = layer1.fit( X=X_train, n_hiddens=100, batch_size=100,
+    layer1 = layer1.fit( X=X_train, n_hiddens=100, p=2, batch_size=100,
                         epoch=epoch, epochs=epochs)
     print(epoch)
 transformed = layer1.transform(X_train[0])
