@@ -40,7 +40,7 @@ def batchize(iterable, size):
         yield iterable[n:min(n + size, lenght)]
 
 
-def scale_update(update, epoch, epochs, learn_rate=0.2):
+def scale_update(update, epoch, epochs, learn_rate):
     max_norm = np.amax(np.abs(update))
     esp = learn_rate*(1-epoch/epochs)
     return esp*update/max_norm
@@ -208,7 +208,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
-    def fit(self, X, n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7,
+    def fit(self, X, n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7, learn_rate=0.02,
                  activation_function=relu, batch_size=None, epoch = None,
                  epochs = None):
         """Fit the weigths to the data.
@@ -259,7 +259,7 @@ class CHUNeuralNetwork(TransformerMixin):
                                                       1/scale,
                                                       activation_function)
             update += batch_update
-        scaled_update = scale_update(update, epoch, epochs)
+        scaled_update = scale_update(update, epoch, epochs, learn_rate)
         print(scaled_update[10][10])
         self.weight_matrix += scale_update(update, epoch, epochs)
         return self
