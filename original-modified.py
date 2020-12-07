@@ -11,7 +11,7 @@ rng = np.random.default_rng(1024)
 M = np.array(pd.read_hdf("database_file"))/255.
 
 N=784 # no. of input features
-Ns = 60000
+Ns = len(M)
 
 # %%
 

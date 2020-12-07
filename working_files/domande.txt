@@ -1,1 +1,2 @@
 come faccio a fare testing di argomenti al dfi fuori di una funzione? perché delta is not defined?
+come non confondersi tra argomenti chiamati e di default?
