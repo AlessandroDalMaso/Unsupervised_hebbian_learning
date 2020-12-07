@@ -69,3 +69,6 @@
 	Ho scoperto che anche il codice originale non converge se le batch sono troppo grandi...
 06/12/2020
 	Cercando di sostituire le mie funzioni allo script originale ho già scoperto un paio di bug.
+07/12/2020
+	Manca poco allo scoprire la differenza tra i due script. Ho già una versione che funziona usando plasticity_rule_vectorized.
+	Manca poco allo scoprire la differenza tra i due script. Ho già una versione che funziona usando plasticity_rule_vectorized.

@@ -26,12 +26,22 @@ X_train = np.array(pd.read_hdf("database_file"))/255.
 layer1 = chu.CHUNeuralNetwork()
 epochs = 50
 rng = np.random.default_rng(1024)
+
+
+
+
+
 for epoch in range(epochs):
     rng.shuffle(X_train)
     layer1 = layer1.fit( X=X_train, n_hiddens=100, p=2, k=2, batch_size=50,
                         epoch=epoch, epochs=epochs)
     print(epoch)
-transformed = layer1.transform(X_train[0])
+
+
+
+
+
+
 
 # %% image representation
 
