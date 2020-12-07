@@ -1,11 +1,14 @@
-from sklearn.datasets import fetch_openml
+
+
 import numpy as np
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-import CHUNeuralNetwork as chu
 import pandas as pd
+from os.path import exists
+import CHUNeuralNetwork as chu
 
 np.random.seed(1024)
-rng = np.random.default_rng(1024)
 
 
 M = np.array(pd.read_hdf("database_file"))/255.
@@ -50,8 +53,7 @@ fig=plt.figure(figsize=(12.9,10))
 
 synapses = np.random.normal(0, sigma, (hid, N)) # init weights
 for nep in range(Nep): # epoch for cycle
-    eps=eps0*(1-nep/Nep) # so the deviation get smaller and smaller?
-    
+
     M=M[np.random.permutation(Ns),:] # random permutation of data
     for i in range(Ns//Num): # batch for cycle
         inputs=np.transpose(M[i*Num:(i+1)*Num,:]) # transposed
@@ -81,11 +83,9 @@ for nep in range(Nep): # epoch for cycle
         """
         my_ds = chu.plasticity_rule_vectorized(synapses, inputs.T, delta, p, 1, k,
                                1, activation_function=None)
+
         update = chu.scale_update(my_ds, nep, Nep, learn_rate=0.02)
         
-        nc=np.amax(np.absolute(my_ds))
-        if nc<prec:
-            nc=prec
         synapses += update
     print(nep)
         

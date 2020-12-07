@@ -262,7 +262,7 @@ class CHUNeuralNetwork(TransformerMixin):
             update += batch_update
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         print(scaled_update[10][10])
-        self.weight_matrix += scale_update(update, epoch, epochs)
+        self.weight_matrix += scaled_update
         return self
 
     def fit_transform(self, X, batch_size=2):

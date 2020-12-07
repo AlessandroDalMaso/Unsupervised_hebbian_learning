@@ -18,22 +18,17 @@ if not exists('./database_file'):
     mnist_dataframe = pd.DataFrame(mnist)
     mnist_dataframe.to_hdf("database_file", key="key")
 
-database = np.array(pd.read_hdf("database_file"))/255.
+X_train = np.array(pd.read_hdf("database_file"))/255.
 
-
-# %% Setting up the data
-
-rng = np.random.default_rng()
-rng.shuffle(database)
-X_train = database.copy()
 
 # %% fit and transform
 
 layer1 = chu.CHUNeuralNetwork()
 epochs = 50
+rng = np.random.default_rng(1024)
 for epoch in range(epochs):
     rng.shuffle(X_train)
-    layer1 = layer1.fit( X=X_train, n_hiddens=100, p=2, batch_size=50,
+    layer1 = layer1.fit( X=X_train, n_hiddens=100, p=2, k=2, batch_size=50,
                         epoch=epoch, epochs=epochs)
     print(epoch)
 transformed = layer1.transform(X_train[0])
