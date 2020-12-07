@@ -38,7 +38,7 @@ Ky=10 # draw parameter
 hid=Kx*Ky    # number of hidden units that are displayed in Ky by Kx array
 sigma=1.0 # init weight standard deviation
 Nep=20      # number of epochs
-Num=99      # size of the minibatch
+Num=50      # size of the minibatch
 prec=1e-30 # safety nonzero division parameter
 delta=0.4    # Strength of the anti-hebbian learning
 p=2.0        # Lebesgue norm of the weights
@@ -89,5 +89,5 @@ for nep in range(Nep): # epoch for cycle
         synapses += update
     print(nep)
         
-    draw_weights(synapses, Kx, Ky)
+draw_weights(synapses, Kx, Ky)
 

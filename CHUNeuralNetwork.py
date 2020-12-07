@@ -247,8 +247,9 @@ class CHUNeuralNetwork(TransformerMixin):
             batch_size = len(X)
         if not hasattr(self, "weight_matrix"): #  TODO ask: is it the correct way?
             dims = (n_hiddens, len(X[0]))
-            self.weight_matrix = np.random.normal(0, 1/sqrt(n_hiddens), dims)
+            self.weight_matrix = np.random.normal(0, 1, dims)
             # The weights are initialized with a gaussian distribution.
+            # TODO discuss initialization
 
         update = np.zeros(self.weight_matrix.shape)
         for batch in batchize(X, batch_size):
