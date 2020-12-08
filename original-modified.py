@@ -23,8 +23,8 @@ X_train = np.array(pd.read_hdf("database_file"))/255.
 
 
 # %%
-Ns=len(X_train)
-N = 784
+Ns = len(X_train)
+N = len(X_train[0])
 eps0=0.02    # learning rate
 Kx=10 # draw parameter
 Ky=10 # draw parameter
@@ -44,8 +44,8 @@ synapses = np.random.normal(0, sigma, (hid, N)) # init weights
 
 for nep in range(Nep):
     rng.shuffle(X_train)
-    for i in range(Ns//Num):
-        inputs=np.transpose(X_train[i*Num:(i+1)*Num,:])
+    for batch in chu.batchize(X_train, Num):
+        inputs = batch.T
         my_ds = chu.plasticity_rule_vectorized(synapses, inputs.T, delta, p, 1, k,
                                    1, activation_function=None)
     
