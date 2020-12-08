@@ -24,7 +24,7 @@ X_train = np.array(pd.read_hdf("database_file"))/255.
 # %% fit and transform
 
 layer1 = chu.CHUNeuralNetwork()
-epochs = 20
+epochs = 150
 
 
 
