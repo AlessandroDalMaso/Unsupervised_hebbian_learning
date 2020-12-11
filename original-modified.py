@@ -30,7 +30,7 @@ Kx=10 # draw parameter
 Ky=10 # draw parameter
 hid=Kx*Ky    # number of hidden units that are displayed in Ky by Kx array
 sigma=1.0 # init weight standard deviation
-Nep=20      # number of epochs
+Nep=160      # number of epochs
 Num=99      # size of the minibatch
 prec=1e-30 # safety nonzero division parameter
 delta=0.4    # Strength of the anti-hebbian learning
@@ -45,9 +45,10 @@ synapses = np.random.normal(0, sigma, (hid, N)) # init weights
 for nep in range(Nep):
     rng.shuffle(X_train)
     for batch in chu.batchize(X_train, Num):
-        inputs = batch.T
-        my_ds = chu.plasticity_rule_vectorized(synapses, inputs.T, delta, p, 1, k,
-                                   1, activation_function=None)
+        my_ds = chu.plasticity_rule_vectorized(weight_matrix=synapses,
+                                               batch=batch, delta=delta, p=p,
+                                               R=1, k=2, one_over_scale=1,
+                                               activation_function=chu.relu)
     
         update = chu.scale_update(my_ds, nep, Nep, learn_rate=0.02)
         

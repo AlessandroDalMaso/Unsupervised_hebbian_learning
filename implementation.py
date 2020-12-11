@@ -11,6 +11,7 @@ import CHUNeuralNetwork as chu
 np.random.seed(1024)
 rng = np.random.default_rng(1024)
 
+
 # %% loading and splitting the MNIST dataset
 
 if not exists('./database_file'):
