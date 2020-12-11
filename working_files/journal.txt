@@ -71,4 +71,5 @@
 	Cercando di sostituire le mie funzioni allo script originale ho già scoperto un paio di bug.
 07/12/2020
 	Manca poco allo scoprire la differenza tra i due script. Ho già una versione che funziona usando plasticity_rule_vectorized.
-	Manca poco allo scoprire la differenza tra i due script. Ho già una versione che funziona usando plasticity_rule_vectorized.
+08/12/2020
+	Ho capito: la versione che funziona aggiorna la matrice ad ogni minibatch. Ma perché ottengo dei risultati diversi con 50 batch e 150^ ma soprattutto, perché quelli con 150 batch sono peggiori? Anzi, forse lo so: per via della normalizzazione che mi sballa tutto l'algoritmo.

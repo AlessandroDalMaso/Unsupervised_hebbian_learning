@@ -1,4 +1,4 @@
-provare a sostituire in original le mie funzioni
+hidden_neurons_func: girare la matrice e (togliere l'activation???)
 vedere un singlo scalare
 variare i parametri
 1) sul database MNIST fare le prove degli effetti con diversi batch

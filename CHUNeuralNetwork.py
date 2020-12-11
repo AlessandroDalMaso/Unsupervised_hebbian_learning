@@ -52,7 +52,7 @@ def relu(currents):
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
     """Calculate hidden neurons activations."""
-    currents = batch @ np.transpose(weight_matrix)
+    currents = weight_matrix @ batch.T
     #currents2 = np.einsum("ik,jk->ij", batch, weight_matrix)
     #currents3 = np.einsum("ik,kj->ij", batch, weight_matrix.T)
     # TODO explain the different behavior
@@ -67,9 +67,8 @@ def hidden_neurons_func_2(batch, weight_matrix, p):
 
 def ranker(batch, weight_matrix, activation_function, k, p):
     """Return the indexes of the first and k-th most activated neurons."""
-    hidden_neurons = hidden_neurons_func_2(batch, weight_matrix,
-                                         p)
-    sorting = np.argsort(hidden_neurons)
+    hidden_neurons = hidden_neurons_func_2(batch, weight_matrix, p)
+    sorting = np.argsort(hidden_neurons) # todo CHOOSE
     return (sorting[:, -1], sorting[:, -k]) # dim i
 
 

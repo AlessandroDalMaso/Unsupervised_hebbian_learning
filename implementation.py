@@ -24,7 +24,7 @@ X_train = np.array(pd.read_hdf("database_file"))/255.
 # %% fit and transform
 
 layer1 = chu.CHUNeuralNetwork()
-epochs = 150
+epochs = 120
 
 
 
@@ -45,8 +45,10 @@ for epoch in range(epochs):
 
 # %% image representation
 
-def put_in_shape(matrix, rows, columns, indexes):
+def put_in_shape(matrix, rows, columns, indexes=None):
     """represent some weights"""
+    if indexes is None:
+        indexes = range(len(matrix))
     counter = 0
     image=np.zeros((28*rows, 28*columns))
     for y in range(rows):
@@ -57,8 +59,7 @@ def put_in_shape(matrix, rows, columns, indexes):
             counter += 1
     return image
 
-indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]    
-image = put_in_shape(layer1.weight_matrix.copy(), 3, 4, indexes)
+image = put_in_shape(layer1.weight_matrix.copy(), 10, 10)
 vmax = np.amax(np.abs(image))
 im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
