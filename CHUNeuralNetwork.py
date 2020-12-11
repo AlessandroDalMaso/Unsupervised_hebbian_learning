@@ -12,31 +12,7 @@ def norms(matrix, p):
     return np.sum(np.abs(matrix) ** p, axis=1)
 
 
-def batchize(iterable, size):
-    """Put iterables in batches.
 
-    Returns a new iterable wich yelds an array of the argument iterable in a
-    list.
-
-    Parameters
-    ----------
-    iterable:
-        the iterable to be batchized.
-    size:
-        the number of elements in a batch.
-
-    Return
-    ------
-    iterable
-        of wich each element is an n-sized list of the argument iterable.
-
-    Notes
-    -----
-    credit: https://stackoverflow.com/users/3868326/kmaschta
-    """
-    lenght = len(iterable)
-    for n in range(0, lenght, size):
-        yield iterable[n:min(n + size, lenght)]
 
 
 def scale_update(update, epoch, epochs, learn_rate):
@@ -154,25 +130,23 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     update
         ndarray, same shape as weight_matrix.
     """
-    batch_update = np.zeros(weight_matrix.shape)
+    update = np.zeros(weight_matrix.shape)
 
     (indexes_hebbian, indexes_anti) = ranker(batch, weight_matrix,
                                              activation_function, k, p)
     for i in range(len(batch)): #  If there's a better way, i haven't found it.
 
         j = indexes_hebbian[i]
-        if j==61:
-            pass #breakpoint()
         weight_vector_1 = weight_matrix[j]
         input_vector = batch[i]
-        batch_update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p,
-                                           R, one_over_scale)
+        update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p,
+                                     R, one_over_scale)
 
         j2 = indexes_anti[i]
         weight_vector_2 = weight_matrix[j2]
-        batch_update[j2] += plasticity_rule(weight_vector_2, input_vector,
-                                            -delta, p, R, one_over_scale)
-    return batch_update
+        update[j2] += plasticity_rule(weight_vector_2, input_vector,
+                                      -delta, p, R, one_over_scale)
+    return update
 
 
 # %% defining the class
@@ -206,7 +180,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
-    def fit(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
+    def fit(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate,
                  activation_function, batch_size, epoch,
                  epochs):
         """Fit the weigths to the data.
@@ -242,17 +216,18 @@ class CHUNeuralNetwork(TransformerMixin):
             The network itself.
         """
         if not hasattr(self, "weight_matrix"): #  TODO ask: is it the correct way?
-            dims = (n_hiddens, len(X[0]))
+            dims = (n_hiddens, len(batch[0]))
             self.weight_matrix = np.random.normal(0, 1, dims) # TODO sigma
             # The weights are initialized with a gaussian distribution.
+        else:
+            print(np.amax(np.abs(self.weight_matrix)))
 
-        for batch in batchize(X, batch_size):
 
-            update = plasticity_rule_vectorized(self.weight_matrix,
-                                                batch, delta, p, R, k, 1/scale,
-                                                activation_function)
-            scaled_update = scale_update(update, epoch, epochs, learn_rate)
-            self.weight_matrix += scaled_update
+        update = plasticity_rule_vectorized(self.weight_matrix,
+                                            batch, delta, p, R, k, 1/scale,
+                                            activation_function)
+        scaled_update = scale_update(update, epoch, epochs, learn_rate)
+        self.weight_matrix += scaled_update
         return self
 
     def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,

@@ -28,13 +28,38 @@ layer1 = chu.CHUNeuralNetwork()
 epochs = 2
 
 
+def batchize(iterable, batch_size):
+    """Put iterables in batches.
 
+    Returns a new iterable wich yelds an array of the argument iterable in a
+    list.
+
+    Parameters
+    ----------
+    iterable:
+        the iterable to be batchized.
+    size:
+        the number of elements in a batch.
+
+    Return
+    ------
+    iterable
+        of wich each element is an n-sized list of the argument iterable.
+
+    Notes
+    -----
+    credit: https://stackoverflow.com/users/3868326/kmaschta
+    """
+    lenght = len(iterable)
+    for n in range(0, lenght, batch_size):
+        yield iterable[n:min(n + batch_size, lenght)]
 
 
 
 for epoch in range(epochs):
     rng.shuffle(X_train)
-    layer1 = layer1.fit( X=X_train, n_hiddens=100, delta=0.4, p=2, R=1, scale=1, k=2, learn_rate=0.02, activation_function=chu.relu, batch_size=99, epoch=epoch, epochs=epochs)
+    for batch in batchize(X_train, batch_size=99):
+        layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1, scale=1, k=2, learn_rate=0.02, activation_function=chu.relu, batch_size=99, epoch=epoch, epochs=epochs)
     print(epoch)
 
 
