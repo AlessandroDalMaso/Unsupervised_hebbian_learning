@@ -51,7 +51,7 @@ def relu(currents):
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
     """Calculate hidden neurons activations."""
-    currents = weight_matrix @ batch.T
+    currents = batch @ weight_matrix.T
     #currents2 = np.einsum("ik,jk->ij", batch, weight_matrix)
     #currents3 = np.einsum("ik,kj->ij", batch, weight_matrix.T)
     # TODO explain the different behavior
@@ -243,18 +243,14 @@ class CHUNeuralNetwork(TransformerMixin):
         """
         if not hasattr(self, "weight_matrix"): #  TODO ask: is it the correct way?
             dims = (n_hiddens, len(X[0]))
-            self.weight_matrix = np.random.normal(0, 1, dims)
+            self.weight_matrix = np.random.normal(0, 1, dims) # TODO sigma
             # The weights are initialized with a gaussian distribution.
 
-        update = np.zeros(self.weight_matrix.shape)
         for batch in batchize(X, batch_size):
 
-            batch_update = plasticity_rule_vectorized(self.weight_matrix,
-                                                      batch, delta, p, R,
-                                                      k,
-                                                      1/scale,
-                                                      activation_function)
-            update += batch_update
+            update = plasticity_rule_vectorized(self.weight_matrix,
+                                                batch, delta, p, R, k, 1/scale,
+                                                activation_function)
             scaled_update = scale_update(update, epoch, epochs, learn_rate)
             self.weight_matrix += scaled_update
         return self
