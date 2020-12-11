@@ -1,4 +1,1 @@
-come faccio a fare testing di argomenti al dfi fuori di una funzione? perché delta is not defined?
-come non confondersi tra argomenti chiamati e di default?
-non può essere un fattore di scala
-HIDDEN_NEURONS_FUNC
+e se invece di prendere 100 emelenti e processare tutto il datrabase prendessi 100 elementi a caso e ripetessi?
