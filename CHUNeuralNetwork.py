@@ -2,7 +2,6 @@
 
 from sklearn.base import TransformerMixin
 import numpy as np
-from math import sqrt
 from scipy.integrate import solve_ivp
 
 # %% defining external equaltions
@@ -68,7 +67,7 @@ def hidden_neurons_func_2(batch, weight_matrix, p):
 def ranker(batch, weight_matrix, activation_function, k, p):
     """Return the indexes of the first and k-th most activated neurons."""
     hidden_neurons = hidden_neurons_func_2(batch, weight_matrix, p)
-    sorting = np.argsort(hidden_neurons) # todo CHOOSE
+    sorting = np.argsort(hidden_neurons)
     return (sorting[:, -1], sorting[:, -k]) # dim i
 
 
@@ -207,9 +206,9 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
-    def fit(self, X, n_hiddens, delta=0.4, p=3, R=1, scale=1, k=7, learn_rate=0.02,
-                 activation_function=relu, batch_size=None, epoch = None,
-                 epochs = None):
+    def fit(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
+                 activation_function, batch_size, epoch,
+                 epochs):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -260,6 +259,9 @@ class CHUNeuralNetwork(TransformerMixin):
             self.weight_matrix += scaled_update
         return self
 
-    def fit_transform(self, X, batch_size=2):
+    def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
+                 activation_function, batch_size, epoch,
+                 epochs):
         """Fit the data, then transform it."""
-        return self.fit(X, batch_size).transform(X)
+        return self.fit(X, n_hiddens, delta, p, R, scale, k, learn_rate,
+                 activation_function, batch_size, epoch,epochs).transform(X)
