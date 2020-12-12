@@ -125,8 +125,8 @@ def product(weight_vector, input_vector, p):
     -----
     Equation [2] of the referenced article.
     """
-    coefficients = np.abs(weight_vector) ** (p - 2)
-    product = weight_vector * coefficients * input_vector
+    sig = np.sign(weight_vector)
+    product = sig * (np.abs(weight_vector) ** p-1) * input_vector
     return np.sum(product)
 
 

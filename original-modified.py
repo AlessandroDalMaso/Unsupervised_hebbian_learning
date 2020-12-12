@@ -57,7 +57,8 @@ for epoch in range(epochs):
         """
     eps=eps0*(1-epoch/epochs)
     X_train=X_train[np.random.permutation(len(X_train)),:]
-    for batch in chu.batchize(X_train, batch_size):
+    for i in range(len(X_train)//batch_size):
+        batch=X_train[i*batch_size:(i+1)*batch_size,:]
         sig=np.sign(weight_matrix)
         product = batch @ (sig*np.absolute(weight_matrix)**(p-1)).T # (i,j)
         
