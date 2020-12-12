@@ -35,7 +35,7 @@ def hidden_neurons_func(batch, weight_matrix, activation_function):
 
 
 def hidden_neurons_func_2(batch, weight_matrix, p):
-    product = weight_matrix * np.abs(weight_matrix) ** (p - 2)
+    product = weight_matrix * np.abs(weight_matrix) ** (p - 1)
     return batch @ product.T
     # (i, k) @ (k, j) = (i, j)
 
@@ -45,6 +45,14 @@ def ranker(batch, weight_matrix, activation_function, k, p):
     hidden_neurons = hidden_neurons_func_2(batch, weight_matrix, p)
     sorting = np.argsort(hidden_neurons)
     return (sorting[:, -1], sorting[:, -k]) # dim i
+
+def g(batch, weight_matrix, k, delta):
+    hiddens = batch @ weight_matrix.T
+    sort = np.argsort(hiddens, axis=1)
+    result = np.zeros(sort.shape)
+    result[:,-1] = 1
+    result[:,-k] = -delta
+    return result
 
 
 def product(weight_vector, input_vector, p):

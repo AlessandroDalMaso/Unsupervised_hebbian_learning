@@ -1,3 +1,4 @@
+trasformarte lentamente il codice
 mettere le batch come unico ciclo interno
 fare le batch differenti (così hai una tesi)
 1) sul database MNIST fare le prove degli effetti con diversi batch

@@ -75,3 +75,5 @@
 	Ho capito: la versione che funziona aggiorna la matrice ad ogni minibatch. Ma perché ottengo dei risultati diversi con 50 batch e 150^ ma soprattutto, perché quelli con 150 batch sono peggiori? Anzi, forse lo so: per via della normalizzazione che mi sballa tutto l'algoritmo.
 10/12/2020
 	Sto cercando di capire la storia delle 150 epochs.
+11/12/2020
+	original-modified funziona, il mio codice no. e mancano 2 mesi e venti giorni alla consegna della tesi...

@@ -57,7 +57,7 @@ def batchize(iterable, batch_size):
 
 
 for epoch in range(epochs):
-    rng.shuffle(X_train)
+    X_train=X_train[np.random.permutation(len(X_train)),:]
     for batch in batchize(X_train, batch_size=99):
         layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1, scale=1, k=2, learn_rate=0.02, activation_function=chu.relu, batch_size=99, epoch=epoch, epochs=epochs)
     print(epoch)

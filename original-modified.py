@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from os.path import exists
 import CHUNeuralNetwork as chu
+from time import time
 
 np.random.seed(1024)
 rng = np.random.default_rng(1024)
@@ -22,16 +23,15 @@ if not exists('./database_file'):
 X_train = np.array(pd.read_hdf("database_file"))/255.
 
 
+
 # %%
-Ns = len(X_train)
-N = len(X_train[0])
 eps0=0.02    # learning rate
 Kx=10 # draw parameter
 Ky=10 # draw parameter
-hid=Kx*Ky    # number of hidden units that are displayed in Ky by Kx array
+hiddens=Kx*Ky    # number of hidden units that are displayed in Ky by Kx array
 sigma=1.0 # init weight standard deviation
-Nep=160      # number of epochs
-Num=99      # size of the minibatch
+epochs=160      # number of epochs
+batch_size=99      # size of the minibatch
 prec=1e-30 # safety nonzero division parameter
 delta=0.4    # Strength of the anti-hebbian learning
 p=2.0        # Lebesgue norm of the weights
@@ -40,9 +40,10 @@ k=2          # ranking parameter, must be integer that is bigger or equal than 2
 # %%
 
 
-synapses = np.random.normal(0, sigma, (hid, N)) # init weights
-
-for nep in range(Nep):
+weight_matrix = np.random.normal(0, sigma, (hiddens, len(X_train[0]))) # init weights
+start=time()
+for epoch in range(epochs):
+    """
     rng.shuffle(X_train)
     for batch in chu.batchize(X_train, Num):
         my_ds = chu.plasticity_rule_vectorized(weight_matrix=synapses,
@@ -53,7 +54,26 @@ for nep in range(Nep):
         update = chu.scale_update(my_ds, nep, Nep, learn_rate=0.02)
         
         synapses += update
-    print(nep)
+        """
+    eps=eps0*(1-epoch/epochs)
+    X_train=X_train[np.random.permutation(len(X_train)),:]
+    for i in range(len(X_train)//batch_size):
+        batch=X_train[i*batch_size:(i+1)*batch_size,:]
+        sig=np.sign(weight_matrix)
+        product = batch @ (sig*np.absolute(weight_matrix)**(p-1)).T # (i,j)
+        
+        y=np.argsort(product)
+        g=np.zeros((batch_size, hiddens))
+        g[np.arange(batch_size),y[:,-1]]=1.0
+        g[np.arange(batch_size),y[:,-k]]=-delta
+        
+        xx=np.sum(np.multiply(g.T,product.T),1)
+        ds=np.dot(g.T,batch) - np.multiply(np.tile(xx.reshape(xx.shape[0],1),(1,len(X_train[0]))),weight_matrix)
+        
+        update = chu.scale_update(ds, epoch, epochs, eps0)
+        weight_matrix += update
+    print(epoch)
+print(time()-start)
 
 
 # %% image representation
@@ -75,5 +95,5 @@ def draw_weights(synapses, Kx, Ky):
 
 
 fig=plt.figure(figsize=(12.9,10))
-draw_weights(synapses, 10, 10)
+draw_weights(weight_matrix, 10, 10)
 

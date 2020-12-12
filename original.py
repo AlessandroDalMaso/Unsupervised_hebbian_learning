@@ -2,6 +2,7 @@ from sklearn.datasets import fetch_openml
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from time import time
 
 np.random.seed(1024)
 
@@ -35,7 +36,7 @@ Ky=10
 hid=Kx*Ky    # number of hidden units that are displayed in Ky by Kx array
 mu=0.0
 sigma=1.0
-Nep=2      # number of epochs
+Nep=10      # number of epochs
 Num=99      # size of the minibatch
 prec=1e-30
 delta=0.4    # Strength of the anti-hebbian learning
@@ -46,6 +47,7 @@ k=2          # ranking parameter, must be integer that is bigger or equal than 2
 fig=plt.figure(figsize=(12.9,10))
 
 synapses = np.random.normal(mu, sigma, (hid, N))
+start=time()
 for nep in range(Nep):
     eps=eps0*(1-nep/Nep)
     M=M[np.random.permutation(Ns),:]
@@ -67,8 +69,9 @@ for nep in range(Nep):
             nc=prec
         synapses += eps*np.true_divide(ds,nc)
     print(nep)
+    print(time()-start)
         
-    draw_weights(synapses, Kx, Ky)
+draw_weights(synapses, Kx, Ky)
 
 
 
