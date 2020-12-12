@@ -30,7 +30,7 @@ Kx=10 # draw parameter
 Ky=10 # draw parameter
 hiddens=Kx*Ky    # number of hidden units that are displayed in Ky by Kx array
 sigma=1.0 # init weight standard deviation
-epochs=160      # number of epochs
+epochs=10      # number of epochs
 batch_size=99      # size of the minibatch
 prec=1e-30 # safety nonzero division parameter
 delta=0.4    # Strength of the anti-hebbian learning
@@ -57,8 +57,7 @@ for epoch in range(epochs):
         """
     eps=eps0*(1-epoch/epochs)
     X_train=X_train[np.random.permutation(len(X_train)),:]
-    for i in range(len(X_train)//batch_size):
-        batch=X_train[i*batch_size:(i+1)*batch_size,:]
+    for batch in chu.batchize(X_train, batch_size):
         sig=np.sign(weight_matrix)
         product = batch @ (sig*np.absolute(weight_matrix)**(p-1)).T # (i,j)
         
@@ -67,7 +66,7 @@ for epoch in range(epochs):
         g[np.arange(batch_size),y[:,-1]]=1.0
         g[np.arange(batch_size),y[:,-k]]=-delta
         
-        xx=np.sum(np.multiply(g.T,product.T),1)
+        xx=np.sum(np.multiply(g,product).T,1)
         ds=np.dot(g.T,batch) - np.multiply(np.tile(xx.reshape(xx.shape[0],1),(1,len(X_train[0]))),weight_matrix)
         
         update = chu.scale_update(ds, epoch, epochs, eps0)

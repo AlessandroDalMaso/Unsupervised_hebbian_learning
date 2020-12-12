@@ -6,6 +6,46 @@ from scipy.integrate import solve_ivp
 
 # %% defining external equaltions
 
+def batchize(iterable, batch_size):
+    """Put iterables in batches.
+
+    Returns a new iterable wich yelds an array of the argument iterable in a
+    list.
+
+    Parameters
+    ----------
+    iterable:
+        the iterable to be batchized.
+    size:
+        the number of elements in a batch.
+
+    Return
+    ------
+    iterable
+        of wich each element is an n-sized list of the argument iterable.
+
+    Notes
+    -----
+    credit: https://stackoverflow.com/users/3868326/kmaschta
+    """
+    lenght = len(iterable)
+    for n in range(0, lenght, batch_size):
+        yield iterable[n:min(n + batch_size, lenght)]
+
+def put_in_shape(matrix, rows, columns, indexes=None):
+    """represent some weights"""
+    if indexes is None:
+        indexes = range(len(matrix))
+    counter = 0
+    image=np.zeros((28*rows, 28*columns))
+    for y in range(rows):
+        for x in range(columns):
+            shape = (28, 28)
+            subimage = np.reshape(matrix[indexes[counter]], shape)
+            image[y*28:(y+1)*28, x*28:(x+1)*28] = subimage
+            counter += 1
+    return image
+
 
 def norms(matrix, p):
     """p-norms of vectors in a matrix."""
@@ -16,6 +56,7 @@ def norms(matrix, p):
 
 
 def scale_update(update, epoch, epochs, learn_rate):
+    """scale the update like in the original code"""
     max_norm = np.amax(np.abs(update))
     esp = learn_rate*(1-epoch/epochs)
     return esp*update/max_norm
@@ -35,6 +76,7 @@ def hidden_neurons_func(batch, weight_matrix, activation_function):
 
 
 def hidden_neurons_func_2(batch, weight_matrix, p):
+    """Calculate hidden neurons activations. like in the original code."""
     product = weight_matrix * np.abs(weight_matrix) ** (p - 1)
     return batch @ product.T
     # (i, k) @ (k, j) = (i, j)
@@ -47,6 +89,10 @@ def ranker(batch, weight_matrix, activation_function, k, p):
     return (sorting[:, -1], sorting[:, -k]) # dim i
 
 def g(batch, weight_matrix, k, delta):
+    """Return a learning activation function for each hidden neuron.
+    
+    
+    """
     hiddens = batch @ weight_matrix.T
     sort = np.argsort(hiddens, axis=1)
     result = np.zeros(sort.shape)
