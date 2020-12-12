@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from os.path import exists
 import CHUNeuralNetwork as chu
+from time import time
 
 np.random.seed(1024)
 rng = np.random.default_rng(1024)
@@ -22,21 +23,31 @@ if not exists('./database_file'):
 X_train = np.array(pd.read_hdf("database_file"))/255.
 
 
-# %% fit and transform
+
+
+
 
 layer1 = chu.CHUNeuralNetwork()
-epochs = 2
+epochs = 10
 
 
 
 
 
 
+
+
+# %% fit and transform
+
+
+
+start = time()
 for epoch in range(epochs):
     X_train=X_train[np.random.permutation(len(X_train)),:]
     for batch in chu.batchize(X_train, batch_size=99):
         layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1, scale=1, k=2, learn_rate=0.02, activation_function=chu.relu, batch_size=99, epoch=epoch, epochs=epochs)
     print(epoch)
+print(time()-start)
 
 
 

@@ -43,35 +43,20 @@ k=2          # ranking parameter, must be integer that is bigger or equal than 2
 weight_matrix = np.random.normal(0, sigma, (hiddens, len(X_train[0]))) # init weights
 start=time()
 for epoch in range(epochs):
-    """
-    rng.shuffle(X_train)
-    for batch in chu.batchize(X_train, Num):
-        my_ds = chu.plasticity_rule_vectorized(weight_matrix=synapses,
-                                               batch=batch, delta=delta, p=p,
-                                               R=1, k=2, one_over_scale=1,
-                                               activation_function=chu.relu)
-    
-        update = chu.scale_update(my_ds, nep, Nep, learn_rate=0.02)
-        
-        synapses += update
-        """
-    eps=eps0*(1-epoch/epochs)
     X_train=X_train[np.random.permutation(len(X_train)),:]
-    for i in range(len(X_train)//batch_size):
-        batch=X_train[i*batch_size:(i+1)*batch_size,:]
+    for batch in chu.batchize(X_train, batch_size):
         sig=np.sign(weight_matrix)
         product = batch @ (sig*np.absolute(weight_matrix)**(p-1)).T # (i,j)
-        
         y=np.argsort(product)
-        g=np.zeros((batch_size, hiddens))
-        g[np.arange(batch_size),y[:,-1]]=1.0
-        g[np.arange(batch_size),y[:,-k]]=-delta
-        
-        xx=np.sum(np.multiply(g,product).T,1)
-        ds=np.dot(g.T,batch) - np.multiply(np.tile(xx.reshape(xx.shape[0],1),(1,len(X_train[0]))),weight_matrix)
-        
-        update = chu.scale_update(ds, epoch, epochs, eps0)
-        weight_matrix += update
+        update = np.zeros((hiddens, len(X_train[0])))
+        for i in range(len(batch)):
+            h = y[i,-1]
+            a = y[i,-k]
+            update[h] += batch[i] - product[i,h] * weight_matrix[h]
+            update[a] += -delta * (batch[i] - product[i,a] * weight_matrix[a]) 
+    
+        scaled_update = chu.scale_update(update, epoch, epochs, eps0)
+        weight_matrix += scaled_update
     print(epoch)
 print(time()-start)
 

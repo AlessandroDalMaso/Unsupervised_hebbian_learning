@@ -129,6 +129,9 @@ def product(weight_vector, input_vector, p):
     product = sig * (np.abs(weight_vector) ** p-1) * input_vector
     return np.sum(product)
 
+def product_v(weight_matrix, batch, p):
+    return batch @ (np.sign(weight_matrix) * np.abs(weight_matrix) ** (p-1)).T
+
 
 def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
     """Calculate the update value for a single row for weight_matrix.
@@ -184,22 +187,15 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     update
         ndarray, same shape as weight_matrix.
     """
+    product_result = product_v(weight_matrix, batch, p)
+    sorting = np.argsort(product_result)
     update = np.zeros(weight_matrix.shape)
+    for i in range(len(batch)): #  alternative: add.at()
+        h = sorting[i,-1]
+        a = sorting[i,-k]
 
-    (indexes_hebbian, indexes_anti) = ranker(batch, weight_matrix,
-                                             activation_function, k, p)
-    for i in range(len(batch)): #  If there's a better way, i haven't found it.
-
-        j = indexes_hebbian[i]
-        weight_vector_1 = weight_matrix[j]
-        input_vector = batch[i]
-        update[j] += plasticity_rule(weight_vector_1, input_vector, 1, p,
-                                     R, one_over_scale)
-
-        j2 = indexes_anti[i]
-        weight_vector_2 = weight_matrix[j2]
-        update[j2] += plasticity_rule(weight_vector_2, input_vector,
-                                      -delta, p, R, one_over_scale)
+        update[h] += batch[i] - product_result[i,h] * weight_matrix[h]
+        update[a] += -delta * (batch[i] - product_result[i,a] * weight_matrix[a]) 
     return update
 
 
@@ -273,8 +269,6 @@ class CHUNeuralNetwork(TransformerMixin):
             dims = (n_hiddens, len(batch[0]))
             self.weight_matrix = np.random.normal(0, 1, dims) # TODO sigma
             # The weights are initialized with a gaussian distribution.
-        else:
-            print(np.amax(np.abs(self.weight_matrix)))
 
 
         update = plasticity_rule_vectorized(self.weight_matrix,
