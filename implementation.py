@@ -10,17 +10,16 @@ import CHUNeuralNetwork as chu
 from time import time
 
 np.random.seed(1024)
-rng = np.random.default_rng(1024)
 
 
 # %% loading and splitting the MNIST dataset
 
-if not exists('./database_file'):
-    mnist, y = fetch_openml('mnist_784', version=1, return_X_y=True)
-    mnist_dataframe = pd.DataFrame(mnist)
-    mnist_dataframe.to_hdf("database_file", key="key")
-
-X_train = np.array(pd.read_hdf("database_file"))/255.
+if not exists('./mnist'):
+    bunch = fetch_openml('mnist_784', version=1, as_frame=True)
+    bunch.frame.to_hdf('mnist', key='key', format='table')
+database = pd.read_hdf('mnist', key='key')
+unlabeled = database.drop('class', axis=1)
+X_train = np.array(unlabeled)/255.
 
 
 
