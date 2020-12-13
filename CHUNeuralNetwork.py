@@ -100,36 +100,7 @@ def g(batch, weight_matrix, k, delta):
     return result
 
 
-def product(weight_vector, input_vector, p):
-    """Multiply the inputs by the synapses weights of a single neuron.
-
-    define coefficients, then multiply the weights, coefficients, and the data
-    in a single operation.
-
-    Parameters
-    ----------
-    weight_vector
-        The vector of the synapses weights.
-    input_vector
-        The data sample.
-    p
-        The Lebesgue norm exponent.
-
-    Return
-    ------
-    ndarray, shape (no. of elements in the batch, no. of hidden neurons)
-        the product for each hidden neuron and each data sample.
-
-    Notes
-    -----
-    Equation [2] of the referenced article.
-    """
-    sig = np.sign(weight_vector)
-    product = sig * (np.abs(weight_vector) ** p-1) * input_vector
-    return np.sum(product)
-
-
-def product_v(weight_matrix, batch, p):
+def product(weight_matrix, batch, p):
     return batch @ (np.sign(weight_matrix) * np.abs(weight_matrix) ** (p-1)).T
 
 
@@ -173,7 +144,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     update
         ndarray, same shape as weight_matrix.
     """
-    product_result = product_v(weight_matrix, batch, p)
+    product_result = product(weight_matrix, batch, p)
     sorting = np.argsort(product_result) # batch @ weight_matrix.T
     update = np.zeros(weight_matrix.shape)
     for i in range(len(batch)): #  alternative: add.at()
