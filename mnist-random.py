@@ -14,10 +14,10 @@ np.random.seed(1024)
 
 # %% loading, splitting  and normalizing the MNIST dataset
 
-if not exists('./mnist'):
+if not exists('./data/mnist'):
     bunch = fetch_openml('mnist_784', version=1, as_frame=True)
-    bunch.frame.to_hdf('mnist', key='key', format='table')
-database = pd.read_hdf('mnist', key='key')
+    bunch.frame.to_hdf('data/mnist', key='key', format='table')
+database = pd.read_hdf('data/mnist', key='key')
 unlabeled = database.drop('class', axis=1)
 X_train = np.array(unlabeled)/255.
 
@@ -57,10 +57,14 @@ vmax = np.amax(np.abs(image))
 im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
 plt.colorbar()
-plt.savefig("image")
+plt.savefig("images/mnist-random/weights_heatmap")
 
 im2, ax2 = plt.subplots()
 ax2 = plt.plot(chu.norms(layer1.weight_matrix, 3))
+plt.savefig("images/mnist-random/p-norms")
 
 im3, ax3 = plt.subplots()
 ax3 = plt.plot(np.ravel(layer1.weight_matrix))
+plt.savefig("images/mnist-random/weights_unraveled")
+
+# %% 

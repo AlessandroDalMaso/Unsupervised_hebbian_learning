@@ -4,7 +4,7 @@ from sklearn.base import TransformerMixin
 import numpy as np
 from scipy.integrate import solve_ivp
 
-# %% defining external equaltions
+# %% defining external equations
 
 
 def batchize(iterable, batch_size):
@@ -57,8 +57,8 @@ def norms(matrix, p):
 def scale_update(update, epoch, epochs, learn_rate):
     """scale the update like in the original code"""
     max_norm = np.amax(np.abs(update))
-    esp = learn_rate*(1-epoch/epochs)
-    return esp*update/max_norm
+    esp = (1-epoch/epochs)
+    return learn_rate*esp*update/max_norm
 
 
 def relu(currents):
