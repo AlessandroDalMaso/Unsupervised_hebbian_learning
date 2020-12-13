@@ -6,6 +6,7 @@ from scipy.integrate import solve_ivp
 
 # %% defining external equaltions
 
+
 def batchize(iterable, batch_size):
     """Put iterables in batches.
 
@@ -32,6 +33,7 @@ def batchize(iterable, batch_size):
     for n in range(0, lenght, batch_size):
         yield iterable[n:min(n + batch_size, lenght)]
 
+
 def put_in_shape(matrix, rows, columns, indexes=None):
     """represent some weights"""
     if indexes is None:
@@ -52,9 +54,6 @@ def norms(matrix, p):
     return np.sum(np.abs(matrix) ** p, axis=1)
 
 
-
-
-
 def scale_update(update, epoch, epochs, learn_rate):
     """scale the update like in the original code"""
     max_norm = np.amax(np.abs(update))
@@ -65,6 +64,7 @@ def scale_update(update, epoch, epochs, learn_rate):
 def relu(currents):
     """Is the default activation function."""
     return np.where(currents < 0, 0, currents)
+
 
 def hidden_neurons_func(batch, weight_matrix, activation_function):
     """Calculate hidden neurons activations."""
@@ -88,10 +88,9 @@ def ranker(batch, weight_matrix, activation_function, k, p):
     sorting = np.argsort(hidden_neurons)
     return (sorting[:, -1], sorting[:, -k]) # dim i
 
+
 def g(batch, weight_matrix, k, delta):
     """Return a learning activation function for each hidden neuron.
-    
-    
     """
     hiddens = batch @ weight_matrix.T
     sort = np.argsort(hiddens, axis=1)
@@ -129,14 +128,16 @@ def product(weight_vector, input_vector, p):
     product = sig * (np.abs(weight_vector) ** p-1) * input_vector
     return np.sum(product)
 
+
 def product_v(weight_matrix, batch, p):
     return batch @ (np.sign(weight_matrix) * np.abs(weight_matrix) ** (p-1)).T
 
 
 def plasticity_rule(weight_vector, input_vector, product_result, g, p, R, one_over_scale):
     """Equation [3] of the original article."""
-    return g * (R ** p * input_vector - product_result * weight_vector
-                ) * one_over_scale
+    minuend = R ** p * input_vector
+    subtrahend = product_result * weight_vector
+    return g * (minuend - subtrahend) * one_over_scale
     
 
 
@@ -173,7 +174,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         ndarray, same shape as weight_matrix.
     """
     product_result = product_v(weight_matrix, batch, p)
-    sorting = np.argsort(product_result)
+    sorting = np.argsort(product_result) # batch @ weight_matrix.T
     update = np.zeros(weight_matrix.shape)
     for i in range(len(batch)): #  alternative: add.at()
         h = sorting[i,-1]
@@ -186,6 +187,8 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         update[a] += plasticity_rule(weight_matrix[a], batch[i],
                                      product_result[i,a], -delta, p, R,
                                      one_over_scale)
+    return update
+
 
 # %% defining the class
 
