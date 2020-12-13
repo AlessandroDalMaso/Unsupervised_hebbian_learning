@@ -194,8 +194,8 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         h = sorting[i,-1]
         a = sorting[i,-k]
 
-        update[h] += batch[i] - product_result[i,h] * weight_matrix[h]
-        update[a] += -delta * (batch[i] - product_result[i,a] * weight_matrix[a]) 
+        update[h] += R ** p * batch[i] - product_result[i,h] * weight_matrix[h]
+        update[a] += -delta * (R ** p * batch[i] - product_result[i,a] * weight_matrix[a]) 
     return update
 
 
