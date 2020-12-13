@@ -133,26 +133,11 @@ def product_v(weight_matrix, batch, p):
     return batch @ (np.sign(weight_matrix) * np.abs(weight_matrix) ** (p-1)).T
 
 
-def plasticity_rule(weight_vector, input_vector, g, p, R, one_over_scale):
-    """Calculate the update value for a single row for weight_matrix.
-
-    The update is zero for all but the most activated and the k-th most
-    activated neuron.
-
-    Parameters
-    ----------
-    weight_vector
-        A row of weight_matrix to calculte the update for.
-    input_vector
-        the data sample
-    first_index
-        the index of the most activated neuron in weight_vector
-    """
-    product_result = product(weight_vector, input_vector, p)
-    minuend = R ** p * input_vector
-    subtrahend = product_result * weight_vector
-    row_update = g * (minuend - subtrahend) * one_over_scale
-    return row_update
+def plasticity_rule(weight_vector, input_vector, product_result, g, p, R, one_over_scale):
+    """Equation [3] of the original article."""
+    return g * (R ** p * input_vector - product_result * weight_vector
+                ) * one_over_scale
+    
 
 
 def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
@@ -194,10 +179,13 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         h = sorting[i,-1]
         a = sorting[i,-k]
 
-        update[h] += R ** p * batch[i] - product_result[i,h] * weight_matrix[h]
-        update[a] += -delta * (R ** p * batch[i] - product_result[i,a] * weight_matrix[a]) 
-    return update
+        update[h] += plasticity_rule(weight_matrix[h], batch[i],
+                                     product_result[i,h], 1, p, R,
+                                     one_over_scale)
 
+        update[a] += plasticity_rule(weight_matrix[a], batch[i],
+                                     product_result[i,a], -delta, p, R,
+                                     one_over_scale)
 
 # %% defining the class
 
