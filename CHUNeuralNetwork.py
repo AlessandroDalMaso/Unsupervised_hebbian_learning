@@ -8,30 +8,9 @@ from scipy.integrate import solve_ivp
 
 
 def batchize(iterable, batch_size):
-    """Put iterables in batches.
-
-    Returns a new iterable wich yelds an array of the argument iterable in a
-    list.
-
-    Parameters
-    ----------
-    iterable:
-        the iterable to be batchized.
-    size:
-        the number of elements in a batch.
-
-    Return
-    ------
-    iterable
-        of wich each element is an n-sized list of the argument iterable.
-
-    Notes
-    -----
-    credit: https://stackoverflow.com/users/3868326/kmaschta
-    """
-    lenght = len(iterable)
-    for n in range(0, lenght, batch_size):
-        yield iterable[n:min(n + batch_size, lenght)]
+    """Put iterables in batches."""
+    for n in range(0, len(iterable), batch_size):
+        yield iterable[n:min(n + batch_size, len(iterable))]
 
 
 def put_in_shape(matrix, rows, columns, indexes=None):
@@ -64,40 +43,6 @@ def scale_update(update, epoch, epochs, learn_rate):
 def relu(currents):
     """Is the default activation function."""
     return np.where(currents < 0, 0, currents)
-
-
-def hidden_neurons_func(batch, weight_matrix, activation_function):
-    """Calculate hidden neurons activations."""
-    currents = batch @ weight_matrix.T
-    #currents2 = np.einsum("ik,jk->ij", batch, weight_matrix)
-    #currents3 = np.einsum("ik,kj->ij", batch, weight_matrix.T)
-    # TODO explain the different behavior
-    return activation_function(currents)
-
-
-def hidden_neurons_func_2(batch, weight_matrix, p):
-    """Calculate hidden neurons activations. like in the original code."""
-    product = weight_matrix * np.abs(weight_matrix) ** (p - 1)
-    return batch @ product.T
-    # (i, k) @ (k, j) = (i, j)
-
-
-def ranker(batch, weight_matrix, activation_function, k, p):
-    """Return the indexes of the first and k-th most activated neurons."""
-    hidden_neurons = hidden_neurons_func_2(batch, weight_matrix, p)
-    sorting = np.argsort(hidden_neurons)
-    return (sorting[:, -1], sorting[:, -k]) # dim i
-
-
-def g(batch, weight_matrix, k, delta):
-    """Return a learning activation function for each hidden neuron.
-    """
-    hiddens = batch @ weight_matrix.T
-    sort = np.argsort(hiddens, axis=1)
-    result = np.zeros(sort.shape)
-    result[:,-1] = 1
-    result[:,-k] = -delta
-    return result
 
 
 def product(weight_matrix, batch, p):
