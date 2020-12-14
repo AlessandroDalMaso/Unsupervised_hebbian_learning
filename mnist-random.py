@@ -67,4 +67,4 @@ im3, ax3 = plt.subplots()
 ax3 = plt.plot(np.ravel(layer1.weight_matrix))
 plt.savefig("images/mnist-random/weights_unraveled")
 
-# %% 
+# %% transform
