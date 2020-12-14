@@ -3,6 +3,7 @@
 import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
 import matplotlib.pyplot as plt
 import pandas as pd
 from os.path import exists
@@ -19,7 +20,6 @@ if not exists('./data/mnist'):
     bunch.frame.to_hdf('data/mnist', key='key', format='table')
 database = pd.read_hdf('data/mnist', key='key')
 data = database.drop('class', axis=1)
-target = database['class']
 X_train = np.array(data)/255.
 
 
@@ -27,7 +27,6 @@ X_train = np.array(data)/255.
 
 
 layer1 = chu.CHUNeuralNetwork()
-
 
 
 # %% fit the data
@@ -71,7 +70,10 @@ ax3 = plt.plot(np.ravel(matrix))
 plt.savefig("images/mnist-random/weights_unraveled")
 
 
-# %% transform
+# %% second layer
 
 
 transformed = layer1.transform(data)
+
+target = label_binarize(database['class'], classes = ["0", "1", "2", "3", "4",
+                                                      "5", "6", "7", "8", "9"])
