@@ -192,7 +192,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return hidden_neurons_func(X, self.weight_matrix, activation_function)
 
-    def fit(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate,
+    def fit(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
                  activation_function, batch_size, epoch,
                  epochs):
         """Fit the weigths to the data.
@@ -227,9 +227,9 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork
             The network itself.
         """
-        if not hasattr(self, "weight_matrix"): #  TODO ask: is it the correct way?
+        if not hasattr(self, "weight_matrix"):
             dims = (n_hiddens, len(batch[0]))
-            self.weight_matrix = np.random.normal(0, 1, dims) # TODO sigma
+            self.weight_matrix = np.random.normal(0, sigma, dims) # TODO sigma
             # The weights are initialized with a gaussian distribution.
 
 
@@ -240,7 +240,7 @@ class CHUNeuralNetwork(TransformerMixin):
         self.weight_matrix += scaled_update
         return self
 
-    def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
+    def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
                  activation_function, batch_size, epoch,
                  epochs):
         """Fit the data, then transform it."""

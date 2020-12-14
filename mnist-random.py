@@ -41,7 +41,7 @@ for epoch in range(epochs):
     for batch in chu.batchize(X_train, batch_size=99):
 
         layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
-                            scale=1, k=2, learn_rate=0.02,
+                            scale=1, k=2, learn_rate=0.02, sigma=1,
                             activation_function=chu.relu, batch_size=99,
                             epoch=epoch, epochs=epochs)
     print(epoch)

@@ -1,2 +1,1 @@
-e se invece di prendere 100 emelenti e processare tutto il datrabase prendessi 100 elementi a caso e ripetessi?
-usare solve_ivp per evitare porblemi di scala?
+come non confondersi tra due versioni
