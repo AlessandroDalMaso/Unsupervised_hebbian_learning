@@ -1,4 +1,6 @@
 fare le batch differenti (così hai una tesi)
+partial_fit
+fork
 1) sul database MNIST fare le prove degli effetti con diversi batch
 2) sulle cellule vedere come classifica e quale sia la struttura delle connessioni quando ha appreso
 3) vedere come delle trasformazioni sulle immagini in input mi cambiano il successo di classificazione

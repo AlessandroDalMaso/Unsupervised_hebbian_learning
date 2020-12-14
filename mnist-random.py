@@ -18,8 +18,9 @@ if not exists('./data/mnist'):
     bunch = fetch_openml('mnist_784', version=1, as_frame=True)
     bunch.frame.to_hdf('data/mnist', key='key', format='table')
 database = pd.read_hdf('data/mnist', key='key')
-unlabeled = database.drop('class', axis=1)
-X_train = np.array(unlabeled)/255.
+data = database.drop('class', axis=1)
+target = database['class']
+X_train = np.array(data)/255.
 
 
 # %%
@@ -48,11 +49,13 @@ for epoch in range(epochs):
 
 print(time()-start)
 
+matrix = layer1.weight_matrix.copy()
+
 
 # %% image representation
 
 
-image = chu.put_in_shape(layer1.weight_matrix.copy(), 10, 10)
+image = chu.put_in_shape(matrix, 10, 10)
 vmax = np.amax(np.abs(image))
 im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
@@ -60,11 +63,15 @@ plt.colorbar()
 plt.savefig("images/mnist-random/weights_heatmap")
 
 im2, ax2 = plt.subplots()
-ax2 = plt.plot(chu.norms(layer1.weight_matrix, 3))
+ax2 = plt.plot(chu.norms(matrix, 3))
 plt.savefig("images/mnist-random/p-norms")
 
 im3, ax3 = plt.subplots()
-ax3 = plt.plot(np.ravel(layer1.weight_matrix))
+ax3 = plt.plot(np.ravel(matrix))
 plt.savefig("images/mnist-random/weights_unraveled")
 
+
 # %% transform
+
+
+transformed = layer1.transform(data)
