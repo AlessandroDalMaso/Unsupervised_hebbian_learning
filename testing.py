@@ -1,6 +1,7 @@
 """Test public functions of CHUNeuralNetwork.py."""
 import CHUNeuralNetwork as chu
 import numpy as np
+import perceptron as pcp
 
 def test_batchize():
     a = np.array([[0, 1, 2],
@@ -52,8 +53,14 @@ def test_plasticity_rule_vectorized_null():
                                              activation_function)
     assert np.array_equal(result2, np.zeros(weight_matrix.shape))
 
+def test_loss():
+    output = np.array([[2,3],[2,6],[0,0]])
+    target = ([[0,1],[0,1],[0,1]])
+    pcp.loss(output, target)
+
 
 test_batchize()
 test_relu_positive()
 test_plasticity_rule()
 test_plasticity_rule_vectorized_null()
+test_loss()
