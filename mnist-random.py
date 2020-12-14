@@ -9,6 +9,9 @@ import pandas as pd
 from os.path import exists
 import CHUNeuralNetwork as chu
 from time import time
+from sklearn.pipeline import make_pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
 
 np.random.seed(1024)
 
@@ -19,23 +22,23 @@ if not exists('./data/mnist'):
     bunch = fetch_openml('mnist_784', version=1, as_frame=True)
     bunch.frame.to_hdf('data/mnist', key='key', format='table')
 database = pd.read_hdf('data/mnist', key='key')
-data = database.drop('class', axis=1)
-X_train = np.array(data)/255.
+data = database.drop('class', axis=1)/255
+target = database['class']
+
 
 
 # %%
 
 
 layer1 = chu.CHUNeuralNetwork()
+epochs=10
+X_train = np.array(data)
 
 
 # %% fit the data
 
 
-epochs=10
-
 start = time()
-
 for epoch in range(epochs):
     X_train=X_train[np.random.permutation(len(X_train)),:]
     for batch in chu.batchize(X_train, batch_size=99):
@@ -48,11 +51,12 @@ for epoch in range(epochs):
 
 print(time()-start)
 
-matrix = layer1.weight_matrix.copy()
+
 
 
 # %% image representation
 
+matrix = layer1.weight_matrix.copy()
 
 image = chu.put_in_shape(matrix, 10, 10)
 vmax = np.amax(np.abs(image))
@@ -73,7 +77,10 @@ plt.savefig("images/mnist-random/weights_unraveled")
 # %% second layer
 
 
-transformed = layer1.transform(data)
+forest = RandomForestClassifier()
+delta = 0.4
 
-target = label_binarize(database['class'], classes = ["0", "1", "2", "3", "4",
-                                                      "5", "6", "7", "8", "9"])
+fit_params = {'delta': 0.4}
+
+pipeline = make_pipeline(layer1, RandomForestClassifier())
+scores = cross_val_score(pipeline, data, target, CHUNeuralNetwork__delta=delta)
