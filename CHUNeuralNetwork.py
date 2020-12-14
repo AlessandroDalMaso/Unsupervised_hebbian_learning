@@ -104,7 +104,8 @@ def product(weight_matrix, batch, p):
     return batch @ (np.sign(weight_matrix) * np.abs(weight_matrix) ** (p-1)).T
 
 
-def plasticity_rule(weight_vector, input_vector, product_result, g, p, R, one_over_scale):
+def plasticity_rule(weight_vector, input_vector, product_result, g, p, R,
+                    one_over_scale):
     """Equation [3] of the original article."""
     minuend = R ** p * input_vector
     subtrahend = product_result * weight_vector
@@ -190,7 +191,7 @@ class CHUNeuralNetwork(TransformerMixin):
 
     def transform(self, X, activation_function=relu):
         """Transform the data."""
-        return hidden_neurons_func(X, self.weight_matrix, activation_function)
+        return activation_function(X @ self.weight_matrix.T)
 
     def fit(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
                  activation_function, batch_size, epoch,
@@ -240,9 +241,8 @@ class CHUNeuralNetwork(TransformerMixin):
         self.weight_matrix += scaled_update
         return self
 
-    def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
-                 activation_function, batch_size, epoch,
-                 epochs):
+    def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
+                      sigma, activation_function, batch_size, epoch, epochs):
         """Fit the data, then transform it."""
         return self.fit(X, n_hiddens, delta, p, R, scale, k, learn_rate,
                  activation_function, batch_size, epoch,epochs).transform(X)
