@@ -81,6 +81,14 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     return update
 
 
+def ivp_helper(weight_array, dims, batch, delta, p, R, k, one_over_scale,
+               activation_function):
+    weight_matrix = np.reshape(weight_array, dims)
+    update = plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
+                               one_over_scale, activation_function)
+    return update.ravel()
+
+
 # %% defining the class
 
 
