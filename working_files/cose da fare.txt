@@ -1,3 +1,5 @@
+appunti in markdown
+
 fare le batch differenti (così hai una tesi)
 partial_fit
 fork

@@ -33,7 +33,7 @@ def mnist_loader():
         bunch = fetch_openml('mnist_784', version=1, as_frame=True)
         bunch.frame.to_hdf('data/mnist', key='key', format='table')
     mnist = pd.read_hdf('data/mnist', key='key')
-    train, test = train_test_split(mnist, test_size=0.25)
+    train, test = train_test_split(mnist, test_size=0.16)
     
     X_train = np.array(train.drop('class', axis=1))/255
     y_train = np.array(train['class'])
