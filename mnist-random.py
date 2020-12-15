@@ -11,6 +11,7 @@ from time import time
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
+import utilities as utils
 
 np.random.seed(1024)
 
@@ -36,7 +37,7 @@ epochs=10
 start = time()
 for epoch in range(epochs):
     X = X_train[np.random.permutation(len(X_train)),:]
-    for batch in chu.batchize(X, batch_size=99):
+    for batch in utils.batchize(X, batch_size=99):
 
         layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
                             scale=1, k=2, learn_rate=0.02, sigma=1,
@@ -53,7 +54,7 @@ print(time()-start)
 
 matrix = layer1.weight_matrix.copy() # type?????
 
-image = chu.put_in_shape(matrix, 10, 10)
+image = utils.put_in_shape(matrix, 10, 10)
 vmax = np.amax(np.abs(image))
 im, ax = plt.subplots()
 ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
@@ -61,7 +62,7 @@ plt.colorbar()
 plt.savefig("images/mnist-random/weights_heatmap")
 
 im2, ax2 = plt.subplots()
-ax2 = plt.plot(chu.norms(matrix, 3))
+ax2 = plt.plot(utils.norms(matrix, 3))
 plt.savefig("images/mnist-random/p-norms")
 
 im3, ax3 = plt.subplots()
