@@ -1,3 +1,7 @@
 come organizzare la repository
 come passare gli arguments a fit
 come riscrivere fit
+farsi rispiegare il testing
+
+cross_val_score(forest1, transformed_test, y_test)
+Out[19]: array([0.91085714, 0.916     , 0.914     , 0.92114286, 0.91314286])

@@ -35,7 +35,7 @@ utils.image_representation(layer1.weight_matrix)
 
 # %% second layer
 
-"""
+
 transformed_train = X_train @ layer1.weight_matrix.T
 transformed_test = X_test @ layer1.weight_matrix.T
 
@@ -49,7 +49,7 @@ print(time()-start)
 
 #score1 = forest1.score(transformed_test, y_test) # 0.986
 score2 = forest2.score(X_test, y_test) # 0.939
-"""
+
 
 
 
