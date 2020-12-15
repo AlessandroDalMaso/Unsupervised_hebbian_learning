@@ -1,1 +1,3 @@
-come non confondersi tra due versioni
+come organizzare la repository
+come passare gli arguments a fit
+come riscrivere fit
