@@ -40,15 +40,12 @@ transformed_train = X_train @ layer1.weight_matrix.T # activation function
 transformed_test = X_test @ layer1.weight_matrix.T
 
 forest1 = RandomForestClassifier()
-forest2 = RandomForestClassifier()
 
 start=time()
 forest1.fit(transformed_train, y_train)
-forest2.fit(X_train, y_train)
 print(time()-start)
 
 score1 = forest1.score(transformed_test, y_test)
-score2 = forest2.score(X_test, y_test)
 
 
 
