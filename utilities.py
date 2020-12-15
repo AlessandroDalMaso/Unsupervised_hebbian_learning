@@ -3,6 +3,7 @@ from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from os.path import exists
+import matplotlib.pyplot as plt
 
 def batchize(iterable, batch_size):
     """Put iterables in batches."""
@@ -39,3 +40,21 @@ def mnist_loader():
     X_test = np.array(test.drop('class', axis=1))/255
     y_test = np.array(test['class'])
     return (X_train, y_train, X_test, y_test)
+
+
+def image_representation(matrix):
+    
+    image = put_in_shape(matrix, 10, 10)
+    vmax = np.amax(np.abs(image))
+    im, ax = plt.subplots()
+    ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
+    plt.colorbar()
+    plt.savefig("images/mnist-random/weights_heatmap")
+    
+    im2, ax2 = plt.subplots()
+    ax2 = plt.plot(norms(matrix, 3))
+    plt.savefig("images/mnist-random/p-norms")
+    
+    im3, ax3 = plt.subplots()
+    ax3 = plt.plot(np.ravel(matrix))
+    plt.savefig("images/mnist-random/weights_unraveled")

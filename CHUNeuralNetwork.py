@@ -155,8 +155,8 @@ class CHUNeuralNetwork(TransformerMixin):
         CHUNeuralNetwork
             The network itself.
         """
-        if not hasattr(self, "weight_matrix"):
-            dims = (n_hiddens, len(batch[0]))
+        dims = (n_hiddens, len(batch[0]))
+        if not hasattr(self, "weight_matrix"):  
             self.weight_matrix = np.random.normal(0, sigma, dims) # TODO sigma
             # The weights are initialized with a gaussian distribution.
 
@@ -164,6 +164,7 @@ class CHUNeuralNetwork(TransformerMixin):
         update = plasticity_rule_vectorized(self.weight_matrix,
                                             batch, delta, p, R, k, 1/scale,
                                             activation_function)
+
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         self.weight_matrix += scaled_update
         return self
