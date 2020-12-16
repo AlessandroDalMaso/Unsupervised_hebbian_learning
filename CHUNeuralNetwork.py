@@ -16,7 +16,8 @@ def scale_update(update, epoch, epochs, learn_rate):
 
 def activ(currents, n):
     """Is the default activation function."""
-    return np.where(currents < 0, 0, currents ** n)
+    return np.where(currents < 0, 0, np.sign(currents) * np.abs(currents) ** n)
+    # no need to worry about complex numbers
 
 
 def product(weight_matrix, batch, p):

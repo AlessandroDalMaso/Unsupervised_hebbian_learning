@@ -16,7 +16,7 @@ np.random.seed(1024)
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=10
+epochs=160
 start = time()
 for epoch in range(epochs):
     X = X_train[np.random.permutation(len(X_train)),:]
@@ -36,8 +36,8 @@ utils.image_representation(layer1.weight_matrix)
 # %% second layer
 
 
-transformed_train = layer1.transform(X_train) # activation function
-transformed_test = layer1.transform(X_test)
+transformed_train = layer1.transform(X_train, chu.activ, 4.5)
+transformed_test = layer1.transform(X_test, chu.activ, 4.5)
 
 forest1 = RandomForestClassifier()
 
@@ -45,7 +45,9 @@ start=time()
 forest1.fit(transformed_train, y_train)
 print(time()-start)
 
-score1 = forest1.score(transformed_test, y_test)
+score1 = forest1.score(transformed_test, y_test) # 0.943571428571428
+
+
 
 
 
