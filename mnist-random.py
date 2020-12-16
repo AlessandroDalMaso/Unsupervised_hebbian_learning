@@ -16,15 +16,15 @@ np.random.seed(1024)
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=160
+epochs=10
 start = time()
 for epoch in range(epochs):
     X = X_train[np.random.permutation(len(X_train)),:]
     for batch in utils.batchize(X, batch_size=99):
 
-        layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
+        layer1 = layer1.fit_single_batch( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
                             scale=1, k=2, learn_rate=0.02, sigma=1,
-                            activation_function=chu.relu, batch_size=99,
+                            activation_function=chu.activ, batch_size=99,
                             epoch=epoch, epochs=epochs)
     print(epoch)
 
@@ -36,8 +36,8 @@ utils.image_representation(layer1.weight_matrix)
 # %% second layer
 
 
-transformed_train = X_train @ layer1.weight_matrix.T # activation function
-transformed_test = X_test @ layer1.weight_matrix.T
+transformed_train = layer1.transform(X_train) # activation function
+transformed_test = layer1.transform(X_test)
 
 forest1 = RandomForestClassifier()
 

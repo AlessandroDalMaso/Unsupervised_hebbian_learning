@@ -1,6 +1,5 @@
 """A biology-inspired data transformer."""
 
-from sklearn.base import TransformerMixin
 import numpy as np
 from scipy.integrate import solve_ivp
 from utilities import batchize
@@ -15,12 +14,13 @@ def scale_update(update, epoch, epochs, learn_rate):
     return learn_rate*esp*update/max_norm
 
 
-def relu(currents):
+def activ(currents, n):
     """Is the default activation function."""
-    return np.where(currents < 0, 0, currents)
+    return np.where(currents < 0, 0, currents ** n)
 
 
 def product(weight_matrix, batch, p):
+    """equation [2] of the refernce article, vectorized."""
     return batch @ (np.sign(weight_matrix) * np.abs(weight_matrix) ** (p-1)).T
 
 
@@ -84,6 +84,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
 
 def ivp_helper(weight_array, dims, batch, delta, p, R, k, one_over_scale,
                activation_function):
+    """Does the same as plasticity_rule_vectorized, but on a flat array"""
     weight_matrix = np.reshape(weight_array, dims)
     update = plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
                                one_over_scale, activation_function)
@@ -93,7 +94,7 @@ def ivp_helper(weight_array, dims, batch, delta, p, R, k, one_over_scale,
 # %% defining the class
 
 
-class CHUNeuralNetwork(TransformerMixin):
+class CHUNeuralNetwork():
     """Extract features from data using a biology-inspired algorithm.
 
     Competing Hidden Units Neural Network. A 2-layers neural network
@@ -117,9 +118,9 @@ class CHUNeuralNetwork(TransformerMixin):
     def __init__(self):
         pass
 
-    def transform(self, X, activation_function=relu):
+    def transform(self, X, activation_function=activ, *args):
         """Transform the data."""
-        return activation_function(X @ self.weight_matrix.T)
+        return activation_function(X @ self.weight_matrix.T, *args)
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
                  activation_function, batch_size, epoch,

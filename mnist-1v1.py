@@ -24,10 +24,30 @@ X_7 = X_train[np.where(y_train == '7')]
 X_8 = X_train[np.where(y_train == '8')]
 X_9 = X_train[np.where(y_train == '9')]
 
+classes = np.array([X_0, X_1, X_2, X_3, X_4, X_5, X_6, X_7, X_8, X_9])
+select = np.random.choice(classes, 2, replace=False)
+X = select[0] + select[1]
+
+pre_labels = np.array(['0','1','2','3','4','5','6','7','8','9'])
+labels = pre_labels[np.random.permutation(len(pre_labels))]
+counter = 0
+for l in labels:
+    for m in labels:
+        if l==m:
+            pass
+        else:
+            X1 = X_train[np.where(y_train == l)]
+            X2 = X_train[np.where(y_train == m)]
+            for batch in 
+            batch1 = X1[np.random.choice(len(X1), 50, replace=False)]
+            batch2 = X2[np.random.choice(len(X2), 50, replace=False)]
+            batch=batch1+batch2
+
 layer1 = chu.CHUNeuralNetwork()
-epochs=160
+epochs=100
 start = time()
 for epoch in range(epochs):
+    select = np.random.choice(classes, 2, replace=False)
     X = X_train[np.random.permutation(len(X_train)),:]
     for batch in utils.batchize(X, batch_size=99):
 
