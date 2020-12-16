@@ -3,12 +3,13 @@
 from sklearn.base import TransformerMixin
 import numpy as np
 from scipy.integrate import solve_ivp
+from utilities import batchize
 
 # %% defining external equations
 
 
 def scale_update(update, epoch, epochs, learn_rate):
-    """scale the update like in the original code"""
+    """scale the update to avoid overshooting"""
     max_norm = np.amax(np.abs(update))
     esp = (1-epoch/epochs)
     return learn_rate*esp*update/max_norm
@@ -120,7 +121,7 @@ class CHUNeuralNetwork(TransformerMixin):
         """Transform the data."""
         return activation_function(X @ self.weight_matrix.T)
 
-    def fit(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
+    def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
                  activation_function, batch_size, epoch,
                  epochs):
         """Fit the weigths to the data.
@@ -168,6 +169,14 @@ class CHUNeuralNetwork(TransformerMixin):
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         self.weight_matrix += scaled_update
         return self
+
+    def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
+            sigma, activation_function, batch_size, epochs):
+        for epoch in range(epochs):
+            for batch in batchize(database, batch_size):
+                self.fit_single_batch(batch, n_hiddens, delta, p, R, scale, k,
+                                      learn_rate, sigma, activation_function,
+                                      batch_size, epoch, epochs)
 
     def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
                       sigma, activation_function, batch_size, epoch, epochs):
