@@ -17,6 +17,7 @@ con il codice originale, 160 batch da 50 samples
 
 ![](15-12-2020/1/15-12-2020-original.png)
 
+
 ### 2
 
 ho splittato mnist 25% di test e ho fittato una random forest, senza preprocessare. risultato: score = 0.97
@@ -29,3 +30,38 @@ ho fatto un fit con mnist 25% di test 160 epochs batch da 99 e ho fittato una ra
 ![](15-12-2020/2/weights_heatmap.png)
 
 ![](15-12-2020/2/weights_unraveled.png)
+
+# 16/12/2020
+
+## 1
+
+codice: mio
+
+splitting: random
+
+batch: 160
+
+splitting: 16%
+
+```
+layer1.fit_single_batch( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
+                            scale=1, k=2, learn_rate=0.02, sigma=1,
+                            activation_function=chu.activ, batch_size=99,
+                            epoch=epoch, epochs=epochs)
+```
+![](16-12-2020/1/1.png)
+![](16-12-2020/1/2.png)
+![](16-12-2020/1/3.png)
+
+forest score: 0.943571
+
+## 2
+
+ho fittato una foresta con numeri casuali:
+
+```
+a = np.random.normal(0, 1, (58800,100))
+
+forest2.fit(a, y_train)
+```
+score=0.06

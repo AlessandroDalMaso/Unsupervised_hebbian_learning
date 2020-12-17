@@ -10,13 +10,13 @@ from sklearn.model_selection import cross_val_score
 import utilities as utils
 np.random.seed(1024)
 
-(X_train, y_train, X_test, y_test) = utils.mnist_loader()
+(X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
 
 
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=160
+epochs=10
 start = time()
 for epoch in range(epochs):
     X = X_train[np.random.permutation(len(X_train)),:]
