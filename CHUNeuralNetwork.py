@@ -35,7 +35,7 @@ def plasticity_rule(weight_vector, input_vector, product_result, g, p, R,
 
 
 def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
-                               one_over_scale, activation_function):
+                               one_over_scale):
     """Calculate the update dW of weight_matrix.
 
     Each sample in batch updates only two rows of weight_matrix: the one
@@ -59,8 +59,6 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         learning.
     one_over_scale
         One over the time scale of learning.
-    activation_function:
-        The activation function of the hidden neurons.
     Return
     -----
     update
@@ -83,12 +81,11 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     return update
 
 
-def ivp_helper(weight_array, dims, batch, delta, p, R, k, one_over_scale,
-               activation_function):
+def ivp_helper(weight_array, dims, batch, delta, p, R, k, one_over_scale):
     """Does the same as plasticity_rule_vectorized, but on a flat array"""
     weight_matrix = np.reshape(weight_array, dims)
     update = plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
-                               one_over_scale, activation_function)
+                               one_over_scale)
     return update.ravel()
 
 
@@ -124,8 +121,7 @@ class CHUNeuralNetwork():
         return activation_function(X @ self.weight_matrix.T, *args)
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
-                 activation_function, batch_size, epoch,
-                 epochs):
+                         batch_size, epoch, epochs):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -148,8 +144,6 @@ class CHUNeuralNetwork():
         k:
             The k-th most activated hidden neuron will undergo anti-hebbian
             learning.
-        activation_function:
-            The activation function of the hidden neurons.
         batch_size
             Number of elements in a batch.
 
@@ -165,20 +159,16 @@ class CHUNeuralNetwork():
 
 
         update = plasticity_rule_vectorized(self.weight_matrix,
-                                            batch, delta, p, R, k, 1/scale,
-                                            activation_function)
+                                            batch, delta, p, R, k, 1/scale,)
 
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         self.weight_matrix += scaled_update
+        
         return self
 
-    def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
-            sigma, activation_function, batch_size, epochs):
-        for epoch in range(epochs):
-            for batch in batchize(database, batch_size):
-                self.fit_single_batch(batch, n_hiddens, delta, p, R, scale, k,
-                                      learn_rate, sigma, activation_function,
-                                      batch_size, epoch, epochs)
+    def fit(self, database, n_hiddens, delta, p, R, scale, k,
+            sigma, batch_size, epochs):
+        pass
 
     def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
                       sigma, activation_function, batch_size, epoch, epochs):

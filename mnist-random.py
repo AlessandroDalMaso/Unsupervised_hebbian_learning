@@ -24,8 +24,7 @@ for epoch in range(epochs):
 
         layer1 = layer1.fit_single_batch( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
                             scale=1, k=2, learn_rate=0.02, sigma=1,
-                            activation_function=chu.activ, batch_size=99,
-                            epoch=epoch, epochs=epochs)
+                            batch_size=99, epoch=epoch, epochs=epochs)
     print(epoch)
 
 print(time()-start)
@@ -45,7 +44,9 @@ start=time()
 forest1.fit(transformed_train, y_train)
 print(time()-start)
 
-score1 = forest1.score(transformed_test, y_test) # 0.943571428571428
+score1 = forest1.score(transformed_test, y_test)
+# my score: 0.94
+# no transform: 97
 
 
 
