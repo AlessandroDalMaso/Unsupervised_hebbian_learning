@@ -171,6 +171,10 @@ class CHUNeuralNetwork():
 
     def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
             sigma, batch_size, epochs):
+        dims = (n_hiddens, len(database[0]))
+        if not hasattr(self, "weight_matrix"):  
+            self.weight_matrix = np.random.normal(0, sigma, dims) # TODO sigma
+            # The weights are initialized with a gaussian distribution.
         for epoch in range(epochs):
             X = database[np.random.permutation(len(database))]
             for batch in batchize(X, batch_size):
