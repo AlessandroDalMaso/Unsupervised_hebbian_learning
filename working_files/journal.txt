@@ -79,3 +79,5 @@
 	original-modified funziona, il mio codice no. e mancano 2 mesi e venti giorni alla consegna della tesi...
 15/12/2020
 	sto cercando di implementare i vari esperimenti di cui mi ha parlato il prof. Giampieri.
+18/12/2020
+	mi sono reso conto che non converge, ma non ho neanche il tempo di pensarci.

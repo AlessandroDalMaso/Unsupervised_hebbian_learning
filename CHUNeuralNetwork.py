@@ -124,7 +124,7 @@ class CHUNeuralNetwork():
         return activation_function(X @ self.weight_matrix.T, *args)
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k,
-                         learn_rate, sigma, batch_size, epoch, epochs):
+                         learn_rate, sigma, epoch, epochs):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -147,8 +147,6 @@ class CHUNeuralNetwork():
         k:
             The k-th most activated hidden neuron will undergo anti-hebbian
             learning.
-        batch_size
-            Number of elements in a batch.
 
         Return
         ------

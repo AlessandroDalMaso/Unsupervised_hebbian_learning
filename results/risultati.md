@@ -65,3 +65,26 @@ a = np.random.normal(0, 1, (58800,100))
 forest2.fit(a, y_train)
 ```
 score=0.06
+
+# 18/12/2020
+cosa succede quando delta = 0?
+```
+layer1 = chu.CHUNeuralNetwork()
+epochs=160
+batch_size=100
+
+start = time()
+for epoch in range(epochs):
+    X = X_train[np.random.permutation(len(X_train)),:]
+    for i in range(0, len(X), batch_size):
+        batch = X[i:i+batch_size]
+        layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0., p=2,
+                                         R=1, scale=1, k=2, learn_rate=0.02,
+                                         sigma=1, epoch=epoch, epochs=epochs)
+    print(epoch)
+```
+![](18-12-2020/1/1.png)
+![](18-12-2020/1/2.png)
+![](18-12-2020/1/3.png)
+
+score = 0.934
