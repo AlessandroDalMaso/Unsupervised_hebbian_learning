@@ -81,11 +81,14 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     return update
 
 
-def ivp_helper(weight_array, dims, batch, delta, p, R, k, one_over_scale):
+def ivp_helper(time, weight_array, dims, database, delta, p, R, k,
+               one_over_scale):
     """Does the same as plasticity_rule_vectorized, but on a flat array"""
     weight_matrix = np.reshape(weight_array, dims)
+    batch = database[np.random.choice(len(database), 100)]
     update = plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
                                one_over_scale)
+    print('done')
     return update.ravel()
 
 
@@ -120,8 +123,8 @@ class CHUNeuralNetwork():
         """Transform the data."""
         return activation_function(X @ self.weight_matrix.T, *args)
 
-    def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
-                         batch_size, epoch, epochs):
+    def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k,
+                         learn_rate, sigma, batch_size, epoch, epochs):
         """Fit the weigths to the data.
 
         Intialize the matrix of weights, the put the data in minibatches and
@@ -166,9 +169,15 @@ class CHUNeuralNetwork():
         
         return self
 
-    def fit(self, database, n_hiddens, delta, p, R, scale, k,
+    def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
             sigma, batch_size, epochs):
-        pass
+        for epoch in range(epochs):
+            X = database[np.random.permutation(len(database))]
+            for batch in batchize(X, batch_size):
+                self.fit_single_batch(batch, n_hiddens, delta, p, R, scale, k,
+                         learn_rate, sigma, batch_size, epoch, epochs)
+            print(epoch)
+        return self
 
     def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
                       sigma, activation_function, batch_size, epoch, epochs):
