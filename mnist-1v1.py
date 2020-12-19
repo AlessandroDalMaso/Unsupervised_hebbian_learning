@@ -11,53 +11,16 @@ from time import time
 import utilities as utils
 np.random.seed(1024)
 
-(X_train, y_train, X_test, y_test) = utils.mnist_loader()
-
-X_0 = X_train[np.where(y_train == '0')]
-X_1 = X_train[np.where(y_train == '1')]
-X_2 = X_train[np.where(y_train == '2')]
-X_3 = X_train[np.where(y_train == '3')]
-X_4 = X_train[np.where(y_train == '4')]
-X_5 = X_train[np.where(y_train == '5')]
-X_6 = X_train[np.where(y_train == '6')]
-X_7 = X_train[np.where(y_train == '7')]
-X_8 = X_train[np.where(y_train == '8')]
-X_9 = X_train[np.where(y_train == '9')]
-
-classes = np.array([X_0, X_1, X_2, X_3, X_4, X_5, X_6, X_7, X_8, X_9])
-select = np.random.choice(classes, 2, replace=False)
-X = select[0] + select[1]
-
-pre_labels = np.array(['0','1','2','3','4','5','6','7','8','9'])
-labels = pre_labels[np.random.permutation(len(pre_labels))]
-counter = 0
-for l in labels:
-    for m in labels:
-        if l==m:
-            pass
-        else:
-            X1 = X_train[np.where(y_train == l)]
-            X2 = X_train[np.where(y_train == m)]
-            for batch in 
-            batch1 = X1[np.random.choice(len(X1), 50, replace=False)]
-            batch2 = X2[np.random.choice(len(X2), 50, replace=False)]
-            batch=batch1+batch2
+(X_train, y_train, X_test, y_test) = utils.mnist_loader(0.16)
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=100
-start = time()
-for epoch in range(epochs):
-    select = np.random.choice(classes, 2, replace=False)
-    X = X_train[np.random.permutation(len(X_train)),:]
-    for batch in utils.batchize(X, batch_size=99):
+half = 50
+epochs=10
 
-        layer1 = layer1.fit( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
-                            scale=1, k=2, learn_rate=0.02, sigma=1,
-                            activation_function=chu.relu, batch_size=99,
-                            epoch=epoch, epochs=epochs)
-    print(epoch)
+X = X_train.reshape((10, (5000//half), half, 784))
+X2 = np.empty((1000,50,784))
 
-print(time()-start)
-
-utils.image_representation(layer1.weight_matrix)
+batch = 0
+for i in range(10):
+    for j in range(i):
 
