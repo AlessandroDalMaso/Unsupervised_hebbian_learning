@@ -10,7 +10,6 @@ np.random.seed(1024)
 # loads 5000 samples for each figure, ordered in the array.
 
 layer1 = chu.CHUNeuralNetwork()
-epochs_per_figure=1
 batch_size=100
 epochs=10
 

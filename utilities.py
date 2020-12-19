@@ -29,6 +29,7 @@ def norms(matrix, p):
     return np.sum(np.abs(matrix) ** p, axis=1)
 
 def mnist_loader(test_size):
+    # only safe for test_size < 0.27!
     if not exists('./data/mnist'):
         bunch = fetch_openml('mnist_784', version=1, as_frame=True)
         bunch.frame.to_hdf('data/mnist', key='key', format='table')
