@@ -16,7 +16,7 @@ np.random.seed(1024)
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=100
+epochs=10
 batch_size=160
 
 start = time()
