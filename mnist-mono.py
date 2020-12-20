@@ -3,22 +3,27 @@ import pandas as pd
 import utilities as utils
 import CHUNeuralNetwork as chu
 from time import time
+from random import shuffle
 from sklearn.ensemble import RandomForestClassifier
 np.random.seed(1024)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
 # loads 5000 samples for each figure, ordered in the array.
 
-layer1 = chu.CHUNeuralNetwork()
 batch_size=100
+X = X_train.copy()
+batches = []
+for i in np.arange(0,len(X), batch_size):
+    batches.append(X[i:i+batch_size])
+
+
+layer1 = chu.CHUNeuralNetwork()
 epochs=10
 
 start = time()
 for epoch in range(epochs):
-    X = X_train.copy()
-    indexes = np.random.permutation(len(X)//batch_size)*batch_size
-    for i in indexes[np.random.permutation(len(indexes))]:
-        batch = X[i:i+batch_size]
+    shuffle(batches)
+    for batch in batches:
         layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
                                          sigma=1, epoch=epoch, epochs=epochs)
