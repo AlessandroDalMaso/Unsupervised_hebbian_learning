@@ -42,5 +42,5 @@ print(time()-start)
 
 score1 = forest1.score(transformed_test, y_test)
 # my score: 0.94
-# no transform: 97
+# no transform: 0.97
 

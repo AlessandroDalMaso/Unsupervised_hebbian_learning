@@ -17,10 +17,5 @@ layer1 = chu.CHUNeuralNetwork()
 half = 50
 epochs=10
 
-X = X_train.reshape((10, (5000//half), half, 784))
-X2 = np.empty((1000,50,784))
-
-batch = 0
-for i in range(10):
-    for j in range(i):
+X = X_train.reshape((10, (4500//half), half, 784))
 

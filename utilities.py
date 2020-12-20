@@ -36,7 +36,7 @@ def mnist_loader(test_size):
     mnist = pd.read_hdf('data/mnist', key='key')
     train, test = train_test_split(mnist, test_size=test_size)
     sorted_train = train.sort_values('class')
-    equal_train = sorted_train.groupby('class').head(5000).reset_index(drop=True)
+    equal_train = sorted_train.groupby('class').head(4500).reset_index(drop=True)
 
     X_train = np.array(equal_train.drop('class', axis=1))/255
     y_train = np.array(equal_train['class'])
