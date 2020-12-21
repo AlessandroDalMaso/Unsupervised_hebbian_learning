@@ -65,6 +65,7 @@ forest score: 0.943571
 
 ho fittato una foresta con numeri casuali:
 <details>
+
 ```
 a = np.random.normal(0, 1, (58800,100))
 
@@ -108,7 +109,8 @@ score = 0.934
 Ho provato con original-modified se non convergeva, e effettivamente non converge! questo è il codice:
 
 <details>
-```py
+
+```
 import numpy as np
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
@@ -184,4 +186,10 @@ da oggi in poi si lavora con delta = 0
 
 ## 2
 
-ho provato con original a mettere il delta = 0:
+ho provato con original a mettere il delta = 0 e non converge:
+<details>
+
+```
+
+```
+</details>

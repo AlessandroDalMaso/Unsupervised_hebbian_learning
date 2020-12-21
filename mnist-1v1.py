@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 import CHUNeuralNetwork as chu
 from time import time
 import utilities as utils
-from random import shuffle
+import random
 np.random.seed(1024)
+random(0)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(10000)
 
@@ -46,7 +47,7 @@ layer1 = chu.CHUNeuralNetwork()
 
 start = time()
 for epoch in range(epochs):
-    shuffle(batches)
+    random.shuffle(batches)
     for b in batches:
         layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
