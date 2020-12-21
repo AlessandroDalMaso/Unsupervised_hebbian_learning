@@ -8,22 +8,26 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 import utilities as utils
+from random import shuffle
 np.random.seed(1024)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
-X = X_train[np.random.permutation(len(X_train)),:]
+X = X_train[np.random.permutation(len(X_train))]
+batches = []
+batch_size=100
+for i in range(0, len(X_train), batch_size):
+    batches.append(X[i:i+batch_size])
 
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=160
-batch_size=160
+epochs=66
+
 
 start = time()
 for epoch in range(epochs):
-    indexes = np.random.permutation(len(X)//batch_size)*batch_size
-    for i in indexes:
-        batch = X[i:i+batch_size]
+    shuffle(batches)
+    for batch in batches:
         layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
                                          sigma=1, epoch=epoch, epochs=epochs)
