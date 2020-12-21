@@ -11,17 +11,16 @@ import utilities as utils
 np.random.seed(1024)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
-
+X = X_train[np.random.permutation(len(X_train)),:]
 
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=10
+epochs=160
 batch_size=160
 
 start = time()
 for epoch in range(epochs):
-    X = X_train[np.random.permutation(len(X_train)),:]
     indexes = np.random.permutation(len(X)//batch_size)*batch_size
     for i in indexes:
         batch = X[i:i+batch_size]
