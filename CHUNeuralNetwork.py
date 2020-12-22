@@ -80,18 +80,6 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
                                      one_over_scale)
     return update
 
-
-def ivp_helper(time, weight_array, dims, database, delta, p, R, k,
-               one_over_scale):
-    """Does the same as plasticity_rule_vectorized, but on a flat array"""
-    weight_matrix = np.reshape(weight_array, dims)
-    batch = database[np.random.choice(len(database), 100)]
-    update = plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
-                               one_over_scale)
-    print('done')
-    return update.ravel()
-
-
 # %% defining the class
 
 
