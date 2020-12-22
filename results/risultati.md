@@ -489,3 +489,112 @@ ecco i risultati del codice che converge:
 
 
 </details>
+
+## 3
+
+Ho provato a mettere:
+* una funzione triangolare per inizializzare la matrice, con sigma come left and right;
+* sigma = 0.01;
+* average invece di amax in scale_update.
+
+risultato: molto brutto. score 9%
+
+<details>
+
+![](22-12-2020/3/1.png)
+![](22-12-2020/3/2.png)
+![](22-12-2020/3/3.png)
+
+</details>
+
+## 4
+
+Ho fatto varie prove variando la sigma e la distribuzione di probabilità.
+
+Innanzitutto: a 160 batch con sigma=1, la gaussiana non diverge, mentre la distribuzione triangolare sì, ecco cosa ottengo con la triangolare:
+
+<details>
+
+![](22-12-2020/4/tri/160/sigma_is_1/1.png)
+![](22-12-2020/4/tri/160/sigma_is_1/2.png)
+![](22-12-2020/4/tri/160/sigma_is_1/3.png)
+
+</details>
+
+Poi: ho provato a diminuire la sigma a 0.1: e niente, vengono sempre i 9 sia con i triangoli che con le gaussiane! (molto interessante)
+
+<details>
+
+![](22-12-2020/4/nein/1.png)
+![](22-12-2020/4/nein/2.png)
+![](22-12-2020/4/nein/3.png)
+
+</details>
+
+
+Faccio infine un altro backup del codice che mi da le cifre perché sono paranoico:
+
+
+<details>
+
+```
+"""Instance CHUNeuralNetwork, fit, transform, represent weights as images."""
+
+import numpy as np
+
+import CHUNeuralNetwork as chu
+from time import time
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+import utilities as utils
+import random
+np.random.seed(1024)
+random.seed(0)
+
+(X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
+batch_size=100
+
+
+# %% fit the data
+
+layer1 = chu.CHUNeuralNetwork()
+epochs=160
+
+
+
+
+start = time()
+
+for epoch in range(epochs):
+    X = X_train[np.random.permutation(len(X_train))]
+    for i in range(0, len(X), batch_size):
+        batch = X[i:i+batch_size]
+        layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4
+                                         , p=2,
+                                         R=1, scale=1, k=2, learn_rate=0.02,
+                                         sigma=1, epoch=epoch, epochs=epochs)
+    print(epoch)
+print(time()-start)
+
+utils.image_representation(layer1.weight_matrix)
+
+
+# %% second layer
+
+
+transformed_train = layer1.transform(X_train, chu.activ, 4.5)
+transformed_test = layer1.transform(X_test, chu.activ, 4.5)
+
+forest1 = RandomForestClassifier()
+
+start=time()
+forest1.fit(transformed_train, y_train)
+print(time()-start)
+
+score1 = forest1.score(transformed_test, y_test)
+# my score: 0.94
+# no transform: 97
+```
+
+</details>

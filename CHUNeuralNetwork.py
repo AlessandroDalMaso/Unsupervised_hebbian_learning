@@ -10,6 +10,7 @@ from utilities import batchize
 def scale_update(update, epoch, epochs, learn_rate):
     """scale the update to avoid overshooting"""
     max_norm = np.amax(np.abs(update))
+    #avg = np.average(np.abs(update))
     esp = (1-epoch/epochs)
     return learn_rate*esp*update/max_norm
 
@@ -143,7 +144,7 @@ class CHUNeuralNetwork():
         """
         dims = (n_hiddens, len(batch[0]))
         if not hasattr(self, "weight_matrix"):  
-            self.weight_matrix = np.random.normal(0, sigma, dims)
+            self.weight_matrix = np.random.normal(0, 1, dims)
             # The weights are initialized with a gaussian distribution.
 
 
@@ -160,7 +161,7 @@ class CHUNeuralNetwork():
 
         dims = (n_hiddens, len(database[0]))
         if not hasattr(self, "weight_matrix"):  
-            self.weight_matrix = np.random.normal(0, sigma, dims)
+            self.weight_matrix = np.random.triangular(-sigma, 0, sigma, dims)
             # The weights are initialized with a gaussian distribution.
 
         for epoch in range(epochs):
