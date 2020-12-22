@@ -65,7 +65,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         ndarray, same shape as weight_matrix.
     """
     product_result = product(weight_matrix, batch, p)
-    sorting = np.argsort(product_result) # batch @ weight_matrix.T
+    sorting = np.argsort(product_result) # batch @ weight_matrix.T?
     update = np.zeros(weight_matrix.shape)
     for i in range(len(batch)): #  alternative: add.at()
         h = sorting[i,-1]
