@@ -81,3 +81,5 @@
 	sto cercando di implementare i vari esperimenti di cui mi ha parlato il prof. Giampieri.
 18/12/2020
 	mi sono reso conto che non converge, ma non ho neanche il tempo di pensarci.
+21/12/2020
+	Il prof. Gimapieri mi ha detto che è meglio tenere delta=0 se sappiamo che coisì non converege comunque, ma almeno non abbiamo un neuron e impoazzito
