@@ -1,2 +1,3 @@
 fare le batch differenti (così hai una tesi)
 parameter optimization (later!)
+S
