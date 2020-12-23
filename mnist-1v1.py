@@ -7,7 +7,7 @@ from time import time
 import utilities as utils
 import random
 np.random.seed(1024)
-random(0)
+random.seed(0)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(10000)
 
