@@ -14,30 +14,12 @@ random.seed(0)
 layer1 = chu.CHUNeuralNetwork()
 half = 50
 
+X = X_train.reshape((10, len(X_train)//10, 784))
+# (figure, sample, single pixel)
 
-X = X_train.reshape((10, 9, len(X_train)//(10*9*half), half, 784))
-# (figure, 2nd figure, half-batch, sample, single pixel)
 
-X_list = []
-for figure in X:
-    listt = []
-    for halfbatch in figure:
-        listt.append(halfbatch)
-    X_list.append(listt)
-# a list of lists of half batches, ready to be coupled
 
-batches = []
 
-for i in range(10):
-    for j in range(i):
-        chunk = np.concatenate((X_list[i][0],X_list[j][0]), axis=1)
-        X_list[i].remove(X_list[i][0])
-        X_list[j].remove(X_list[j][0])
-        for batch in chunk:
-            batches.append(batch)
-# a list of lists of batches 1 figure vs. another
-
-strart = time()
 
 
 # %%
@@ -47,7 +29,29 @@ layer1 = chu.CHUNeuralNetwork()
 
 start = time()
 for epoch in range(epochs):
-    random.shuffle(batches)
+    X = X[:, np.random.permutation(len(X[0]))]
+    #shuffle between same figures
+    Y = X.reshape((10, len(X_train)//(10*half), half, 784))
+    # (figure, half-batch, sample, single pixel)
+    
+    list1 = []
+    for figure in Y:
+        list1.append(list(figure))
+    # make it a list for removal
+    
+    batches = []
+    for i in range(10):
+        # for each figure...
+        for j in range(i):
+            #... for each figure combination (i,j)...
+            for k in range(len(X_train)//(10*9*half)):
+                #...take a certain number of images for both figures...
+                batches.append(np.concatenate((list1[i][0],list1[j][0])))
+                # ...make a batch out of them...
+                list1[i].remove(list1[i][0])
+                list1[j].remove(list1[j][0])
+                # ...and remove them from the list!
+
     for b in batches:
         layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,

@@ -18,8 +18,7 @@ epochs=10
 
 start = time()
 for epoch in range(epochs):
-        for i in range(10):
-            X[i] = X[i, np.random.permutation(4500)]
+        X = X[:, np.random.permutation(4500)]
         # scramble each of the 10 figures
         batches = X.reshape((len(X_train)//batch_size, batch_size, 784))
         batches = batches[np.random.permutation(len(batches))]

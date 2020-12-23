@@ -144,7 +144,7 @@ class CHUNeuralNetwork():
         """
         dims = (n_hiddens, len(batch[0]))
         if not hasattr(self, "weight_matrix"):  
-            self.weight_matrix = np.random.normal(0, 1, dims)
+            self.weight_matrix = np.random.normal(0, sigma, dims)
             # The weights are initialized with a gaussian distribution.
 
 
