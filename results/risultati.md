@@ -681,3 +681,119 @@ score1 = forest1.score(transformed_test, y_test)
 ```
 
 </details>
+
+# 24/12/2020
+
+## 1
+
+Ho fatto un po' di prove sul perché non converge quando le p-norme sono tutte 1. succede che uno a caso dei vettori viene selezionato più di tutti. questi sono gli indici del vettore massimo ogni volta:
+
+[11, 11,  5, 48, 67, 11, 67, 11, 11, 53, 11, 11, 67, 79,  4,  5, 30,
+       11, 76, 74, 78, 11, 11, 74, 11, 11, 11,  5, 30, 53, 40, 92, 78, 48,
+       92, 74, 11, 64,  8, 35, 63, 78, 78, 11, 27, 92, 11, 30, 78, 51, 76,
+       11, 11, 66,  4, 79, 15,  9, 78, 30,  5, 78, 11, 54, 66, 30, 67,  4,
+       90, 78, 66, 11, 58, 77, 11, 11, 48, 78, 30, 11, 54, 11, 11, 37, 58,
+       11, 73, 78, 11, 66, 86, 78, 11, 40, 10, 30, 54, 11, 11, 64]
+
+ed ecco cosa succede alle p-norm dopo una batch:
+
+<details>
+
+![](24-12-2020/1/1.png)
+
+</details>
+
+dopo due batch, la situazione è peggiorata:
+
+<details>
+
+![](24-12-2020/1/2.png)
+
+</details>
+
+## finalmente, convergenza, con sigma=10:
+
+<details>
+
+```
+"""Instance CHUNeuralNetwork, fit, transform, represent weights as images."""
+
+import numpy as np
+import CHUNeuralNetwork as chu
+from time import time
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+import utilities as utils
+import random
+np.random.seed(1024)
+random.seed(0)
+
+(X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=10000)
+batch_size=100
+
+
+# %% fit the data
+
+layer1 = chu.CHUNeuralNetwork()
+epochs=160
+
+
+start = time()
+
+for epoch in range(epochs):
+    X = X_train[np.random.permutation(len(X_train))]
+    batches = X.reshape((45000//batch_size, batch_size, 784))
+    for batch in batches:
+        layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4,
+                                         p=2,
+                                         R=1, scale=1, k=2, learn_rate=0.02,
+                                         sigma=10, epoch=epoch, epochs=epochs)
+    print(epoch)
+print(time()-start)
+
+utils.image_representation(layer1.weight_matrix, 2)
+
+
+# %% second layer
+
+
+transformed_train = layer1.transform(X_train, chu.activ, 4.5)
+transformed_test = layer1.transform(X_test, chu.activ, 4.5)
+
+forest1 = RandomForestClassifier()
+
+start=time()
+forest1.fit(transformed_train, y_train)
+print(time()-start)
+
+score1 = forest1.score(transformed_test, y_test)
+# my score: 0.94
+# no transform: 97
+```
+
+![](24-12-2020/2/1.png)
+![](24-12-2020/2/2.png)
+![](24-12-2020/2/3.png)
+
+</details>
+
+## 3
+
+|&Delta;|p|k| &sigma;|LR|promosso|
+|-|-|-|-|-|-|
+|0.4|
+|0.4|
+|0.4|
+|0.4|
+|0.4|
+|0.4|
+|0.4|
+|0.2|
+|0.2|
+|0.2|
+|0.2|
+|0.2|
+|0.2|
+|0.2|
+|0.2|

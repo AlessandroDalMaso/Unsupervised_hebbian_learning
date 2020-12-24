@@ -45,7 +45,7 @@ def mnist_loader(test_size):
     return (X_train, y_train, X_test, y_test)
 
 
-def image_representation(matrix):
+def image_representation(matrix, p):
     
     image = put_in_shape(matrix, 10, 10)
     vmax = np.amax(np.abs(image))
@@ -55,7 +55,7 @@ def image_representation(matrix):
     plt.savefig("images/mnist-random/weights_heatmap")
     
     im2, ax2 = plt.subplots()
-    ax2 = plt.plot(norms(matrix, 3))
+    ax2 = plt.plot(norms(matrix, p))
     plt.savefig("images/mnist-random/p-norms")
     
     im3, ax3 = plt.subplots()

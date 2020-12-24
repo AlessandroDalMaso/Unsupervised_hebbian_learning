@@ -68,7 +68,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     product_result = product(weight_matrix, batch, p)
     sorting = np.argsort(product_result) # batch @ weight_matrix.T?
     update = np.zeros(weight_matrix.shape)
-    for i in range(len(batch)): #  alternative: add.at()
+    for i in range(len(batch)):
         h = sorting[i,-1]
         a = sorting[i,-k]
 
@@ -145,7 +145,12 @@ class CHUNeuralNetwork():
         dims = (n_hiddens, len(batch[0]))
         if not hasattr(self, "weight_matrix"):  
             self.weight_matrix = np.random.normal(0, sigma, dims)
+            #self.weight_matrix = np.abs(self.weight_matrix)
+            #for i in range(len(self.weight_matrix)):
+            #    norm = np.sum(np.abs(self.weight_matrix[i]) ** p)
+            #    self.weight_matrix[i] = self.weight_matrix[i]/(norm ** (1/p))
             # The weights are initialized with a gaussian distribution.
+            
 
 
         update = plasticity_rule_vectorized(self.weight_matrix,
