@@ -778,22 +778,24 @@ score1 = forest1.score(transformed_test, y_test)
 
 </details>
 
-## 3
+# Natale
 
-|&Delta;|p|k| &sigma;|LR|promosso|
+## 1
+
+Un po' di esplorazione dello spazio delle fasi oggi. Selezionati 5 parametri promettenti, prima di tutto prendo dei punti a caso nel loro spazio delle fasi, e li vado a confrontare con il valore che so convergere:
+
+&Delta; = [0, 0.2, 0.4, 0.6, 0.8]
+
+p = [2, 3, 4.5]
+
+k= [2, 3, 4, 5, 6, 7]
+
+&sigma; = [6, 8, 10, ]
+
+LR = [0.01, 0.02, 0.03]
+
+|&Delta;|p|k| &sigma;|LR|score|
 |-|-|-|-|-|-|
-|0.4|
-|0.4|
-|0.4|
-|0.4|
-|0.4|
-|0.4|
-|0.4|
-|0.2|
-|0.2|
-|0.2|
-|0.2|
-|0.2|
-|0.2|
-|0.2|
-|0.2|
+|0.4|2  |2|10|0.02|94.04|
+|0.8|3  |5|6 |0.01|da provare con 160|
+|0  |4.5|3|10|0.02|''|
