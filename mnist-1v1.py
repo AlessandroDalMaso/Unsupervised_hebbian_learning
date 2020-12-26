@@ -6,6 +6,7 @@ import CHUNeuralNetwork as chu
 from time import time
 import utilities as utils
 import random
+from sklearn.ensemble import RandomForestClassifier
 np.random.seed(1024)
 random.seed(0)
 
@@ -24,7 +25,7 @@ X = X_train.reshape((10, len(X_train)//10, 784))
 
 # %%
 
-epochs=10
+epochs=160
 layer1 = chu.CHUNeuralNetwork()
 
 start = time()
@@ -60,8 +61,22 @@ for epoch in range(epochs):
 
 print(time()-start)
 
-utils.image_representation(layer1.weight_matrix)
+utils.image_representation(layer1.weight_matrix, 2)
 
-# %%
+# %% second layer
+
+
+transformed_train = layer1.transform(X_train, chu.activ, 4.5)
+transformed_test = layer1.transform(X_test, chu.activ, 4.5)
+
+forest1 = RandomForestClassifier()
+
+start=time()
+forest1.fit(transformed_train, y_train)
+print(time()-start)
+
+score1 = forest1.score(transformed_test, y_test)
+# my score: 0.94
+# no transform: 97
 
     
