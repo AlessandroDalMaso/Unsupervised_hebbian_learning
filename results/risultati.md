@@ -784,6 +784,8 @@ score1 = forest1.score(transformed_test, y_test)
 
 Un po' di esplorazione dello spazio delle fasi oggi. Selezionati 5 parametri promettenti, prima di tutto prendo dei punti a caso nel loro spazio delle fasi, e li vado a confrontare con il valore che so convergere:
 
+<details>
+
 &Delta; = [0, 0.2, 0.4, 0.6, 0.8]
 
 p = [2, 3, 4.5]
@@ -796,6 +798,99 @@ LR = [0.01, 0.02, 0.03]
 
 |&Delta;|p|k| &sigma;|LR|score|
 |-|-|-|-|-|-|
-|0.4|2  |2|10|0.02|94.04|
-|0.8|3  |5|6 |0.01|da provare con 160|
-|0  |4.5|3|10|0.02|''|
+|0.4|2  |2|10|0.02|94.01|
+|0.8|3  |5|6 |0.01|28|
+|0  |4.5|3|10|0.02|92|
+
+quindi decido di partire dal primo. Cambio di relativamente poco tre parametri scelti a caso:
+
+|&Delta;|p|k| &sigma;|LR|score|
+|-|-|-|-|-|-|
+|0.5|3  |3|10|0.02|94.71|
+
+Ok, sta chiaramente succedendo qualcosa di interessante. Visivamente si vedono delle zone negative, però non c'è convergenza. forse gli serve più tempo per convergere? comunque l'opzione è scartata. torno al modelo di base, quello della prima riga della tabella.
+
+provo questa combinazione:
+
+|&Delta;|p|k| &sigma;|LR|score|
+|-|-|-|-|-|-|
+|0.4|2  |3|10|0.02|94.49|
+
+non converge. La scarto e torno al modello di base. Stavolta cambio solo una variabile:
+
+|&Delta;|p|k| &sigma;|LR|score|
+|-|-|-|-|-|-|
+|0.4|3  |2|10|0.02|94.28|
+
+ L'ultima prova:
+
+ |&Delta;|p|k| &sigma;|LR|score|
+ |-|-|-|-|-|-|
+ |0.4|1  |2|10|0.02||
+
+ Niente, non converge.
+
+ </details>
+
+ Poi ho provato con vari valori di n:
+
+<details>
+
+ |n|1|3|4.5|5|
+ |-|-|-|-|-|
+ |score|93.92|93.99|94.01|93.99|
+
+ </details>
+
+ Poi ho provato a varire le dimensioni delle bach:
+
+ Ora mi manca di provarlo con i tre splitting fatti:
+
+<details>
+
+|batch_size|score|
+|-|-|
+|200|neuroni che non convergono|
+|100|94.01|
+|90|93.97|
+|50|93.54|
+
+</details>
+
+## 2
+
+Ho provato con le tre suddivisioni in batch:
+
+<details>
+
+### batch Random
+
+score = 94.01%
+
+![](24-12-2020/2/1.png)
+![](24-12-2020/2/2.png)
+![](24-12-2020/2/3.png)
+
+
+### batch monotematiche
+
+score=94.34
+
+(no convergenza)
+
+![](26-12-2020/1/1.png)
+![](26-12-2020/1/2.png)
+![](26-12-2020/1/3.png)
+
+
+### batch 1v1
+
+score = 93.75
+
+(no convergenza)
+
+![](26-12-2020/2/1.png)
+![](26-12-2020/2/2.png)
+![](26-12-2020/2/3.png)
+
+</details>
