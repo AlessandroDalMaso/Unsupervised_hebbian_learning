@@ -43,6 +43,7 @@ def mnist_loader(test_size):
     X_test = np.array(test.drop('class', axis=1))/255
     y_test = np.array(test['class'])
     return (X_train, y_train, X_test, y_test)
+        
 
 
 def image_representation(matrix, p):

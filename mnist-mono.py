@@ -14,7 +14,7 @@ random.seed(0)
 batch_size=100 # always a dividend of 4500
 X = X_train.reshape((10, 4500, len(X_train[0])))
 layer1 = chu.CHUNeuralNetwork()
-epochs=10
+epochs=160
 
 start = time()
 for epoch in range(epochs):
@@ -26,12 +26,12 @@ for epoch in range(epochs):
         for batch in batches:
             layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
-                                         sigma=1, epoch=epoch, epochs=epochs)
+                                         sigma=10, epoch=epoch, epochs=epochs)
         print(epoch)
 
 print(time()-start)
 
-utils.image_representation(layer1.weight_matrix)
+utils.image_representation(layer1.weight_matrix, 2)
 
 # %% second layer
 

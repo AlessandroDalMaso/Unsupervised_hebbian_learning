@@ -1,2 +1,7 @@
-come faccio ad organizzare la cartella dei risultati?
-come faccio a valutare l'analisi del clustering?
+come faccio a cancellare la chiave in più?
+
+chiavi:
+1v1
+_1v1
+monotype
+random
