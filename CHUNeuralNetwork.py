@@ -75,10 +75,10 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         update[h] += plasticity_rule(weight_matrix[h], batch[i],
                                      product_result[i,h], 1, p, R,
                                      one_over_scale)
-
-        update[a] += plasticity_rule(weight_matrix[a], batch[i],
-                                     product_result[i,a], -delta, p, R,
-                                     one_over_scale)
+        if delta:
+            update[a] += plasticity_rule(weight_matrix[a], batch[i],
+                                         product_result[i,a], -delta, p, R,
+                                         one_over_scale)
     return update
 
 # %% defining the class
