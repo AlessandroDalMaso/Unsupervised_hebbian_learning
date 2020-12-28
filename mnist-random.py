@@ -8,8 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 import utilities as utils
 import random
-np.random.seed(1024)
-random.seed(0)
+np.random.seed(9471)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=10000)
 batch_size=100
@@ -32,9 +31,10 @@ for epoch in range(epochs):
                                          learn_rate=0.02, sigma=10,
                                          epoch=epoch, epochs=epochs)
     print(epoch)
+    if not epoch%20:
+        utils.image_representation(layer1.weight_matrix, 2)
 print(time()-start)
 
-utils.image_representation(layer1.weight_matrix, 2)
 
 
 # %% second layer

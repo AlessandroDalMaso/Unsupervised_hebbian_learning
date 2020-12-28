@@ -5,8 +5,7 @@ import CHUNeuralNetwork as chu
 from time import time
 import random
 from sklearn.ensemble import RandomForestClassifier
-np.random.seed(1024)
-random.seed(0)
+np.random.seed(6948)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
 # loads 4500 samples for each figure, ordered in the array.

@@ -53,12 +53,9 @@ def image_representation(matrix, p):
     im, ax = plt.subplots()
     ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
     plt.colorbar()
-    plt.savefig("images/mnist-random/weights_heatmap")
     
     im2, ax2 = plt.subplots()
     ax2 = plt.plot(norms(matrix, p))
-    plt.savefig("images/mnist-random/p-norms")
     
     im3, ax3 = plt.subplots()
     ax3 = plt.plot(np.ravel(matrix))
-    plt.savefig("images/mnist-random/weights_unraveled")

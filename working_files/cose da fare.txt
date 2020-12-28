@@ -1,3 +1,2 @@
-fare le batch differenti (così hai una tesi)
-parameter optimization (later!)
-S
+fare prove con più seed per delta = 0, 0.4
+controllare linkage matrix
