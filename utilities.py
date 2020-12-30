@@ -46,16 +46,21 @@ def mnist_loader(test_size):
         
 
 
-def image_representation(matrix, p):
+def image_representation(matrix, p, heatmap, norms, ravel):
+    if heatmap:
+        image = put_in_shape(matrix, 10, 10)
+        vmax = np.amax(np.abs(image))
+        im, ax = plt.subplots()
+        ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
+        plt.colorbar()
+    if norms:
+        im2, ax2 = plt.subplots()
+        ax2 = plt.plot(norms(matrix, p))
+    if ravel:
+        im3, ax3 = plt.subplots()
+        ax3 = plt.plot(np.ravel(matrix))
     
-    image = put_in_shape(matrix, 10, 10)
-    vmax = np.amax(np.abs(image))
-    im, ax = plt.subplots()
-    ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
-    plt.colorbar()
+def matrix_saver(matrix, key):
+    data = pd.DataFrame(matrix)
+    data.to_hdf('matrices', key=key)
     
-    im2, ax2 = plt.subplots()
-    ax2 = plt.plot(norms(matrix, p))
-    
-    im3, ax3 = plt.subplots()
-    ax3 = plt.plot(np.ravel(matrix))
