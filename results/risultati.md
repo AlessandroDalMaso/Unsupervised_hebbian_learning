@@ -894,3 +894,36 @@ score = 93.75
 ![](26-12-2020/2/3.png)
 
 </details>
+
+# 29/12/2020
+
+## 1
+
+Ho provato con 3 seed casuali per delta=0.4, e con 3 seed casuali per delta=0. Il risultato è che c'è convergenza costantemente per quando delta=0.
+
+<details>
+
+I primi tre grafici sono ottenuti con delta=0.4, gli ultimi tre con delta=0.
+
+![](28-12-2020/1/zero-0.4.png)
+![](28-12-2020/1/6984-0.4.png)
+![](28-12-2020/1/9761-0.4.png)
+![](28-12-2020/1/zero-zero.png)
+![](28-12-2020/1/5645-zero.png)
+![](28-12-2020/1/405-zero.png)
+
+</details>
+
+## 2
+
+ho provato a mettere learning rate 0.1 (di solito è 0.02).
+Risultato:
+
+score 93.96
+
+<details>
+
+![](28-12-2020/2/1.png)
+![](28-12-2020/2/2.png)
+
+</details>
