@@ -46,14 +46,14 @@ def mnist_loader(test_size):
         
 
 
-def image_representation(matrix, p, heatmap, norms, ravel):
+def image_representation(matrix, p, heatmap, p_norms, ravel):
     if heatmap:
         image = put_in_shape(matrix, 10, 10)
         vmax = np.amax(np.abs(image))
         im, ax = plt.subplots()
         ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
         plt.colorbar()
-    if norms:
+    if p_norms:
         im2, ax2 = plt.subplots()
         ax2 = plt.plot(norms(matrix, p))
     if ravel:

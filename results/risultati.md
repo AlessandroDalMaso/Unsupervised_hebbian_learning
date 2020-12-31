@@ -927,3 +927,38 @@ score 93.96
 ![](28-12-2020/2/2.png)
 
 </details>
+
+# 30/12/2020
+
+## 1
+
+Ho notato che con delta = 0 converge in 60 batch, ma il punteggio scende a 92% (che le batch siano 60 o 160). punteggio codice originale = 93.92%.
+
+## 2
+ho provato con  400 batch, delta=0.4, non arrivano tutti a 1 comunque, però convergono (non tutti a 1).
+
+<details>
+
+![](30-12-2020/1/1.png)
+![](30-12-2020/1/2.png)
+
+a 380 batch la situazione era questa:
+
+![](30-12-2020/1/3.png)
+
+</details>
+
+## 3
+
+Devo raccogliere dati su tre casi: il codice originale,
+ il mio codice con delta=0 e 0.4. 5 casi per caso e costruiamo media dev. standard e dev. standard della media.
+
+ risultati codice original: 93.61, 94.08, 94.07, 93.58, 93.98
+
+ risultati senza transform: 96.54, 96.70, 96.56, 96.84, 96.58
+
+ risultati codice mio con delta: 93.39, 93.12, 93.16, 93.15, 93.14
+
+ risultarti codice mio senza delta: 93.17, 93.25, 93.05, 93.25, 93.13
+
+ nota: con delta=0 i tempi si dimezzano.

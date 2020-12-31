@@ -1,2 +1,3 @@
-fare prove con più seed per delta = 0, 0.4
-controllare linkage matrix
+fare prove con più seed per ottenere i punteggi medi.
+metrica diversa.
+aggiustare cose minori.
