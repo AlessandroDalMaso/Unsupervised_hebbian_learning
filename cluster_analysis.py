@@ -8,11 +8,12 @@ from utilities import image_representation
 
 X = np.array(pd.read_hdf('matrices', key='random'))
 
-r_link = linkage(X, method='ward')
+r_link = linkage(X, metric='cosine', method='average')
 
-indexes = fcluster(r_link, t=1.2, criterion='distance')
+indexes = fcluster(r_link, t=0.3, criterion='distance')
+print(np.amax(indexes))
 
-for i in range(18):
+for i in range(15):
     M = np.zeros((280,280))
     for y in range(10):
         for x in range(10):
@@ -23,4 +24,4 @@ for i in range(18):
     plt.imshow(M, cmap='bwr', vmax=0.2, vmin=-0.2)
     plt.colorbar()
 
-image_representation(X, 2)
+image_representation(X, 2, True, False, False)
