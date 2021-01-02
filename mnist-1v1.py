@@ -1,6 +1,7 @@
 """Instance CHUNeuralNetwork, fit, transform, represent weights as images."""
 
 import numpy as np
+import pandas as pd
 import CHUNeuralNetwork as chu
 from time import time
 import utilities as utils
@@ -56,12 +57,20 @@ for epoch in range(epochs):
         layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
                                          sigma=1, epoch=epoch, epochs=epochs)
+    if epoch%20 == 0:
+            utils.image_representation(layer1.weight_matrix, 2, heatmap=True,
+                                       p_norms=True, ravel=False)
     print(epoch)
 
 print(time()-start)
 
 utils.image_representation(layer1.weight_matrix, 2, heatmap=True, p_norms=True,
                            ravel=True)
+
+# %% saving the results
+    
+data = pd.DataFrame(layer1.weight_matrix.copy())
+data.to_hdf('matrices', key='_1v1')
 
 # %% second layer
 

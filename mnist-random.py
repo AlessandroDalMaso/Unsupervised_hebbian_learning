@@ -1,6 +1,7 @@
 """Instance CHUNeuralNetwork, fit, transform, represent weights as images."""
 
 import numpy as np
+import pandas as pd
 import CHUNeuralNetwork as chu
 from time import time
 from sklearn.pipeline import Pipeline
@@ -36,8 +37,11 @@ for epoch in range(epochs):
                                    heatmap=True, p_norms=True,
                                    ravel=False)
 print(time()-start)
-    
 
+# %% saving the results
+    
+data = pd.DataFrame(layer1.weight_matrix.copy())
+data.to_hdf('matrices', key='random')
     
     # %% second layer
     
