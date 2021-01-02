@@ -953,7 +953,10 @@ a 380 batch la situazione era questa:
 Devo raccogliere dati su tre casi: il codice originale,
  il mio codice con delta=0 e 0.4. 5 casi per caso e costruiamo media dev. standard e dev. standard della media.
 
+<details>
+
  risultati codice original: 93.61, 94.08, 94.07, 93.58, 93.98
+
 
  risultati senza transform: 96.54, 96.70, 96.56, 96.84, 96.58
 
@@ -962,3 +965,16 @@ Devo raccogliere dati su tre casi: il codice originale,
  risultarti codice mio senza delta: 93.17, 93.25, 93.05, 93.25, 93.13
 
  nota: con delta=0 i tempi si dimezzano.
+
+ |caso|media|sem|
+ |----|-----|---|
+ |codice originale|93.86|0.11|
+ |senza traformazione|96.54|0.05|
+ |codice mio con delta|93.19|0.04|
+ |codice mio senza delta|93.17|0.03|
+
+ </details>
+
+ # 31/12/2020
+
+ Ho controlato la convergenza di mnist-mono e mnist-1v1: sulle 80 batch convergono entrambi. ho anche messo 2/3 matrici nel file.
