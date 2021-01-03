@@ -1,79 +1,3 @@
-## 12/12/2020
-
-### 1
-
-con il mio codice ho fatto 160 epochs con batch a 100.
-<details>
-
-![](12-12-2020/1/2020-12-12-weights.png)
-
-![](12-12-2020/1/2020-12-12-norms.png)
-
-![](12-12-2020/1/2020-12-12-ravel.png)
-</details>
-
-## 15/12/2020
-
-### 1
-con il codice originale, 160 batch da 50 samples
-<details>
-![](15-12-2020/1/15-12-2020-original.png)
-</details>
-
-### 2
-
-ho splittato mnist 25% di test e ho fittato una random forest, senza preprocessare. risultato: score = 0.97
-
-### 3
-
-ho fatto un fit con mnist 25% di test 160 epochs batch da 99 e ho fittato una random forest con i risultati. risultato: score = 0.943
-<details>
-![](15-12-2020/2/p-norms.png)
-
-![](15-12-2020/2/weights_heatmap.png)
-
-![](15-12-2020/2/weights_unraveled.png)
-</details>
-
-# 16/12/2020
-
-## 1
-
-codice: mio
-
-splitting: random
-
-batch: 160
-
-splitting: 16%
-<details>
-
-```
-layer1.fit_single_batch( batch=batch, n_hiddens=100, delta=0.4, p=2, R=1,
-                            scale=1, k=2, learn_rate=0.02, sigma=1,
-                            activation_function=chu.activ, batch_size=99,
-                            epoch=epoch, epochs=epochs)
-```
-![](16-12-2020/1/1.png)
-![](16-12-2020/1/2.png)
-![](16-12-2020/1/3.png)
-</details>
-
-forest score: 0.943571
-
-## 2
-
-ho fittato una foresta con numeri casuali:
-<details>
-
-```
-a = np.random.normal(0, 1, (58800,100))
-
-forest2.fit(a, y_train)
-```
-</details>
-
-score=0.06
 
 # 18/12/2020
 cosa succede quando delta = 0?
@@ -968,7 +892,7 @@ Devo raccogliere dati su tre casi: il codice originale,
 
  |caso|media|sem|
  |----|-----|---|
- |codice originale|93.86|0.11|
+ |codice originale|93.9|0.11|
  |senza traformazione|96.54|0.05|
  |codice mio con delta|93.19|0.04|
  |codice mio senza delta|93.17|0.03|
