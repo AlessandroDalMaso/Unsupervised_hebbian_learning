@@ -85,3 +85,5 @@
 	Il prof. Gimapieri mi ha detto che è meglio tenere delta=0 se sappiamo che coisì non converege comunque, ma almeno non abbiamo un neuron e impoazzito
 28/12/2020
 	Ho passato alcuni giorni pensando che il pattern convergesse per via di un random seed. adesso devo fare dei test per vedere se la non convergenza è vera o ha bisogno di più tempo.
+02/12/2020
+	Lunedì contatto castellani per l'esame. Devo anche usare il server per raccogliere dati.

@@ -1,19 +1,25 @@
 import numpy as np
+from numpy.linalg import norm
 
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram
+from scipy.spatial.distance import squareform
 import pandas as pd
 from scipy.cluster.hierarchy import linkage, fcluster
 from utilities import image_representation
 
 X = np.array(pd.read_hdf('matrices', key='random'))
 
-r_link = linkage(X, metric='cosine', method='average')
+def dist(v, u):
+        return 1 - (v @ u.T) / (norm(u) * norm(v))
 
-indexes = fcluster(r_link, t=0.3, criterion='distance')
+
+r_link = linkage(X, metric=dist, method='average')
+
+indexes = fcluster(r_link, t=0.33, criterion='distance')
 print(np.amax(indexes))
 
-for i in range(15):
+for i in range(np.amax(indexes)+1):
     M = np.zeros((280,280))
     for y in range(10):
         for x in range(10):
@@ -25,3 +31,16 @@ for i in range(15):
     plt.colorbar()
 
 image_representation(X, 2, True, False, False)
+
+def g(r_link, dist):
+    indexes = fcluster(r_link, t=dist, criterion='distance')
+    return (np.amax(indexes))
+
+d = []
+n = []
+for i in np.arange(0, 1, 0.01):
+    print(i, g(r_link, i))
+    d.append(i)
+    n.append(g(r_link, i))
+    
+plt.plot(d, n)

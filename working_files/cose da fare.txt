@@ -1,3 +1,5 @@
-fare prove con più seed per ottenere i punteggi medi.
-metrica diversa.
+mail a castellani
+controllare di essersi iscritti
+vedere la predict score delle altre splitting sul server
+studiare il paper
 aggiustare cose minori.

@@ -52,6 +52,7 @@ forest1.fit(transformed_train, y_train)
 print(time()-start)
 
 score1 = forest1.score(transformed_test, y_test)
+print(score1)
 # my score: 0.94
 # no transform: 0.97
 
