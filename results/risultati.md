@@ -902,3 +902,24 @@ Devo raccogliere dati su tre casi: il codice originale,
  # 31/12/2020
 
  Ho controlato la convergenza di mnist-mono e mnist-1v1: sulle 80 batch convergono entrambi. ho anche messo 2/3 matrici nel file.
+
+# 03/01/2021
+
+## 1
+
+Devo raccogliere dati sulla convergenza e sul punteggio di mnist-mono e mnist-1v1.
+
+Ho notato inostre che con ottanta batch e learn_rate 0.04 converge lo stesso.
+
+<details>
+
+punteggi di mnist-mono: 93.07, 93.31, 93.39, 92.59, 93.24
+
+punteggi di mnist-1v1: 93.08, 93.04, 93.03, 92.75, 93.08
+
+|caso|media|sem |
+|----|-----|----|
+|mono|93.1 |0.14|
+|1v1 |93.00|0.06|
+
+</details>
