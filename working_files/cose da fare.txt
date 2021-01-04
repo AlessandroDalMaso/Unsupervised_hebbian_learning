@@ -3,3 +3,4 @@ controllare di essersi iscritti
 vedere la predict score delle altre splitting sul server
 studiare il paper
 aggiustare cose minori.
+mettere uno smorzamento migliore.

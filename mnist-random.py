@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 import utilities as utils
 import random
-np.random.seed(2024)
+#np.random.seed(2024)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=10000)
 batch_size=100
@@ -29,7 +29,7 @@ for epoch in range(epochs):
     for batch in batches:
         layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0,
                                          p=2, R=1, scale=1, k=2,
-                                         learn_rate=0.02, sigma=10,
+                                         learn_rate=0.1, sigma=10,
                                          epoch=epoch, epochs=epochs)
     print(epoch)
     if epoch%50 == 0:

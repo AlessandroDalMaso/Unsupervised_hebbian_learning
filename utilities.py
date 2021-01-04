@@ -62,5 +62,5 @@ def image_representation(matrix, p, heatmap, p_norms, ravel):
     
 def matrix_saver(matrix, key):
     data = pd.DataFrame(matrix)
-    data.to_hdf('matrices', key=key)
+    data.to_hdf('results/matrices', key=key)
     
