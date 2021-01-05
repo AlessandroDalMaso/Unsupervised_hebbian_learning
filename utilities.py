@@ -5,10 +5,6 @@ import pandas as pd
 from os.path import exists
 import matplotlib.pyplot as plt
 
-def batchize(iterable, batch_size):
-    """Put iterables in batches."""
-    for n in range(0, len(iterable), batch_size):
-        yield iterable[n:min(n + batch_size, len(iterable))]
 
 def put_in_shape(matrix, rows, columns, indexes=None):
     """represent some weights"""
