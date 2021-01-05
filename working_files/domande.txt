@@ -1,1 +1,2 @@
-enviroinment anaconda
+environment anaconda
+activation function: n=4.5 o niente?

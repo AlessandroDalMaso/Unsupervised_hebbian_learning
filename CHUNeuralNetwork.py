@@ -114,17 +114,17 @@ class CHUNeuralNetwork():
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k,
                          learn_rate, sigma, epoch, epochs):
-        """Fit the weigths to the data.
+        """Fit the weigths to a single batch.
 
-        Intialize the matrix of weights, the put the data in minibatches and
-        update the matrix for each minibatch.
+        Intialize the matrix of weights, then update the matrix with the result
+        of plasticity_rule_vectorized.
 
         Parameters
         ----------
-        X
+        batch
             The data to fit. Shape: (sample, feature).
         n_hiddens:
-            the number of hidden neurons
+            the number of hidden neurons.
         delta:
             Relative strenght of anti-hebbian learning.
         p:
