@@ -136,6 +136,16 @@ class CHUNeuralNetwork():
         k:
             The k-th most activated hidden neuron will undergo anti-hebbian
             learning.
+        learn_rate:
+            The update will be normalized so that its maximum (in absolute
+            value) will be equal to this parameter.
+        sigma:
+            The standard deviation of the normal distribution from wich random
+            weights initial values are drawn.
+        epoch:
+            The epoch number.
+        epochs:
+            the total number of epochs.
 
         Return
         ------
@@ -163,6 +173,44 @@ class CHUNeuralNetwork():
 
     def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
             sigma, batch_size, epochs):
+        """Fit the weigths to the whole database.
+
+        Intialize the matrix of weights, then put the data in minibatches, then
+        fit the matrix of weights to each batch.
+
+        Parameters
+        ----------
+        database
+            The data to fit. Shape: (sample, feature).
+        n_hiddens:
+            the number of hidden neurons.
+        delta:
+            Relative strenght of anti-hebbian learning.
+        p:
+            Exponent of the lebesgue norm used (see product function).
+        R:
+            Radius of the sphere on wich the weights will converge.
+        scale:
+            The learning rate.
+        k:
+            The k-th most activated hidden neuron will undergo anti-hebbian
+            learning.
+        learn_rate:
+            The update will be normalized so that its maximum (in absolute
+            value) will be equal to this parameter.
+        sigma:
+            The standard deviation of the normal distribution from wich random
+            weights initial values are drawn.
+        batch_size:
+            The size of the batches to put samples in.
+        epochs:
+            the total number of epochs.
+
+        Return
+        ------
+        CHUNeuralNetwork
+            The network itself.
+        """
 
         dims = (n_hiddens, len(database[0]))
         if not hasattr(self, "weight_matrix"):  
@@ -171,9 +219,10 @@ class CHUNeuralNetwork():
 
         for epoch in range(epochs):
             X = database[np.random.permutation(len(database))]
-            for batch in batchize(X, batch_size):
+            for i in range(0, len(X), batch_size):
+                batch=X[i:i+batch_size]
                 self.fit_single_batch(batch, n_hiddens, delta, p, R, scale, k,
-                         learn_rate, sigma, batch_size, epoch, epochs)
+                         learn_rate, sigma, epoch, epochs)
             print(epoch)
 
         return self

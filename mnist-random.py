@@ -18,7 +18,7 @@ batch_size=100
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=100
+epochs=1
 
 
 start = time()
