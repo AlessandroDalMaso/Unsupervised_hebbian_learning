@@ -47,7 +47,7 @@ def put_in_shape(matrix, rows, columns, height, width, indexes=None):
 
 def norms(matrix, p):
     """p-norms of vectors in a matrix."""
-    return np.sum(np.abs(matrix) ** p, axis=1)
+    return (np.sum(np.abs(matrix) ** p, axis=1) ** (1/p))
 
 def mnist_loader(test_size):
     # only safe for test_size < 0.27!
