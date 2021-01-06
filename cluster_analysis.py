@@ -3,7 +3,6 @@ from numpy.linalg import norm
 
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram
-from scipy.spatial.distance import squareform
 import pandas as pd
 from scipy.cluster.hierarchy import linkage, fcluster
 from utilities import image_representation

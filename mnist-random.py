@@ -28,8 +28,8 @@ for epoch in range(epochs):
                                          learn_rate=0.1, sigma=10,
                                          epoch=epoch, epochs=epochs)
     print(epoch)
-    if epoch%50 == 0:
-        utils.image_representation(layer1.weight_matrix, 2,
+    if epoch%50 == 49:
+        utils.image_representation(layer1.weight_matrix, 2, epoch,
                                    heatmap=True, pnorms=True,
                                    ravel=False)
 print(time()-start)

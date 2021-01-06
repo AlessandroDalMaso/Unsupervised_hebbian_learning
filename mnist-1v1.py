@@ -57,14 +57,14 @@ for epoch in range(epochs):
         layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.04,
                                          sigma=1, epoch=epoch, epochs=epochs)
-    #if epoch%20 == 0:
+    #if epoch%20 == 19:
             #utils.image_representation(layer1.weight_matrix, 2, heatmap=True,
                                        #pnorms=True, ravel=False)
     #print(epoch)
 
 #print(time()-start)
 
-utils.image_representation(layer1.weight_matrix, 2, heatmap=True, p_norms=True,
+utils.image_representation(layer1.weight_matrix, 2, epoch, heatmap=True, p_norms=True,
                            ravel=True)
 
 # %% saving the results
@@ -75,18 +75,7 @@ data.to_hdf('matrices', key='_1v1')
 # %% second layer
 
 
-transformed_train = layer1.transform(X_train, chu.activ, 4.5)
-transformed_test = layer1.transform(X_test, chu.activ, 4.5)
-
-forest1 = RandomForestClassifier()
-
-start=time()
-forest1.fit(transformed_train, y_train)
-#print(time()-start)
-
-score1 = forest1.score(transformed_test, y_test)
-print(score1)
-# my score: 0.94
-# no transform: 97
+score = utils.score(X_train, y_train, X_test, y_test, layer1, (chu.activ, 4.5))
+print(score)
 
     

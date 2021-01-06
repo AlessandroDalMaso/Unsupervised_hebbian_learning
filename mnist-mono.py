@@ -25,8 +25,8 @@ for epoch in range(epochs):
             layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
                                          sigma=10, epoch=epoch, epochs=epochs)
-        if epoch%20 == 0:
-            utils.image_representation(layer1.weight_matrix, 2, heatmap=True,
+        if epoch%20 == 19:
+            utils.image_representation(layer1.weight_matrix, 2, epoch, heatmap=True,
                                        pnorms=True, ravel=False)
         print(epoch)
 
@@ -42,17 +42,6 @@ data.to_hdf('matrices', key='monotype')
 # %% second layer
 
 
-transformed_train = layer1.transform(X_train, chu.activ, 4.5)
-transformed_test = layer1.transform(X_test, chu.activ, 4.5)
-
-forest1 = RandomForestClassifier()
-
-start=time()
-forest1.fit(transformed_train, y_train)
-print(time()-start)
-
-score1 = forest1.score(transformed_test, y_test)
-print(score1)
-# my score: 0.94
-# no transform: 0.97
+score = utils.score(X_train, y_train, X_test, y_test, layer1, (chu.activ, 4.5))
+print(score)
 
