@@ -6,17 +6,19 @@ from os.path import exists
 import matplotlib.pyplot as plt
 
 
-def put_in_shape(matrix, rows, columns, indexes=None):
+def put_in_shape(matrix, rows, columns, height, width, indexes=None):
     """represent some weights"""
     if indexes is None:
         indexes = range(len(matrix))
     counter = 0
-    image=np.zeros((28*rows, 28*columns))
+    h = height
+    w = width
+    image=np.zeros((w*rows, h*columns))
     for y in range(rows):
         for x in range(columns):
-            shape = (28, 28)
+            shape = (h, w)
             subimage = np.reshape(matrix[indexes[counter]], shape)
-            image[y*28:(y+1)*28, x*28:(x+1)*28] = subimage
+            image[y*h:(y+1)*h, x*w:(x+1)*w] = subimage
             counter += 1
     return image
 
@@ -44,7 +46,7 @@ def mnist_loader(test_size):
 
 def image_representation(matrix, p, heatmap, p_norms, ravel):
     if heatmap:
-        image = put_in_shape(matrix, 10, 10)
+        image = put_in_shape(matrix, 10, 10, 28, 28)
         vmax = np.amax(np.abs(image))
         im, ax = plt.subplots()
         ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
