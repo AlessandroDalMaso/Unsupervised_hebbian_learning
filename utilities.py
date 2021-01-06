@@ -50,7 +50,24 @@ def norms(matrix, p):
     return (np.sum(np.abs(matrix) ** p, axis=1) ** (1/p))
 
 def mnist_loader():
-    # only safe for test_size < 0.27!
+    """load up an already nomalized MNIST database.
+
+    Download the MNIST database, thean load it in memory and return it in 4
+    numpy arrays.
+
+    return
+    ------
+
+    X_train: ndarray
+        Shape (45000, 784). 4500 samples FOR EACH FIGURE, ordered and already
+        normalized.
+    y_train: ndarray
+        Shape (45000,). the corresponding labels.
+    X_test: ndarray
+        Shape (10000, 784). 10000 samples for testing.
+    y_test: ndarray
+        Shape (10000,). The corresponding labels.
+    """
     if not exists('./data/mnist'):
         bunch = fetch_openml('mnist_784', version=1, as_frame=True)
         bunch.frame.to_hdf('data/mnist', key='key', format='table')
@@ -67,21 +84,46 @@ def mnist_loader():
         
 
 
-def image_representation(matrix, p, heatmap, p_norms, ravel):
+def image_representation(matrix, p, heatmap, pnorms, ravel):
+    """Represent some useful data about the matrix.
+
+    heatmap:
+        Represent all synapses in a heatmap image, wich consents to visually
+        characterize the shapes emerging while fitting.
+    pnorms:
+        the p-norms of each row in matrix, wich should converge to the
+        parameter R of the CHUNeuralNetwork.
+    ravel:
+        All the synapses, unraveled.
+
+    Parameters:
+    -----------
+    matrix
+        The matrix of the synapses.
+    p
+        The exponent of the p-norms.
+    heatmap:
+        Whenever to show the heatmap
+    pnorms:
+        Whenever to show the p-norms.
+    ravel:
+        Whenever to show the unraveled synapses.
+    """
     if heatmap:
         image = put_in_shape(matrix, 10, 10, 28, 28)
         vmax = np.amax(np.abs(image))
         im, ax = plt.subplots()
-        ax = plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
+        plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
         plt.colorbar()
-    if p_norms:
+    if pnorms:
         im2, ax2 = plt.subplots()
-        ax2 = plt.plot(norms(matrix, p))
+        plt.plot(norms(matrix, p))
     if ravel:
         im3, ax3 = plt.subplots()
-        ax3 = plt.plot(np.ravel(matrix))
+        plt.plot(np.ravel(matrix))
     
 def matrix_saver(matrix, key):
+    "save the fit results in a file."
     data = pd.DataFrame(matrix)
     data.to_hdf('results/matrices', key=key)
     
