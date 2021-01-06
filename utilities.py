@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from os.path import exists
 import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
 
 
 def put_in_shape(matrix, rows, columns, height, width, indexes=None):
@@ -126,4 +127,15 @@ def matrix_saver(matrix, key):
     "save the fit results in a file."
     data = pd.DataFrame(matrix)
     data.to_hdf('results/matrices', key=key)
+
+
+def score(X_train, y_train, X_test, y_test, transformer, args):
+    transformed_train = transformer.transform(X_train, *args)
+    transformed_test = transformer.transform(X_test, *args)
+    forest1 = RandomForestClassifier()
+    forest1.fit(transformed_train, y_train)
+    score1 = forest1.score(transformed_test, y_test)
+    return score1
+    # my score: 0.94
+    # no transform: 97
     

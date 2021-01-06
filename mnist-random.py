@@ -4,11 +4,7 @@ import numpy as np
 import pandas as pd
 import CHUNeuralNetwork as chu
 from time import time
-from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
 import utilities as utils
-import random
 #np.random.seed(2024)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader()
@@ -18,7 +14,7 @@ batch_size=100
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=80
+epochs=1
 
 
 start = time()
@@ -34,7 +30,7 @@ for epoch in range(epochs):
     print(epoch)
     if epoch%50 == 0:
         utils.image_representation(layer1.weight_matrix, 2,
-                                   heatmap=True, p_norms=True,
+                                   heatmap=True, pnorms=True,
                                    ravel=False)
 print(time()-start)
 
@@ -45,15 +41,4 @@ data.to_hdf('matrices', key='random')
     
     # %% second layer
     
-    
-transformed_train = layer1.transform(X_train, chu.activ, 4.5)
-transformed_test = layer1.transform(X_test, chu.activ, 4.5)
-
-forest1 = RandomForestClassifier()
-
-forest1.fit(transformed_train, y_train)
-
-score1 = forest1.score(transformed_test, y_test)
-print(score1)
-# my score: 0.94
-# no transform: 97
+score = utils.score(X_train, y_train, X_test, y_test, layer1, (chu.activ, 4.5))

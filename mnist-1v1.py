@@ -59,7 +59,7 @@ for epoch in range(epochs):
                                          sigma=1, epoch=epoch, epochs=epochs)
     #if epoch%20 == 0:
             #utils.image_representation(layer1.weight_matrix, 2, heatmap=True,
-                                       #p_norms=True, ravel=False)
+                                       #pnorms=True, ravel=False)
     #print(epoch)
 
 #print(time()-start)
