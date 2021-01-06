@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 np.random.seed(1024)
 #random.seed(0)
 
-(X_train, y_train, X_test, y_test) = utils.mnist_loader(10000)
+(X_train, y_train, X_test, y_test) = utils.mnist_loader()
 
 layer1 = chu.CHUNeuralNetwork()
 half = 50

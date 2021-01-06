@@ -6,13 +6,13 @@ from time import time
 from sklearn.ensemble import RandomForestClassifier
 np.random.seed(6948)
 
-(X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=0.16)
+(X_train, y_train, X_test, y_test) = utils.mnist_loader()
 # loads 4500 samples for each figure, ordered in the array.
 
 batch_size=100 # always a dividend of 4500
 X = X_train.reshape((10, 4500, len(X_train[0])))
 layer1 = chu.CHUNeuralNetwork()
-epochs=160
+epochs=1
 
 start = time()
 for epoch in range(epochs):

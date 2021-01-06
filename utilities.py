@@ -49,13 +49,13 @@ def norms(matrix, p):
     """p-norms of vectors in a matrix."""
     return (np.sum(np.abs(matrix) ** p, axis=1) ** (1/p))
 
-def mnist_loader(test_size):
+def mnist_loader():
     # only safe for test_size < 0.27!
     if not exists('./data/mnist'):
         bunch = fetch_openml('mnist_784', version=1, as_frame=True)
         bunch.frame.to_hdf('data/mnist', key='key', format='table')
     mnist = pd.read_hdf('data/mnist', key='key')
-    train, test = train_test_split(mnist, test_size=test_size)
+    train, test = train_test_split(mnist, test_size=10000)
     sorted_train = train.sort_values('class')
     equal_train = sorted_train.groupby('class').head(4500).reset_index(drop=True)
 

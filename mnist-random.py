@@ -11,7 +11,7 @@ import utilities as utils
 import random
 #np.random.seed(2024)
 
-(X_train, y_train, X_test, y_test) = utils.mnist_loader(test_size=10000)
+(X_train, y_train, X_test, y_test) = utils.mnist_loader()
 batch_size=100
 
 
