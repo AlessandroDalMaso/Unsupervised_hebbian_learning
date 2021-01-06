@@ -7,7 +7,30 @@ import matplotlib.pyplot as plt
 
 
 def put_in_shape(matrix, rows, columns, height, width, indexes=None):
-    """represent some weights"""
+    """put the synapses in a human-readable shape.
+
+    Each neuron has height x width synapses. These rectangles get represented
+    justaxposed in the same image.
+
+    parameters
+    ----------
+
+    matrix
+        The synapses.
+    rows, columns
+        The image is composed of rows*columns subimages...
+    height, width
+        ...each of wich is height*width pixels.
+    indexes:
+        the indexes of the neurons whose synapses we want to represent. if it
+        is None, then all synapses will be represented.
+
+    return
+    ------
+    image: ndarray
+        shape: (rows*width, columns*height)
+        
+    """
     if indexes is None:
         indexes = range(len(matrix))
     counter = 0
