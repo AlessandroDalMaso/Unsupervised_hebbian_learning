@@ -85,7 +85,7 @@ def mnist_loader():
         
 
 
-def image_representation(matrix, p, heatmap, pnorms, ravel):
+def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
     """Represent some useful data about the matrix.
 
     heatmap:
@@ -116,12 +116,15 @@ def image_representation(matrix, p, heatmap, pnorms, ravel):
         im, ax = plt.subplots()
         plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
         plt.colorbar()
+        plt.title('epochs processed: ' + str(epoch+1))
     if pnorms:
         im2, ax2 = plt.subplots()
         plt.plot(norms(matrix, p))
+        plt.title('epochs processed: ' + str(epoch+1))
     if ravel:
         im3, ax3 = plt.subplots()
         plt.plot(np.ravel(matrix))
+        plt.title('epochs processed: ' + str(epoch+1))
     
 def matrix_saver(matrix, key):
     "save the fit results in a file."
