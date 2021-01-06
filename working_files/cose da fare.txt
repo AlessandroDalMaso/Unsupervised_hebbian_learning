@@ -1,6 +1,3 @@
-mail a castellani
-controllare di essersi iscritti
-vedere la predict score delle altre splitting sul server
-studiare il paper
+implementare le distanze
 aggiustare cose minori.
-mettere uno smorzamento migliore.
+mettere uno smorzamento migliore. (maybe)

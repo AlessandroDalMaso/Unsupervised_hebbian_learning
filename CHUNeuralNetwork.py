@@ -2,7 +2,6 @@
 
 import numpy as np
 from scipy.integrate import solve_ivp
-from utilities import batchize
 
 # %% defining external equations
 
@@ -62,8 +61,8 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
         One over the time scale of learning.
     Return
     -----
-    update
-        ndarray, same shape as weight_matrix.
+    update: ndarray
+        same shape as weight_matrix.
     """
     product_result = product(weight_matrix, batch, p)
     sorting = np.argsort(product_result) # batch @ weight_matrix.T?
