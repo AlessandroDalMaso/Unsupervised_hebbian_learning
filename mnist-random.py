@@ -14,7 +14,7 @@ batch_size=100
 # %% fit the data
 
 layer1 = chu.CHUNeuralNetwork()
-epochs=1
+epochs=160
 
 
 start = time()
@@ -37,7 +37,7 @@ print(time()-start)
 # %% saving the results
     
 data = pd.DataFrame(layer1.weight_matrix.copy())
-data.to_hdf('matrices', key='random')
+data.to_hdf('results/matrices', key='random')
     
     # %% second layer
     

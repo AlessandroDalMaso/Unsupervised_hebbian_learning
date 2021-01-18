@@ -126,10 +126,6 @@ def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
         plt.plot(np.ravel(matrix))
         plt.title('epochs processed: ' + str(epoch+1))
     
-def matrix_saver(matrix, key):
-    "save the fit results in a file."
-    data = pd.DataFrame(matrix)
-    data.to_hdf('results/matrices', key=key)
 
 
 def score(X_train, y_train, X_test, y_test, transformer, args):

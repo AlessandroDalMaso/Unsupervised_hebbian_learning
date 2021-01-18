@@ -12,7 +12,7 @@ np.random.seed(6948)
 batch_size=100 # always a dividend of 4500
 X = X_train.reshape((10, 4500, len(X_train[0])))
 layer1 = chu.CHUNeuralNetwork()
-epochs=1
+epochs=160
 
 start = time()
 for epoch in range(epochs):
@@ -37,7 +37,7 @@ print(time()-start)
 # %% saving the results
     
 data = pd.DataFrame(layer1.weight_matrix.copy())
-data.to_hdf('matrices', key='monotype')
+data.to_hdf('results/matrices', key='monotype')
 
 # %% second layer
 

@@ -23,8 +23,8 @@ def three_d(v):
     return points
 
 def dist_haus(u, v, pdist='euclidean'):
-        u3 = u.reshape(len(u)//3, 3)
-        v3 = v.reshape(len(v)//3, 3)
+        u3 = three_d(u)
+        v3 = three_d(v)
         return hausdorff_distance(u3, v3, pdist)
 
 def dist_row(u, v):
@@ -35,37 +35,36 @@ def dist_row(u, v):
         return dist_cos(u_r, v_r)
 
 def littleroot(Aw_ij, Bw_ij, A_ij, B_ij):
-    d1 = hausdorff_distance(Aw_ij, np.array([B_ij]))
-    d2 = hausdorff_distance(Bw_ij, np.array([A_ij]))
+    d1 = np.amin((Aw_ij - B_ij) ** 2)
+    d2 = np.amin((Bw_ij - A_ij) ** 2)
     return sqrt(d1 * d1 + d2 * d2)
 
-def dist_avg(u, v):
-    A = u[:,:,2].reshape((28,28))
-    B = v[:,:,2].reshape((28,28))
-    W = 5
+def dist_avg(u, v, W):
+    A = u.reshape((28,28))
+    B = v.reshape((28,28))
     N = len(A)
-    total = 0
-    for ay in np.arange(W, N-W, 1):
-        for ax in np.arange(W, N-W, 1):
-            for by in np.arange(W, N-W, 1):
-                    for bx in np.arange(W, N-W, 1):
-                        Aw_ij = A[ay-W:ay+W, ax-W,ay+W]
-                        Bw_ij = B[by-W:by+W, bx-W,by+W]
-                        A_ij = A[]
-                        total += littleroot(Aw_ij, Bw_ij, A_ij, B_ij)
-                
-        
+    result = 0
+    for i in np.arange(W, N-W, 1):
+        for j in np.arange(W, N-W, 1):
+            Aw_ij = three_d(A[i-W:i+W+1, j-W:j+W+1].ravel())
+            Bw_ij = three_d(B[i-W:i+W+1, j-W:j+W+1].ravel())
+            A_ij = np.array([i/28, j/28, A[i, j]])
+            B_ij = np.array([i/28, j/28, B[i, j]])
+
+            result += littleroot(Aw_ij, Bw_ij, A_ij, B_ij)
+            coefficient = 0.5 * (N - 2* W)
+    return result * coefficient
+
 
 random = np.array(pd.read_hdf('results/matrices', key='random'))
 mono = np.array(pd.read_hdf('results/matrices', key='monotype'))
 _1v1 = np.array(pd.read_hdf('results/matrices', key='_1v1'))
 
-random_3d = np.apply_along_axis(three_d, 1, random).reshape((100,784*3))
-mono_3d = np.apply_along_axis(three_d, 1, mono).reshape((100,784*3))
-_1v1_3d = np.apply_along_axis(three_d, 1, _1v1).reshape((100,784*3))
 
 
-r_link = linkage(random_3d, metric=dist_haus, method='average')
+# %% linkage
+
+r_link = linkage(random, metric=dist_haus, method='average')
 
 def g(r_link, dist):
     indexes = fcluster(r_link, t=dist, criterion='distance')
@@ -88,7 +87,7 @@ plt.show()
 
 d = []
 n = []
-for i in np.arange(0.08, 0.12, 0.001):
+for i in np.arange(0, 1, 0.01):
     print(i, g(r_link, i))
     d.append(i)
     n.append(g(r_link, i))

@@ -1,5 +1,1 @@
-environment anaconda
-activation function: n=4.5 o niente?
-import miei su bio10?
-farsi spiegare mnist_loader
-dove mettere certe funzioni
+haudorff senza normalizzazione: provare a tentativi le altre due distanze?

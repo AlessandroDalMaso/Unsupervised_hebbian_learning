@@ -1,7 +1,6 @@
 """A biology-inspired data transformer."""
 
 import numpy as np
-from scipy.integrate import solve_ivp
 
 # %% defining external equations
 
@@ -110,6 +109,7 @@ class CHUNeuralNetwork():
     def transform(self, X, activation_function=activ, *args):
         """Transform the data."""
         return activation_function(X @ self.weight_matrix.T, *args)
+    # UUUUUUUUUUUUUUUUUUUUUUUU
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k,
                          learn_rate, sigma, epoch, epochs):
