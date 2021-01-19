@@ -117,6 +117,8 @@ def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
         plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
         plt.colorbar()
         plt.title('epochs processed: ' + str(epoch+1))
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
     if pnorms:
         im2, ax2 = plt.subplots()
         plt.plot(norms(matrix, p))
