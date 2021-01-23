@@ -5,7 +5,26 @@ import pandas as pd
 from os.path import exists
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import SGDClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.neighbors import KNeighborsClassifier
+from math import sqrt
+from hausdorff import hausdorff_distance
 
+def three_d(v):
+    points = np.empty((len(v),3))
+    lenght = int(sqrt(len(v)))
+    img = np.reshape(v, (lenght, lenght))
+    valmax = np.amax(img)
+    for (y, x), val in np.ndenumerate(img):
+        points[lenght*y+x] = np.array([x/28, y/28, val])
+    return points
+
+def dist_haus(u, v, pdist='euclidean'):
+        u3 = three_d(u)
+        v3 = three_d(v)
+        return hausdorff_distance(u3, v3, pdist)
 
 def put_in_shape(matrix, rows, columns, height, width, indexes=None):
     """put the synapses in a human-readable shape.
@@ -127,16 +146,47 @@ def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
         im3, ax3 = plt.subplots()
         plt.plot(np.ravel(matrix))
         plt.title('epochs processed: ' + str(epoch+1))
-    
+
+
+def h_activation(X):
+    return np.where(X<0, 0, X)
 
 
 def score(X_train, y_train, X_test, y_test, transformer, args):
-    transformed_train = transformer.transform(X_train, *args)
-    transformed_test = transformer.transform(X_test, *args)
+    t_train = transformer.transform(X_train, *args)
+    t_test = transformer.transform(X_test, *args)
+
     forest1 = RandomForestClassifier()
-    forest1.fit(transformed_train, y_train)
-    score1 = forest1.score(transformed_test, y_test)
-    return score1
-    # my score: 0.94
-    # no transform: 97
+    forest1.fit(X_train, y_train)
+    score1 = forest1.score(X_test, y_test)
+    print('random forest no transform score: ', score1)
+
+    forest2 = RandomForestClassifier()
+    forest2.fit(t_train, y_train)
+    score2 = forest2.score(t_test, y_test)
+    print('random forest transform score: ', score2)
+
+    
+    pip_ns_perceptron = make_pipeline(StandardScaler(), SGDClassifier(loss='perceptron'))
+    pip_ns_perceptron.fit(h_activation(X_train), y_train)
+    score3 = pip_ns_perceptron.score(h_activation(X_test), y_test)
+    print('second layer no transform score: ', score3)
+
+
+    pip_perceptron = make_pipeline(StandardScaler(), SGDClassifier(loss='perceptron'))
+    pip_perceptron.fit(h_activation(t_train), y_train)
+    score5 = pip_perceptron.score(h_activation(t_test), y_test)
+    print('second layer transform score: ', score5)
+
+    pip_SVM_nt = make_pipeline(StandardScaler(),SGDClassifier(max_iter=2000))
+    pip_SVM_nt.fit(X_train, y_train)
+    score6 = pip_SVM_nt.score(X_test, y_test)
+    print('SVM score no transform: ', score6)
+
+    pip_SVM = make_pipeline(StandardScaler(),SGDClassifier(max_iter=2000))
+    pip_SVM.fit(t_train, y_train)
+    score7 = pip_SVM.score(t_test, y_test)
+    print('SVM score transformed: ', score7)
+
+    
     
