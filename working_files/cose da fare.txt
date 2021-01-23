@@ -1,3 +1,0 @@
-implementare le distanze
-aggiustare cose minori.
-mettere uno smorzamento migliore. (maybe)

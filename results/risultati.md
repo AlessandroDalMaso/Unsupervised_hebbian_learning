@@ -923,3 +923,9 @@ punteggi di mnist-1v1: 93.08, 93.04, 93.03, 92.75, 93.08
 |1v1 |93.00|0.06|
 
 </details>
+
+# 20/01/2020
+
+## 1
+
+Voglio provare a raccogliere dati con diversi apprendimenti supervised.

@@ -7,25 +7,11 @@ import pandas as pd
 from scipy.cluster.hierarchy import linkage, fcluster
 from utilities import image_representation
 from math import sqrt
-from hausdorff import hausdorff_distance
-from scipy.spatial.distance import squareform
+from utilities import dist_haus, three_d
 
 def dist_cos(v, u):
         return 1 - (v @ u.T) / (norm(u) * norm(v))
 
-def three_d(v):
-    points = np.empty((len(v),3))
-    lenght = int(sqrt(len(v)))
-    img = np.reshape(v, (lenght, lenght))
-    valmax = np.amax(img)
-    for (y, x), val in np.ndenumerate(img):
-        points[lenght*y+x] = np.array([x/28, y/28, val])
-    return points
-
-def dist_haus(u, v, pdist='euclidean'):
-        u3 = three_d(u)
-        v3 = three_d(v)
-        return hausdorff_distance(u3, v3, pdist)
 
 def dist_row(u, v):
         u_sq = u.reshape((28,28))

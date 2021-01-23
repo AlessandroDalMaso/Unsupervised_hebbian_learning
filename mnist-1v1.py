@@ -56,7 +56,7 @@ for epoch in range(epochs):
     for b in batches:
         layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
-                                         sigma=1, epoch=epoch, epochs=epochs)
+                                         sigma=10, epoch=epoch, epochs=epochs)
     if epoch%20 == 19:
             utils.image_representation(layer1.weight_matrix, 2, epoch=epoch, heatmap=True,
                                        pnorms=True, ravel=False)
