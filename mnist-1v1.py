@@ -5,10 +5,8 @@ import pandas as pd
 import CHUNeuralNetwork as chu
 from time import time
 import utilities as utils
-import random
-from sklearn.ensemble import RandomForestClassifier
 np.random.seed(1024)
-#random.seed(0)
+
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader()
 
@@ -56,11 +54,11 @@ for epoch in range(epochs):
     for b in batches:
         layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
-                                         sigma=10, epoch=epoch, epochs=epochs)
-    if epoch%20 == 19:
-            utils.image_representation(layer1.weight_matrix, 2, epoch=epoch, heatmap=True,
-                                       pnorms=True, ravel=False)
+                                         sigma=1, epoch=epoch, epochs=epochs)
+            
     #print(epoch)
+utils.image_representation(layer1.weight_matrix, 2, epoch=epoch, heatmap=True,
+                                       pnorms=True, ravel=False)
 
 #print(time()-start)
 

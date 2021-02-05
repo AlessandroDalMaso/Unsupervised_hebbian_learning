@@ -322,6 +322,7 @@ score1 = forest1.score(transformed_test, y_test)
 
 ![](22-12-2020/1/1.png)
 ![](22-12-2020/1/1.png)
+
 </details>
 
 ## 2
@@ -928,4 +929,43 @@ punteggi di mnist-1v1: 93.08, 93.04, 93.03, 92.75, 93.08
 
 ## 1
 
-Voglio provare a raccogliere dati con diversi apprendimenti supervised.
+Voglio provare a raccogliere dati con diversi apprendimenti supervised. Prima ho provato con sigma=10 e delta=0.4, ma **ho notato che nel 30 % dei casi converge a quello schema di nove blu**. qundi ho messo sigma01 e delta=0.
+
+<details>
+
+random forest no transform:
+
+[0.9683,0.9696,0.9689,0.9685,0.9698]
+
+random forest transform:
+
+[0.9321,0.9318,0.9314,0.9299,0.9313]
+
+second layer no transform:
+
+[0.8974,0.8993,0.9065,0.9008,0.8991]
+
+second layer transform:
+
+[0.8913,0.8816,0.8789,0.9081,0.9098]
+
+SVG no transform:
+
+[0.9034,0.901,0.9022,0.9049,0.902]
+
+SVG transform:
+
+[0.9213,0.926,0.925,0.9081,0.9184]
+
+</details>
+
+|-|Random forest without transform|Random forest with transform|Second network layer without transform|Second network layer with transform|SVM without transform|SVM with transform|
+|-|-----|--|-----|--|------|---|
+|average|96.90 %|93.13 %|90.0 %|89.4 %|90.3 %|92.0 %|
+|sem|0.02 %|0.03 %|0.2 %|0.6 %|0.1 %|0.3 %|
+
+# 24/01/2021
+
+Ho beccato i 9 anche nel codice originale: non sono più un problema solo del mio codice.
+
+![](24-01-2021/1/1.png)

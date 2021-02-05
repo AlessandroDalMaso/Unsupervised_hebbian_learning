@@ -8,17 +8,15 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import make_pipeline
-from sklearn.neighbors import KNeighborsClassifier
 from math import sqrt
 from hausdorff import hausdorff_distance
 
-def three_d(v):
+def three_d(v, xc=28, yc=28, valc=1):
     points = np.empty((len(v),3))
     lenght = int(sqrt(len(v)))
     img = np.reshape(v, (lenght, lenght))
-    valmax = np.amax(img)
     for (y, x), val in np.ndenumerate(img):
-        points[lenght*y+x] = np.array([x/28, y/28, val])
+        points[lenght*y+x] = np.array([x/xc, y/yc, val/valc])
     return points
 
 def dist_haus(u, v, pdist='euclidean'):
