@@ -90,7 +90,7 @@ def dist_gyro(A, B):
     diff2 = B - rotate(A, angle_f)
     return max(diff1@diff1.T, diff2@diff2.T)
 
-random = np.array(pd.read_hdf('results/matrices', key='random0'))
+random = np.array(pd.read_hdf('results/matrices', key='nodelta0'))
 
 # %% linkage
 

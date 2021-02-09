@@ -8,7 +8,6 @@ import numpy as np
 def scale_update(update, epoch, epochs, learn_rate):
     """scale the update to avoid overshooting"""
     max_norm = np.amax(np.abs(update))
-    #avg = np.average(np.abs(update))
     esp = (1-epoch/epochs)
     return learn_rate*esp*update/max_norm
 
@@ -33,7 +32,7 @@ def plasticity_rule(weight_vector, input_vector, product_result, g, p, R,
     
 
 
-def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
+def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh,
                                one_over_scale):
     """Calculate the update dW of weight_matrix.
 
@@ -67,12 +66,18 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k,
     sorting = np.argsort(product_result) # batch @ weight_matrix.T?
     update = np.zeros(weight_matrix.shape)
     for i in range(len(batch)):
-        h = sorting[i,-1]
-        a = sorting[i,-k]
 
-        update[h] += plasticity_rule(weight_matrix[h], batch[i],
-                                     product_result[i,h], 1, p, R,
-                                     one_over_scale)
+        for hx in np.arange(hh)+1:
+            h = sorting[i,-hx]
+            #print(-hx)
+            update[h] += plasticity_rule(weight_matrix[h], batch[i],
+                                         product_result[i,h], 1, p, R,
+                                         one_over_scale)
+        #h = sorting[i, -1]
+        #update[h] += plasticity_rule(weight_matrix[h], batch[i],
+        #                                 product_result[i,h], 1, p, R,
+        #                                 one_over_scale)
+        a = sorting[i,-k]
         if delta != 0:
             update[a] += plasticity_rule(weight_matrix[a], batch[i],
                                          product_result[i,a], -delta, p, R,
@@ -111,7 +116,7 @@ class CHUNeuralNetwork():
         return activation_function(X @ self.weight_matrix.T, *args)
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k,
-                         learn_rate, sigma, epoch, epochs):
+                         learn_rate, sigma, hh, epoch, epochs):
         """Fit the weigths to a single batch.
 
         Intialize the matrix of weights, then update the matrix with the result
@@ -158,19 +163,18 @@ class CHUNeuralNetwork():
             #    norm = np.sum(np.abs(self.weight_matrix[i]) ** p)
             #    self.weight_matrix[i] = self.weight_matrix[i]/(norm ** (1/p))
             # The weights are initialized with a gaussian distribution.
-            
-
-
-        update = plasticity_rule_vectorized(self.weight_matrix,
-                                            batch, delta, p, R, k, 1/scale,)
+        update = plasticity_rule_vectorized(self.weight_matrix, batch, delta,
+                                            p, R, k, hh, 1/scale)
 
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         self.weight_matrix += scaled_update
+        #self.weight_matrix *= 0.999
+        #self.weight_matrix += np.random.normal(0, 0.001, dims)
         
         return self
 
     def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
-            sigma, batch_size, epochs):
+            sigma, batch_size, hh, epochs):
         """Fit the weigths to the whole database.
 
         Intialize the matrix of weights, then put the data in minibatches, then
@@ -219,14 +223,15 @@ class CHUNeuralNetwork():
             X = database[np.random.permutation(len(database))]
             for i in range(0, len(X), batch_size):
                 batch=X[i:i+batch_size]
-                self.fit_single_batch(batch, n_hiddens, delta, p, R, scale, k,
-                         learn_rate, sigma, epoch, epochs)
+                self.fit_single_batch(batch=batch, n_hiddens=n_hiddens, delta=delta, p=p, R=R, scale=scale, k=k,
+                         learn_rate=learn_rate, sigma=sigma, hh=hh, epoch=epoch, epochs=epochs)
             print(epoch)
 
         return self
 
     def fit_transform(self, X, n_hiddens, delta, p, R, scale, k, learn_rate,
-                      sigma, activation_function, batch_size, epoch, epochs):
+                      sigma, batch_size, epoch, epochs, activation_function):
         """Fit the data, then transform it."""
-        return self.fit(X, n_hiddens, delta, p, R, scale, k, learn_rate,
-                 activation_function, batch_size, epoch,epochs).transform(X)
+        return self.fit(X, n_hiddens, delta, p, R, scale, k, learn_rate, sigma,
+                        batch_size, epoch, 
+                        epochs).transform(X, activation_function)

@@ -1,3 +1,5 @@
 prendere parte hebbiana e anti-hebbiana
 confrontare con due varianti: prima variante: facciamo evolvere i primi 4, 5
 seconda variante: diminuzione di tutta del numero dei pesi in modo proporzionale alla singola sinapsi con termine di noise
+fare la presentazione:
+cluster analysis

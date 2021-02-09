@@ -21,7 +21,6 @@ X = X_train.reshape((10, len(X_train)//10, 784))
 
 
 
-# %%
 
 epochs=160
 layer1 = chu.CHUNeuralNetwork()
@@ -52,11 +51,11 @@ for epoch in range(epochs):
                 # ...and remove them from the list!
 
     for b in batches:
-        layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0, p=2,
+        layer1 = layer1.fit_single_batch(batch=b, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
-                                         sigma=1, epoch=epoch, epochs=epochs)
+                                         sigma=10, hh=1, epoch=epoch, epochs=epochs)
             
-    #print(epoch)
+    print(epoch)
 utils.image_representation(layer1.weight_matrix, 2, epoch=epoch, heatmap=True,
                                        pnorms=True, ravel=False)
 
