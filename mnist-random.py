@@ -11,10 +11,8 @@ import utilities as utils
 batch_size=100
 
 
-# %% fit the data
-
 layer1 = chu.CHUNeuralNetwork()
-epochs=20
+epochs=80
 
 start = time()
 
@@ -22,13 +20,13 @@ for epoch in range(epochs):
     X = X_train[np.random.permutation(len(X_train))]
     batches = X.reshape((45000//batch_size, batch_size, 784))
     for batch in batches:
-        layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0,
+        layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4,
                                          p=2, R=1, scale=1, k=5,
-                                         learn_rate=0.1, sigma=10, hh=4,
+                                         learn_rate=0.1, sigma=10, hh=1,
                                          epoch=epoch, epochs=epochs)
     print(epoch)
 utils.image_representation(layer1.weight_matrix, 2, epoch,
-                                   heatmap=True, pnorms=False,
+                                   heatmap=True, pnorms=True,
                                    ravel=False)
 #print(time()-start)
 

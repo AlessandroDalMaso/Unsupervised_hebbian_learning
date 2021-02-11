@@ -12,7 +12,7 @@ np.random.seed(6948)
 batch_size=100 # always a dividend of 4500
 X = X_train.reshape((10, 4500, len(X_train[0])))
 layer1 = chu.CHUNeuralNetwork()
-epochs=160
+epochs=100
 
 start = time()
 for epoch in range(epochs):
@@ -22,7 +22,7 @@ for epoch in range(epochs):
         batches = batches[np.random.permutation(len(batches))]
         # then scramble the monotype batches
         for batch in batches:
-            layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0, p=2,
+            layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=100, delta=0.4, p=2,
                                          R=1, scale=1, k=2, learn_rate=0.02,
                                          sigma=1, epoch=epoch, epochs=epochs)
 

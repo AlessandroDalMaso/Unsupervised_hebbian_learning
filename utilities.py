@@ -12,6 +12,7 @@ from math import sqrt
 from hausdorff import hausdorff_distance
 
 def three_d(v, xc=28, yc=28, valc=1):
+    """turn a 2d array in a list of points in 3D space."""
     points = np.empty((len(v),3))
     lenght = int(sqrt(len(v)))
     img = np.reshape(v, (lenght, lenght))
@@ -20,9 +21,10 @@ def three_d(v, xc=28, yc=28, valc=1):
     return points
 
 def dist_haus(u, v, pdist='euclidean'):
-        u3 = three_d(u)
-        v3 = three_d(v)
-        return hausdorff_distance(u3, v3, pdist)
+    """Hausdorff distance of two 2D images."""
+    u3 = three_d(u)
+    v3 = three_d(v)
+    return hausdorff_distance(u3, v3, pdist)
 
 def put_in_shape(matrix, rows, columns, height, width, indexes=None):
     """put the synapses in a human-readable shape.
@@ -147,10 +149,33 @@ def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
 
 
 def h_activation(X):
+    """An activation function."""
     return np.where(X<0, 0, X)
 
 
 def score(X_train, y_train, X_test, y_test, transformer, args):
+    """
+    Calculate the prediction score for three different methoods.
+
+    Transform the dataset, then for each method calculate the function score
+    of scikit-learn's predictors, bot with and without transformation.
+
+    Parameters
+    ----------
+
+    X_train
+        The training dataset.
+    y_train
+        X_train's labels.
+    X_test
+        The testing dataset.
+    y_test
+        X_test's labels.
+    transformer
+    The transformer used to transform the data.
+    args:
+        To be passed to the transformer's transform function.
+    """
     t_train = transformer.transform(X_train, *args)
     t_test = transformer.transform(X_test, *args)
 

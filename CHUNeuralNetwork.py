@@ -9,13 +9,13 @@ def scale_update(update, epoch, epochs, learn_rate):
     """scale the update to avoid overshooting"""
     max_norm = np.amax(np.abs(update))
     esp = (1-epoch/epochs)
-    return learn_rate*esp*update/max_norm
+    return learn_rate * esp * update / max_norm
 
 
 def activ(currents, n):
     """Is the default activation function."""
     return np.where(currents < 0, 0, np.sign(currents) * np.abs(currents) ** n)
-    # no need to worry about complex numbers
+    # so no need to worry about complex numbers
 
 
 def product(weight_matrix, batch, p):
@@ -83,6 +83,11 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh,
                                          product_result[i,a], -delta, p, R,
                                          one_over_scale)
     return update
+
+
+def forget(matrix, rate, sigma):
+    "partially forget the learned paterns in a matrix."
+    return matrix*(1-rate) + np.random.normal(0, sigma, matrix.shape)
 
 # %% defining the class
 
@@ -168,8 +173,7 @@ class CHUNeuralNetwork():
 
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         self.weight_matrix += scaled_update
-        #self.weight_matrix *= 0.999
-        #self.weight_matrix += np.random.normal(0, 0.001, dims)
+        #self.weight_matrix = forget(self.weight_matrix, 0.001, 0.001)
         
         return self
 
@@ -216,7 +220,7 @@ class CHUNeuralNetwork():
 
         dims = (n_hiddens, len(database[0]))
         if not hasattr(self, "weight_matrix"):  
-            self.weight_matrix = np.random.triangular(-sigma, 0, sigma, dims)
+            self.weight_matrix = np.abs(np.random.triangular(-sigma, 0, sigma, dims))
             # The weights are initialized with a gaussian distribution.
 
         for epoch in range(epochs):

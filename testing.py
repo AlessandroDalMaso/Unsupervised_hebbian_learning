@@ -49,6 +49,15 @@ def test_product_slower():
 
     assert np.allclose(result, result2)
 
+def test_three_d_count():
+    v = np.ones(784)
+    xc = 28
+    yc = 28
+    valc=1
+    result = utils.three_d(v, xc, yc, valc)
+    assert len(result) == 28*28
+
+test_three_d_count()
 test_product_slower()
 test_plasticity_rule_vectorized_null()
 test_scale_update_monotony()
