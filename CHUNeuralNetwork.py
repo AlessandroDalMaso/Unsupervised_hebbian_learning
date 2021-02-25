@@ -32,7 +32,7 @@ def plasticity_rule(weight_vector, input_vector, product_result, g, p, R,
     
 
 
-def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh,
+def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa, decay,
                                one_over_scale):
     """Calculate the update dW of weight_matrix.
 
@@ -77,17 +77,17 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh,
         #update[h] += plasticity_rule(weight_matrix[h], batch[i],
         #                                 product_result[i,h], 1, p, R,
         #                                 one_over_scale)
-        a = sorting[i,-k]
         if delta != 0:
-            update[a] += plasticity_rule(weight_matrix[a], batch[i],
-                                         product_result[i,a], -delta, p, R,
-                                         one_over_scale)
+            for ax in np.arange(aa)+k:
+                #print(ax)
+                a = sorting[i, -ax]
+                update[a] += plasticity_rule(weight_matrix[a], batch[i],
+                                             product_result[i,a], -delta, p, R,
+                                             one_over_scale)
+    update -= weight_matrix * decay
     return update
 
 
-def forget(matrix, rate, sigma):
-    "partially forget the learned paterns in a matrix."
-    return matrix*(1-rate) + np.random.normal(0, sigma, matrix.shape)
 
 # %% defining the class
 
@@ -121,7 +121,7 @@ class CHUNeuralNetwork():
         return activation_function(X @ self.weight_matrix.T, *args)
 
     def fit_single_batch(self, batch, n_hiddens, delta, p, R, scale, k,
-                         learn_rate, sigma, hh, epoch, epochs):
+                         learn_rate, sigma, hh, aa, decay, epoch, epochs):
         """Fit the weigths to a single batch.
 
         Intialize the matrix of weights, then update the matrix with the result
@@ -169,16 +169,16 @@ class CHUNeuralNetwork():
             #    self.weight_matrix[i] = self.weight_matrix[i]/(norm ** (1/p))
             # The weights are initialized with a gaussian distribution.
         update = plasticity_rule_vectorized(self.weight_matrix, batch, delta,
-                                            p, R, k, hh, 1/scale)
+                                            p, R, k, hh, aa, decay, 1/scale)
 
         scaled_update = scale_update(update, epoch, epochs, learn_rate)
         self.weight_matrix += scaled_update
-        #self.weight_matrix = forget(self.weight_matrix, 0.001, 0.001)
+        
         
         return self
 
     def fit(self, database, n_hiddens, delta, p, R, scale, k, learn_rate,
-            sigma, batch_size, hh, epochs):
+            sigma, batch_size, hh, aa, decay, epochs):
         """Fit the weigths to the whole database.
 
         Intialize the matrix of weights, then put the data in minibatches, then
@@ -228,7 +228,7 @@ class CHUNeuralNetwork():
             for i in range(0, len(X), batch_size):
                 batch=X[i:i+batch_size]
                 self.fit_single_batch(batch=batch, n_hiddens=n_hiddens, delta=delta, p=p, R=R, scale=scale, k=k,
-                         learn_rate=learn_rate, sigma=sigma, hh=hh, epoch=epoch, epochs=epochs)
+                         learn_rate=learn_rate, sigma=sigma, hh=hh, aa=aa, decay=decay, epoch=epoch, epochs=epochs)
             print(epoch)
 
         return self

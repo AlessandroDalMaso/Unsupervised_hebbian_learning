@@ -140,7 +140,9 @@ def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
         ax.get_yaxis().set_visible(False)
     if pnorms:
         im2, ax2 = plt.subplots()
-        plt.plot(norms(matrix, p))
+        ax2.hist(norms(matrix, p), 100)
+        ax2.set_ylabel("Occurrences")
+        ax2.set_xlabel("p-norm")
         plt.title('epochs processed: ' + str(epoch+1))
     if ravel:
         im3, ax3 = plt.subplots()

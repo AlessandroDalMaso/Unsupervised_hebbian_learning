@@ -130,7 +130,7 @@ plt.grid()
 
 # %% fcluster
 
-indexes = fcluster(r_link, t=0.09, criterion='distance')
+indexes = fcluster(r_link, t=0.1, criterion='distance')
 print(np.amax(indexes))
 
 def represent_cluster(index):
