@@ -36,9 +36,9 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa, dec
                                one_over_scale):
     """Calculate the update dW of weight_matrix.
 
-    Each sample in batch updates only two rows of weight_matrix: the one
-    corresponding to the most activated hidden neuron and the one corresponding
-    to the k-th most activated.
+    Each sample in batch updates aa+hh rows of weight_matrix: the hh most
+    activated ones undergo hebbian learning and the ones from the k-est to the
+    k+aa most activated undergo anti-hebbian learning.
 
     Parameters
     ----------
@@ -52,9 +52,13 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa, dec
         Lebesgue norm exponent.
     R
         The radius of the sphere at wich the hidden neurons will converge.
-    k
-        The rank of the hidden neuron whose synapses will undergo anti-hebbian
-        learning.
+    k:
+        The rank of the highest-rank hidden neuron whose synapses will undergo
+        anti-hebbian learning.
+        hh:
+            The number of neurons undergoing hebbian learning.
+        aa:
+            The number of neurons undergoing anti-hebbian learning.
     one_over_scale
         One over the time scale of learning.
     Return
@@ -142,14 +146,18 @@ class CHUNeuralNetwork():
         scale:
             The learning rate.
         k:
-            The k-th most activated hidden neuron will undergo anti-hebbian
-            learning.
+        The rank of the highest-rank hidden neuron whose synapses will undergo
+        anti-hebbian learning.
         learn_rate:
             The update will be normalized so that its maximum (in absolute
             value) will be equal to this parameter.
         sigma:
             The standard deviation of the normal distribution from wich random
             weights initial values are drawn.
+        hh:
+            The number of neurons undergoing hebbian learning.
+        aa:
+            The number of neurons undergoing anti-hebbian learning.
         epoch:
             The epoch number.
         epochs:
