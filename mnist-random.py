@@ -7,6 +7,7 @@ import utilities as utils
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import SGDClassifier
+import pandas as pd
 #np.random.seed(3024)
 
 (X_train, y_train, X_test, y_test) = utils.mnist_loader()
@@ -36,8 +37,8 @@ utils.image_representation(layer1.weight_matrix, 2, epoch,
 
 # %% saving the results
 
-#data = pd.DataFrame(layer1.weight_matrix.copy())
-#data.to_hdf('results/matrices', key='random')
+data = pd.DataFrame(layer1.weight_matrix.copy())
+data.to_hdf('results/matrices', key='random')
 
 # %% second layer
 
