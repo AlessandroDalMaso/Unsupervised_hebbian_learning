@@ -13,15 +13,18 @@ def test_plasticity_rule_vectorized_null():
     weight_matrix = np.array([[0,  1, -1],
                               [1, -1,  9]])
     delta = 0.4
-    p = 3
+    p = 2
     R = 1
     k = 2
     hh = 1
+    aa = 1
+    decay = 0.01
     one_over_scale = 1
     result = chu.plasticity_rule_vectorized(weight_matrix=weight_matrix,
                                             batch=batch, delta=delta, p=p, R=R,
-                                            k=k, hh=hh,
+                                            k=k, hh=hh, aa=aa, decay=decay,
                                             one_over_scale=one_over_scale)
+    print(result)
 
     assert np.array_equal(result, np.zeros(weight_matrix.shape))
 
