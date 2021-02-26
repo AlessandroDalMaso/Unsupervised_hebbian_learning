@@ -10,6 +10,8 @@ from math import sqrt
 from utilities import dist_haus, three_d
 from PIL import Image
 
+#%% distance definitions
+
 def dist_cos(v, u):
     """Cosine distance."""
     return 1 - (v @ u.T) / (norm(u) * norm(v))
@@ -145,7 +147,8 @@ r_link = linkage(random, metric=dist_haus, method='average')
     
 # best one: dist-haus
 
-def g(r_link, dist):
+def n_clust(r_link, dist):
+    """Return the number of clusters for a given distance."""
     indexes = fcluster(r_link, t=dist, criterion='distance')
     return (np.amax(indexes))
 
@@ -160,26 +163,37 @@ dendrogram(
     p=18,  # show only the last p merged clusters
     leaf_rotation=90.,
     leaf_font_size=12.,
-    show_contracted=True,  # to get a distribution impression in truncated branches
-)
+    show_contracted=True)  # to get a distribution impression in truncated branches)
+    
 plt.show()
 
 d = []
 n = []
-for i in np.arange(0.075, 0.1, 0.001):
-    print(i, g(r_link, i))
-    d.append(i)
-    n.append(g(r_link, i))
+for dist in np.arange(0.075, 0.1, 0.001):
+    print(dist, n_clust(r_link, dist))
+    d.append(dist)
+    n.append(n_clust(r_link, dist))
 im, ax = plt.subplots()
 plt.scatter(d, n)
 plt.grid()
 
-# %% fcluster
+# %% clustering
 
 indexes = fcluster(r_link, t=0.1, criterion='distance')
 print(np.amax(indexes))
 
 def represent_cluster(index):
+    """Represent the clusters.
+
+    Create an image for each cluster of the same dimensions of the original 
+    matrix in wich all the synapses are zero but those belonging to that
+    particular cluster.
+
+    Parameters
+    ----------
+    index:
+        The index of the cluster to represent.
+    """
     M = np.zeros((280,280))
     for y in range(10):
         for x in range(10):
