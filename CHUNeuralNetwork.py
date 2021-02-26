@@ -32,8 +32,8 @@ def plasticity_rule(weight_vector, input_vector, product_result, g, p, R,
     
 
 
-def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa, decay,
-                               one_over_scale):
+def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa,
+                               decay, one_over_scale):
     """Calculate the update dW of weight_matrix.
 
     Each sample in batch updates aa+hh rows of weight_matrix: the hh most
@@ -55,10 +55,12 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa, dec
     k:
         The rank of the highest-rank hidden neuron whose synapses will undergo
         anti-hebbian learning.
-        hh:
-            The number of neurons undergoing hebbian learning.
-        aa:
-            The number of neurons undergoing anti-hebbian learning.
+    hh:
+        The number of neurons undergoing hebbian learning.
+    aa:
+        The number of neurons undergoing anti-hebbian learning.
+    decay:
+        Over-time decay for each batch.
     one_over_scale
         One over the time scale of learning.
     Return
@@ -158,6 +160,8 @@ class CHUNeuralNetwork():
             The number of neurons undergoing hebbian learning.
         aa:
             The number of neurons undergoing anti-hebbian learning.
+        decay:
+            Over-time decay for each batch.
         epoch:
             The epoch number.
         epochs:
@@ -217,6 +221,12 @@ class CHUNeuralNetwork():
             weights initial values are drawn.
         batch_size:
             The size of the batches to put samples in.
+        hh:
+            The number of neurons undergoing hebbian learning.
+        aa:
+            The number of neurons undergoing anti-hebbian learning.
+        decay:
+            Over-time decay for each batch.
         epochs:
             the total number of epochs.
 
