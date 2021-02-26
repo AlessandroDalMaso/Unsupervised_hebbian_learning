@@ -40,7 +40,7 @@ utils.image_representation(layer1.weight_matrix, 2, epoch,
 data = pd.DataFrame(layer1.weight_matrix.copy())
 data.to_hdf('results/matrices', key='random')
 
-# %% second layer
+# %% supervised learning
 
 #utils.score(X_train, y_train, X_test, y_test, layer1, (chu.activ, 4.5))
 args=(1)

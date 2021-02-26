@@ -18,7 +18,7 @@ def test_plasticity_rule_vectorized_null():
     k = 2
     hh = 1
     aa = 1
-    decay = 0.01
+    decay = 0
     one_over_scale = 1
     result = chu.plasticity_rule_vectorized(weight_matrix=weight_matrix,
                                             batch=batch, delta=delta, p=p, R=R,
