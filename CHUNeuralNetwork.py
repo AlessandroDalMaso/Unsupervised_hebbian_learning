@@ -90,9 +90,7 @@ def plasticity_rule_vectorized(weight_matrix, batch, delta, p, R, k, hh, aa,
                 update[a] += plasticity_rule(weight_matrix[a], batch[i],
                                              product_result[i,a], -delta, p, R,
                                              one_over_scale)
-    print(update)
     update -= weight_matrix * decay
-    print(update)
     return update
 
 

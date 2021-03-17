@@ -96,9 +96,9 @@ def mnist_loader():
     sorted_train = train.sort_values('class')
     equal_train = sorted_train.groupby('class').head(4500).reset_index(drop=True)
 
-    X_train = np.array(equal_train.drop('class', axis=1))/255
+    X_train = np.array(equal_train.drop('class', axis=1))/255.
     y_train = np.array(equal_train['class'])
-    X_test = np.array(test.drop('class', axis=1))/255
+    X_test = np.array(test.drop('class', axis=1))/255.
     y_test = np.array(test['class'])
     return (X_train, y_train, X_test, y_test)
         
@@ -135,6 +135,8 @@ def image_representation(matrix, p, epoch, heatmap, pnorms, ravel):
         im, ax = plt.subplots()
         plt.imshow(image, cmap='bwr', vmax = vmax, vmin=-vmax)
         plt.colorbar()
+        plt.xticks([])
+        plt.yticks([])
         plt.title('epochs processed: ' + str(epoch+1))
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
@@ -178,7 +180,7 @@ def score(X_train, y_train, X_test, y_test, transformer, args):
     args:
         To be passed to the transformer's transform function.
     """
-    t_train = transformer.transform(X_train, *args)
+    t_train = transformer.transform(X_train, *args)[np.random.permutation(len(X_train))][4500]
     t_test = transformer.transform(X_test, *args)
 
     forest2 = RandomForestClassifier()

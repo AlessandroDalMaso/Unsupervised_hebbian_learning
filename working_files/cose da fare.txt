@@ -1,5 +1,12 @@
-prendere parte hebbiana e anti-hebbiana
-confrontare con due varianti: prima variante: facciamo evolvere i primi 4, 5
-seconda variante: diminuzione di tutta del numero dei pesi in modo proporzionale alla singola sinapsi con termine di noise
-fare la presentazione:
-cluster analysis
+aggiungere teoria sulla tabella principale?
+conclusioni: cosa comporta il mio lavoro? connessioni stabili, interpretabilità,
+risultati per altre def di distanza?
+side project con richi
+rassuntino dopo gli elenchi puntati
+versione a colori vs in bianco e nero
+
+da fare
+_______________________
+sforzarsi di scrivere dopo gli elenchi puntati
+estendere abstract
+su github

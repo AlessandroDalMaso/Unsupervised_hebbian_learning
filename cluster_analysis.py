@@ -155,7 +155,7 @@ def n_clust(r_link, dist):
 
 im, ax = plt.subplots()
 plt.title('Hierarchical Clustering Dendrogram (truncated)')
-plt.xlabel('sample index or (cluster size)')
+#plt.xlabel('sample index or (cluster size)')
 plt.ylabel('distance')
 dendrogram(
     r_link,
@@ -164,12 +164,13 @@ dendrogram(
     leaf_rotation=90.,
     leaf_font_size=12.,
     show_contracted=True)  # to get a distribution impression in truncated branches)
-    
 plt.show()
+
+# %%
 
 d = []
 n = []
-for dist in np.arange(0.075, 0.1, 0.001):
+for dist in np.arange(0.08, 0.1, 0.001):
     print(dist, n_clust(r_link, dist))
     d.append(dist)
     n.append(n_clust(r_link, dist))
@@ -179,7 +180,8 @@ plt.grid()
 
 # %% clustering
 
-indexes = fcluster(r_link, t=0.1, criterion='distance')
+indexes = fcluster(r_link, t=0.115
+                   , criterion='distance')
 print(np.amax(indexes))
 
 def represent_cluster(index):
@@ -200,12 +202,24 @@ def represent_cluster(index):
             if index == indexes[10*y+x]:
                 M[y*28:(y+1)*28,x*28:(x+1)*28] = random[10*y+x].reshape((28,28))
     im, ax = plt.subplots()
-    plt.imshow(M, cmap='bwr', vmax=0.2, vmin=-0.2)
+    plt.imshow(M, cmap='Greys')
     plt.colorbar()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
     plt.title('cluster '+str(index))
+    #plt.gca().set_axis_off()
+    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, 
+                hspace = 0, wspace = 0)
+    plt.margins(0,0)
+    plt.gca().xaxis.set_major_locator(plt.NullLocator())
+    plt.gca().yaxis.set_major_locator(plt.NullLocator())
+    #plt.savefig(str(index), bbox_inches = 'tight',
+    #    pad_inches = 0)
+    
 
-for i in range(0, np.amax(indexes)+1):
+for i in np.arange(1, np.amax(indexes)+1):
     represent_cluster(i)
+    
 
 image_representation(random, 2, 159, True, False, False)
 
