@@ -142,7 +142,7 @@ random = np.array(pd.read_hdf('results/matrices', key='nodelta0'))
 
 # %% linkage
 
-r_link = linkage(random, metric=dist_haus, method='average')
+r_link = linkage(random, metric='euclidean', method='ward')
 
     
 # best one: dist-haus
@@ -170,7 +170,7 @@ plt.show()
 
 d = []
 n = []
-for dist in np.arange(0.08, 0.1, 0.001):
+for dist in np.arange(1, 2, 0.01):
     print(dist, n_clust(r_link, dist))
     d.append(dist)
     n.append(n_clust(r_link, dist))
@@ -180,8 +180,7 @@ plt.grid()
 
 # %% clustering
 
-indexes = fcluster(r_link, t=0.115
-                   , criterion='distance')
+indexes = fcluster(r_link, t=1.25, criterion='distance')
 print(np.amax(indexes))
 
 def represent_cluster(index):
@@ -202,7 +201,7 @@ def represent_cluster(index):
             if index == indexes[10*y+x]:
                 M[y*28:(y+1)*28,x*28:(x+1)*28] = random[10*y+x].reshape((28,28))
     im, ax = plt.subplots()
-    plt.imshow(M, cmap='Greys')
+    plt.imshow(M, cmap='bwr', vmax = np.amax(M), vmin = -np.amax(M))
     plt.colorbar()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
@@ -213,8 +212,8 @@ def represent_cluster(index):
     plt.margins(0,0)
     plt.gca().xaxis.set_major_locator(plt.NullLocator())
     plt.gca().yaxis.set_major_locator(plt.NullLocator())
-    #plt.savefig(str(index), bbox_inches = 'tight',
-    #    pad_inches = 0)
+    plt.savefig(str(index), bbox_inches = 'tight',
+        pad_inches = 0)
     
 
 for i in np.arange(1, np.amax(indexes)+1):

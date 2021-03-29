@@ -18,25 +18,22 @@ batch_size=100
 layer1 = chu.CHUNeuralNetwork()
 epochs=100
 
-for i in [20,40,60,80,100]:
-    n_hiddens = i
-    start = time.time()
+n_hiddens=100
+start = time.time()
     
-    for epoch in range(epochs):
-        X = X_train[np.random.permutation(len(X_train))]
-        batches = X.reshape((45000//batch_size, batch_size, 784))
-        for batch in batches:
-            
-            layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=n_hiddens, delta=0,
-                                             p=2, R=1, scale=1, k=2,
-                                              learn_rate=0.04, sigma=10, hh=1, aa=1,
-                                             decay = 0, epoch=epoch, epochs=epochs)
-        #print(epoch)
-    #utils.image_representation(layer1.weight_matrix, 2, epoch,
-    #                                   heatmap=True, pnorms=True,
-    #                                   ravel=False)
-    print(n_hiddens)
-    print(time.time()-start)
+for epoch in range(epochs):
+    X = X_train[np.random.permutation(len(X_train))]
+    batches = X.reshape((45000//batch_size, batch_size, 784))
+    for batch in batches:
+        layer1 = layer1.fit_single_batch(batch=batch, n_hiddens=n_hiddens, delta=0,
+                                         p=2, R=1, scale=1, k=2,
+                                          learn_rate=0.04, sigma=10, hh=1, aa=1,
+                                         decay = 0, epoch=epoch, epochs=epochs)
+    print(epoch)
+#utils.image_representation(layer1.weight_matrix, 2, epoch,
+#                                   heatmap=True, pnorms=True,
+#                                   ravel=False)
+
 
 # %% saving the results
 
@@ -44,6 +41,7 @@ data = pd.DataFrame(layer1.weight_matrix.copy())
 data.to_hdf('results/matrices', key='random')
 
 # %% supervised learning
+
 
 utils.score(X_train, y_train, X_test, y_test, layer1, (chu.activ, 4.5))
 """

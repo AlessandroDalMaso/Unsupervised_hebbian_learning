@@ -1,12 +1,12 @@
-aggiungere teoria sulla tabella principale?
-conclusioni: cosa comporta il mio lavoro? connessioni stabili, interpretabilità,
-risultati per altre def di distanza?
-side project con richi
-rassuntino dopo gli elenchi puntati
-versione a colori vs in bianco e nero
+mestendere abstract?
+conclusioni?
+teoria tabella principale?
+rifare con 10%?
 
-da fare
-_______________________
-sforzarsi di scrivere dopo gli elenchi puntati
-estendere abstract
-su github
+rfnts  = [0.9358, 0.9323, 0.9400, 0.9369, 0.9399] media = 0.9370 sem = 0.001
+rfs    = [0.8707, 0.8708, 0.8691, 0.8697, 0.8709] media = 0.8702 sem = 0.001
+slnts  = [0.8854, 0.8863, 0.8887, 0.8950, 0.8905] media = 0.8892 sem = 0.002
+sl     = [0.8934, 0.9013, 0.8824, 0.8600, 0.8882] media = 0.8851 sem = 0.007
+SVMnts = [0.8844, 0.8861, 0.8890, 0.8935, 0.8909] media = 0.8887 sem = 0.001
+SVMs   = [0.9121, 0.8814, 0.8960, 0.8909, 0.9068] media = 0.8974 sem = 0.005
+

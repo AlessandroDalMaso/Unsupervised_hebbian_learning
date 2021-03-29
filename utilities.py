@@ -180,23 +180,41 @@ def score(X_train, y_train, X_test, y_test, transformer, args):
     args:
         To be passed to the transformer's transform function.
     """
-    t_train = transformer.transform(X_train, *args)[np.random.permutation(len(X_train))][4500]
+    perm = np.random.permutation(len(X_train))[:4500]
+    XX_train = X_train[perm]
+    yy_train = y_train[perm][:4500]
+    t_train = transformer.transform(XX_train, *args) 
     t_test = transformer.transform(X_test, *args)
 
+    forest1 = RandomForestClassifier()
+    forest1.fit(XX_train, yy_train)
+    score1 = forest1.score(X_test, y_test)
+    print('random forest no transform score: ', score1)
+
     forest2 = RandomForestClassifier()
-    forest2.fit(t_train, y_train)
+    forest2.fit(t_train, yy_train)
     score2 = forest2.score(t_test, y_test)
     print('random forestscore: ', score2)
+    
+    pip_perceptron0 = make_pipeline(StandardScaler(), SGDClassifier(loss='perceptron'))
+    pip_perceptron0.fit(XX_train, yy_train)
+    score3 = pip_perceptron0.score(X_test, y_test)
+    print('second layer no transform score: ', score3)
 
 
     pip_perceptron = make_pipeline(StandardScaler(), SGDClassifier(loss='perceptron'))
-    pip_perceptron.fit(h_activation(t_train), y_train)
-    score5 = pip_perceptron.score(h_activation(t_test), y_test)
+    pip_perceptron.fit(t_train, yy_train)
+    score5 = pip_perceptron.score(t_test, y_test)
     print('second layer score: ', score5)
+    
+    pip_SVM0 = make_pipeline(StandardScaler(),SGDClassifier(max_iter=2000))
+    pip_SVM0.fit(XX_train, yy_train)
+    score7 = pip_SVM0.score(X_test, y_test)
+    print('SVM score no transformed: ', score7)
 
 
     pip_SVM = make_pipeline(StandardScaler(),SGDClassifier(max_iter=2000))
-    pip_SVM.fit(t_train, y_train)
+    pip_SVM.fit(t_train, yy_train)
     score7 = pip_SVM.score(t_test, y_test)
     print('SVM score transformed: ', score7)
 
